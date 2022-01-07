@@ -1,0 +1,92 @@
+{
+	"href": "https://api.spotify.com/v1/users/samleeml/playlists?offset=0&limit=20",
+	"items": [
+		{
+			"collaborative": false,
+			"description": "",
+			"external_urls": {
+				"spotify": "https://open.spotify.com/playlist/6nD4NgvMJbqRB6kraHxzDB"
+			},
+			"href": "https://api.spotify.com/v1/playlists/6nD4NgvMJbqRB6kraHxzDB",
+			"id": "6nD4NgvMJbqRB6kraHxzDB",
+			"images": [
+				{
+					"height": 640,
+					"url": "https://i.scdn.co/image/ab67616d0000b27352c400741caba259a2d68af9",
+					"width": 640
+				}
+			],
+			"name": "Not Boring",
+			"owner": {
+				"display_name": "Samantha Lee",
+				"external_urls": {
+					"spotify": "https://open.spotify.com/user/samleeml"
+				},
+				"href": "https://api.spotify.com/v1/users/samleeml",
+				"id": "samleeml",
+				"type": "user",
+				"uri": "spotify:user:samleeml"
+			},
+			"primary_color": null,
+			"public": true,
+			"snapshot_id": "NTAsMTc5NDNjNzU0ZTM3OTc3NmJhNGZlZTgzMTY1ZDBjNzkyMWY4ZjJmYw==",
+			"tracks": {
+				"href": "https://api.spotify.com/v1/playlists/6nD4NgvMJbqRB6kraHxzDB/tracks",
+				"total": 11
+			},
+			"type": "playlist",
+			"uri": "spotify:playlist:6nD4NgvMJbqRB6kraHxzDB"
+		},
+		{
+			"collaborative": false,
+			"description": "",
+			"external_urls": {
+				"spotify": "https://open.spotify.com/playlist/7tuJKZre2zfUdz0ERsqR1L"
+			},
+			"href": "https://api.spotify.com/v1/playlists/7tuJKZre2zfUdz0ERsqR1L",
+			"id": "7tuJKZre2zfUdz0ERsqR1L",
+			"images": [
+				{
+					"height": 640,
+					"url": "https://mosaic.scdn.co/640/ab67616d0000b2734021f08adac02616e22adfd5ab67616d0000b2737510d1d8d363a0ec5c3a2670ab67616d0000b273bc2c70f5dfe45e49713dbb26ab67616d0000b273fa248176d2a4eee5bd0eb1ec",
+					"width": 640
+				},
+				{
+					"height": 300,
+					"url": "https://mosaic.scdn.co/300/ab67616d0000b2734021f08adac02616e22adfd5ab67616d0000b2737510d1d8d363a0ec5c3a2670ab67616d0000b273bc2c70f5dfe45e49713dbb26ab67616d0000b273fa248176d2a4eee5bd0eb1ec",
+					"width": 300
+				},
+				{
+					"height": 60,
+					"url": "https://mosaic.scdn.co/60/ab67616d0000b2734021f08adac02616e22adfd5ab67616d0000b2737510d1d8d363a0ec5c3a2670ab67616d0000b273bc2c70f5dfe45e49713dbb26ab67616d0000b273fa248176d2a4eee5bd0eb1ec",
+					"width": 60
+				}
+			],
+			"name": "Float On",
+			"owner": {
+				"display_name": "Samantha Lee",
+				"external_urls": {
+					"spotify": "https://open.spotify.com/user/samleeml"
+				},
+				"href": "https://api.spotify.com/v1/users/samleeml",
+				"id": "samleeml",
+				"type": "user",
+				"uri": "spotify:user:samleeml"
+			},
+			"primary_color": null,
+			"public": true,
+			"snapshot_id": "MTksMThmNGZiZTE4NTYyZTZjNTg3NWQwMTQzNTBhOTc1MTY3ZGU5M2NjMQ==",
+			"tracks": {
+				"href": "https://api.spotify.com/v1/playlists/7tuJKZre2zfUdz0ERsqR1L/tracks",
+				"total": 10
+			},
+			"type": "playlist",
+			"uri": "spotify:playlist:7tuJKZre2zfUdz0ERsqR1L"
+		}
+	],
+	"limit": 20,
+	"next": null,
+	"offset": 0,
+	"previous": null,
+	"total": 11
+}
