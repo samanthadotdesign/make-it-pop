@@ -15,13 +15,11 @@
 
 <div class="flex flex-col">
 	<!-- Button -->
-	<div>
-		<button on:click={handleToggle} class="toggle">
-			{#key view}
-				<InlineSvg src={`/images/${view == 'record' ? 'list' : 'record'}.svg`} />
-			{/key}
-		</button>
-	</div>
+	<button on:click={handleToggle} class="ml-auto mr-6 p-6 cursor-pointer">
+		{#key view}
+			<InlineSvg src={`/images/${view == 'record' ? 'list' : 'record'}.svg`} />
+		{/key}
+	</button>
 
 	<!-- Conditional rendering -->
 	{#if view == 'record'}
@@ -30,13 +28,3 @@
 		<ListView />
 	{/if}
 </div>
-
-<style>
-	.toggle {
-		padding: 12px;
-	}
-
-	.toggle:hover {
-		cursor: pointer;
-	}
-</style>
