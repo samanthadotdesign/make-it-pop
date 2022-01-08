@@ -1,27 +1,7 @@
-<nav>
-	<h1>make it pop</h1>
-	<div class="nav-links">
-		<a href="/connect">connect</a>
-		<a href="/info">info</a>
+<nav class="flex justify-between items-center px-8 py-6">
+	<h1 class="inline-block">make it pop</h1>
+	<div class="inline-block">
+		<a class="pl-3" href="/connect">connect</a>
+		<a class="pl-3" href="/info">info</a>
 	</div>
 </nav>
-
-<style>
-	nav {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		padding: 16px 32px;
-	}
-
-	.nav-links {
-		display: flex;
-		flex-direction: row;
-	}
-
-	a {
-		text-decoration: none;
-		padding: 8px;
-	}
-</style>
