@@ -35,6 +35,7 @@
 	}
 
 	async function getTrackAnalysis(currentTrack, playlistId) {
+		console.log('CECKING CURRENT TRACK', $playlist.items[currentTrack]);
 		const trackId = $playlist['items'][currentTrack]['track']['id'];
 		const url = `/json/audio-analysis/${playlistId}/${trackId}.json`;
 		const res = await fetch(url);

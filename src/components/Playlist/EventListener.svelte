@@ -22,14 +22,14 @@ But isolates the logic that listens to the body event
 	}
 
 	function handleTrackChange(bool) {
-		if (bool && $currentTrack < $playlist.items.length) {
+		if (bool && $currentTrack < $playlist.items.length - 1) {
 			$currentTrack += 1;
 		} else if ($currentTrack > 0) {
 			$currentTrack -= 1;
 		}
 	}
 
-	// When the user is scrolling
+	// When the user is scrolling on desktop
 	function handleScroll(event) {
 		if (Math.sign(event.deltaY) == -1) {
 			handleTrackChange(true);
@@ -39,6 +39,7 @@ But isolates the logic that listens to the body event
 	}
 
 	// Waiting to be mounted on the client to get document body and window element that Hammer needs
+	// Hammer handles swipes for mobile and click+drag for desktop
 	onMount(() => {
 		// REFERENCING BODY
 		const body = document.body;
