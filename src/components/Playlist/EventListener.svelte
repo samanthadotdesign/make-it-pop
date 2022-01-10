@@ -21,6 +21,23 @@ But isolates the logic that listens to the body event
 		$windowObject.width = width;
 	}
 
+	function handleTrackChange(bool) {
+		if (bool && $currentTrack < $playlist.items.length) {
+			$currentTrack += 1;
+		} else if ($currentTrack > 0) {
+			$currentTrack -= 1;
+		}
+	}
+
+	// When the user is scrolling
+	function handleScroll(event) {
+		if (Math.sign(event.deltaY) == -1) {
+			handleTrackChange(true);
+		} else if (Math.sign(event.deltaY) == 1) {
+			handleTrackChange(false);
+		}
+	}
+
 	// Waiting to be mounted on the client to get document body and window element that Hammer needs
 	onMount(() => {
 		// REFERENCING BODY
@@ -37,40 +54,31 @@ But isolates the logic that listens to the body event
 			let direction = '';
 
 			switch (true) {
-				// LEFT
 				case e.angle < -157.5 || e.angle > 157.5:
 					direction = 'left';
 					break;
-				// RIGHT
 				case e.angle > -22.5 && e.angle < 22.5:
 					direction = 'right';
 					break;
-				// UP
 				case e.angle < -67.5 && e.angle > -112.5:
 					direction = 'up';
 					break;
-				// Down
 				case e.angle > 67.5 && e.angle < 112.5:
 					direction = 'down';
 					break;
-				// LEFT-Up
 				case e.angle < -112.5 && e.angle > -157.5:
 					direction = 'left-up';
 					break;
-				// LEFT-Down
 				case e.angle > 112.5 && e.angle < 157.5:
 					direction = 'left-down';
 					break;
-				// RIGHT-Up
 				case -22.5 > e.angle && e.angle > -67.5:
 					direction = 'right-up';
 					break;
-				// RIGHT-Down
 				case e.angle > 22.5 && e.angle < 67.5:
 					direction = 'right-down';
 					break;
 				default:
-					// code block
 					direction = 'unknown';
 			}
 
@@ -78,16 +86,10 @@ But isolates the logic that listens to the body event
 
 			// WE USE HAMMER TO HELP US CHANGE THE TRACK COUNTER
 			// If user is swiping left/up, they are looking for the next track & vice versa
-			if (
-				['left', 'left-down', 'left-up', 'up'].includes(direction) &&
-				$currentTrack < $playlist.items.length
-			) {
-				$currentTrack += 1;
-			} else if (
-				['right', 'right-down', 'right-up', 'down'].includes(direction) &&
-				$currentTrack > 0
-			) {
-				$currentTrack -= 1;
+			if (['left', 'left-down', 'left-up', 'up'].includes(direction)) {
+				handleTrackChange(true);
+			} else if (['right', 'right-down', 'right-up', 'down'].includes(direction)) {
+				handleTrackChange(false);
 			}
 
 			console.log('CHECKING CURRENT TRACK', $currentTrack);
@@ -100,4 +102,4 @@ But isolates the logic that listens to the body event
 	});
 </script>
 
-<svelte:window bind:innerHeight={height} bind:innerWidth={width} />
+<svelte:window on:mousewheel={handleScroll} bind:innerHeight={height} bind:innerWidth={width} />
