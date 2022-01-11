@@ -83,8 +83,6 @@ But isolates the logic that listens to the body event
 					direction = 'unknown';
 			}
 
-			console.log('--00--> Swipe: ' + e.direction + ' -- Dir is: ' + direction);
-
 			// WE USE HAMMER TO HELP US CHANGE THE TRACK COUNTER
 			// If user is swiping left/up, they are looking for the next track & vice versa
 			if (['left', 'left-down', 'left-up', 'up'].includes(direction)) {
@@ -92,8 +90,6 @@ But isolates the logic that listens to the body event
 			} else if (['right', 'right-down', 'right-up', 'down'].includes(direction)) {
 				handleTrackChange(false);
 			}
-
-			console.log('CHECKING CURRENT TRACK', $currentTrack);
 		});
 
 		// Prevent native function when pointer moves

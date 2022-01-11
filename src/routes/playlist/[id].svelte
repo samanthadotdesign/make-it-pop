@@ -11,21 +11,23 @@
 		return {
 			props: {
 				fetchedPlaylist: await res.json(), // res.json() returns a promise
-				playlistId: params.id // store playlistId locally
+				playlistId: params.id // store playlist id & name locally
 			}
 		};
 	}
 </script>
 
 <script>
-	import { playlist, trackAnalysis } from '@stores/userDataStore.js';
+	import { playlists, playlist, trackAnalysis } from '@stores/userDataStore.js';
 	import { currentTrack } from '@stores/visualizerStore.js';
 	import { page } from '$app/stores';
-
 	import EventListener from '@components/Playlist/EventListener.svelte';
+	import Controls from '@components/Controls.svelte';
+	import Index from '../index.svelte';
 
 	export let fetchedPlaylist;
 	export let playlistId;
+	export let playlistName;
 
 	// On runtime, fetchedPlaylist will be automatically populated from context="module" props
 	$playlist = fetchedPlaylist;
@@ -35,17 +37,27 @@
 	}
 
 	async function getTrackAnalysis(currentTrack, playlistId) {
-		console.log('CECKING CURRENT TRACK', $playlist.items[currentTrack]);
 		const trackId = $playlist['items'][currentTrack]['track']['id'];
 		const url = `/json/audio-analysis/${playlistId}/${trackId}.json`;
 		const res = await fetch(url);
 		const result = await res.json();
-		console.log('track analysis', result);
 		return result;
 	}
+
+	function getPlaylistName(playlistId) {
+		const playlistsArray = $playlists.items;
+		// playlistsArray.find(playlist => playlist.id== playlistId)
+		playlistsArray.forEach((playlist, index) => {
+			if (playlist.id == playlistId) {
+				return playlist['name'];
+			}
+		});
+	}
+	playlistName = getPlaylistName(playlistId);
 </script>
 
 <EventListener />
+<Controls title={playlistName} />
 <h1>
 	{#each $playlist.items as trackObject}
 		<p>{trackObject.track.name}</p>

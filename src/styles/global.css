@@ -6,3 +6,12 @@ body {
 	width: 100vw;
 	height: 100vh;
 }
+
+button {
+	border: solid 1px #000;
+}
+
+input {
+	border: solid 1px #ccc;
+	outline: none;
+}

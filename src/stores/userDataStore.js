@@ -5,9 +5,11 @@
 
 import { writable } from "svelte/store";
 
-// Fetching playlist JSON from local files
+// Playlist JSON from local files
 import initialPlaylists from "../../static/json/playlists.json"
 export const playlists = writable(initialPlaylists)
+
+// Single playlist object (with track items) 
 export const playlist = writable({}) 
 
 export const trackAnalysis = writable({})
