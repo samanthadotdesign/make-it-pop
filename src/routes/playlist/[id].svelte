@@ -1,26 +1,15 @@
 <script context="module">
 	import { randomTerm } from '@stores/visualizerStore.js';
-
+	import { fetchVideos } from '@utils/videoAPI';
 	/** @type {import('@sveltejs/kit').Load} */
 	export async function load({ params, fetch, error, status }) {
 		const url = `/json/playlists/${params.id}.json`;
 		const res = await fetch(url);
-
-		const videosUrl = `https://api.pexels.com/videos/search?query=${randomTerm}&per_page=20`;
-
-		const response = await fetch(videosUrl, {
-			method: 'GET',
-			headers: {
-				Authorization: import.meta.env.VITE_PEXELS_API_KEY,
-				'Content-Type': 'application/json'
-			}
-		});
-
 		return {
 			props: {
 				fetchedPlaylist: await res.json(), // res.json() returns a promise
 				playlistId: params.id, // store playlist id & name locally
-				videos: await response.json(),
+				videos: await fetchVideos(randomTerm),
 				randomTerm
 			}
 		};
