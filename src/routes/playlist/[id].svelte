@@ -46,12 +46,8 @@
 
 	function getPlaylistName(playlistId) {
 		const playlistsArray = $playlists.items;
-		// playlistsArray.find(playlist => playlist.id== playlistId)
-		playlistsArray.forEach((playlist, index) => {
-			if (playlist.id == playlistId) {
-				return playlist['name'];
-			}
-		});
+		const currentPlaylist = playlistsArray.find((playlist) => playlist.id == playlistId);
+		return currentPlaylist['name'];
 	}
 	playlistName = getPlaylistName(playlistId);
 </script>
