@@ -16,13 +16,22 @@ Play audio (local files)
 2. Play the file using browser API 
 --------------------------------------------------
 Play audio (Spotify link)
+--------------------------------------------------
+Play button => sync video + audio playing
+0. Create a function to handle both video + audio 
+Handling audio autoplaying in EventListener 
+Handling video autoplaying in visualizerStore
+trusted events 
+1. Handle audio on end -> need to trigger track change
+2. Store playStatus variable in the store, we use it also to manage auto-hide different components 
  -->
 <script>
 	import {
 		currentVideo,
 		videosData,
 		setVideoIndex,
-		currentTrack
+		currentTrack,
+		playStatus
 	} from '@stores/visualizerStore.js';
 	import { playlist } from '@stores/userDataStore.js';
 
@@ -32,9 +41,9 @@ Play audio (Spotify link)
 
 	let video;
 	let audio;
+	let videoIsPlaying;
 
 	$: currentTrackData = $playlist?.items?.[$currentTrack];
-
 	$: currentVideoData = $videosData.videos[$currentVideo];
 
 	// Triggers change in video when video ends automatically
@@ -42,12 +51,38 @@ Play audio (Spotify link)
 		setVideoIndex(true);
 	}
 
-	function handlePlay() {
-		audio.play();
+	// Change player signal from play to pause
+	function togglePlay() {
+		if (!$playStatus) {
+			audio.play();
+		} else {
+			audio.pause();
+		}
+		$playStatus = !$playStatus;
+		console.log('*** PLAY STATUS', $playStatus);
 	}
+
+	// What to handle: change the song, but it stopped playing until i hit the play button
+	console.log('play status on load', $playStatus);
 </script>
 
-<button id="startButton" on:click={handlePlay}>Play</button>
+{#if !$playStatus}
+	<button
+		id="startButton"
+		class="w-24 h-24 rounded-full border-solid border-2 border-black"
+		on:click={togglePlay}
+		>Play
+	</button>
+{/if}
+
+{#if $playStatus}
+	<button
+		id="pauseButton"
+		class="w-24 h-24 rounded-full border-solid border-2 border-black"
+		on:click={togglePlay}
+		>Pause
+	</button>
+{/if}
 
 <audio bind:this={audio} src={`/audio/${playlistId}/${currentTrackData?.track.id}.mp3`} />
 

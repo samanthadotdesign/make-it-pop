@@ -3,6 +3,7 @@ import { writable, get } from "svelte/store";
 // currentTrack is the index on the playlist
 export const currentTrack = writable(0)
 
+export const playStatus = writable(false)
 // currentVideo is the index of current video playing for a song
 // There can be multiple videos per track 
 export const currentVideo = writable(0)
