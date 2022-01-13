@@ -25,9 +25,6 @@ export function setVideoIndex(direction){
 	const videoIndex = get(currentVideo) // get() is used because we can't use $currentVideo here, it's the same file, but works similarly
 	const playlistLength = get(videoPlaylistLength)
 
-	console.log("*** INDEXES ***", videoIndex, playlistLength, direction, get(videoPlaylistLength))
-
-
 	if(direction) {
     // Play Next 
 		// If videos have run out, reset the current index to 0 
@@ -48,6 +45,4 @@ export function setVideoIndex(direction){
 		}
 	}
 
-	console.log("*** CURRENT VIDEO ***", get(currentVideo))
-	
 }

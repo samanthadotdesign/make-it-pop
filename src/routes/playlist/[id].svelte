@@ -45,7 +45,6 @@
 	searchTerm.set(randomTerm);
 	videosData.set(videos);
 
-	console.log('*** VIDEOS ***', videos);
 	videoPlaylistLength.set(videos?.videos?.length ?? 0);
 
 	$: {
