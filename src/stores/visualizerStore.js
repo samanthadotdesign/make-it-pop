@@ -4,7 +4,7 @@ import { writable } from "svelte/store";
 export const currentTrack = writable(0)
 
 // currentVideo is the index of current video playing for a song
-// There can be multiple videos per song 
+// There can be multiple videos per track 
 export const currentVideo = writable(0)
 
 // Get random search term for video API

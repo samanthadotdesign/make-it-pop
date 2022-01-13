@@ -11,13 +11,20 @@ E.g song 0, video 0–5 -> song 1, video 3–6
  -->
 <script>
 	import { currentVideo, videosData } from '@stores/visualizerStore.js';
+	let video;
 
 	$: currentVideoData = $videosData.videos[$currentVideo];
+
+	// Triggers change in video when video ends automatically
+	function videoEndedHandler(event) {
+		$currentVideo += 1;
+	}
 </script>
 
 <button id="startButton">Play</button>
 
 <video
+	bind:this={video}
 	id="video"
 	src={currentVideoData.video_files[0].link}
 	crossOrigin="anonymous"
@@ -25,4 +32,5 @@ E.g song 0, video 0–5 -> song 1, video 3–6
 	muted={true}
 	autoplay={true}
 	class="w-full aspect-video"
+	on:ended={videoEndedHandler}
 />
