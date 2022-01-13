@@ -18,7 +18,12 @@
 
 <script>
 	import { browser } from '$app/env';
-	import { playlists, playlist, trackAnalysis } from '@stores/userDataStore.js';
+	import {
+		playlists,
+		playlist,
+		trackAnalysis,
+		getPlaylistProperty
+	} from '@stores/userDataStore.js';
 	import {
 		currentTrack,
 		searchTerm,
@@ -64,13 +69,7 @@
 			return {};
 		}
 	}
-
-	function getPlaylistName(playlistId) {
-		const playlistsArray = $playlists.items;
-		const currentPlaylist = playlistsArray.find((playlist) => playlist.id == playlistId);
-		return currentPlaylist['name'];
-	}
-	playlistName = getPlaylistName(playlistId);
+	playlistName = getPlaylistProperty(playlistId);
 </script>
 
 <EventListener />

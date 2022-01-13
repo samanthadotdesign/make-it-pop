@@ -9,10 +9,31 @@ Interaction behaviour
 2. When the song changes, change the video
 3. When we run out of videos, loop back to the beginning 
 E.g song 0, video 0–5 -> song 1, video 3–6
+--------------------------------------------------
+Play audio (local files)
+0. Fetch the actual track id from array & handle the prev/next
+1. Fetch the mp3 file 
+2. Play the file using browser API 
+--------------------------------------------------
+Play audio (Spotify link)
  -->
 <script>
-	import { currentVideo, videosData, setVideoIndex } from '@stores/visualizerStore.js';
+	import {
+		currentVideo,
+		videosData,
+		setVideoIndex,
+		currentTrack
+	} from '@stores/visualizerStore.js';
+	import { playlist } from '@stores/userDataStore.js';
+
+	import { page } from '$app/stores';
+	const { params } = $page;
+	const { id: playlistId } = params;
+
 	let video;
+	let audio;
+
+	$: currentTrackData = $playlist?.items?.[$currentTrack];
 
 	$: currentVideoData = $videosData.videos[$currentVideo];
 
@@ -20,9 +41,15 @@ E.g song 0, video 0–5 -> song 1, video 3–6
 	function videoEndedHandler(event) {
 		setVideoIndex(true);
 	}
+
+	function handlePlay() {
+		audio.play();
+	}
 </script>
 
-<button id="startButton">Play</button>
+<button id="startButton" on:click={handlePlay}>Play</button>
+
+<audio bind:this={audio} src={`/audio/${playlistId}/${currentTrackData?.track.id}.mp3`} />
 
 <video
 	bind:this={video}
