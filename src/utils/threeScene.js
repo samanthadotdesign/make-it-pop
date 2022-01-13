@@ -1,17 +1,4 @@
-<!-- 
-Logic
-0. starts with randomTerm 
-1. Use searchTerm to fetch video API, return array
---------------------------------------------------
-Interaction behaviour
-0. Assign a new video to each video in array
-1. Different videos for the entire length of the song
-2. When the song changes, change the video
-E.g song 0, video 0–5 -> song 1, video 3–6
- -->
-<script>
-	import { videosData } from '@stores/visualizerStore.js';
-	import { onMount } from 'svelte';
+import { onMount } from 'svelte';
 	import * as THREE from 'three';
 
 	import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
@@ -228,15 +215,3 @@ E.g song 0, video 0–5 -> song 1, video 3–6
 			composer.render();
 		}
 	});
-</script>
-
-<button id="startButton">Play</button>
-
-<video
-	id="video"
-	loop
-	src={$videosData.videos[0].video_files[0].link}
-	crossOrigin="anonymous"
-	playsinline
-	style="display:none"
-/>
