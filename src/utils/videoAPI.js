@@ -1,6 +1,8 @@
+import { defaultVideoPlaylistLength } from "@stores/visualizerStore";
+
 export async function fetchVideos(searchTerm) {
 
-	const videosUrl = `https://api.pexels.com/videos/search?query=${searchTerm}&per_page=20`;
+	const videosUrl = `https://api.pexels.com/videos/search?query=${searchTerm}&per_page=${defaultVideoPlaylistLength}`;
 	
 	return await fetch(videosUrl, {
 		method: 'GET',

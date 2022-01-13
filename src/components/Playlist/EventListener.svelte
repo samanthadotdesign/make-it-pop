@@ -8,7 +8,7 @@ But isolates the logic that listens to the body event
 <script>
 	import { onMount } from 'svelte';
 	import { windowObject } from '@stores/layoutStore.js';
-	import { currentTrack, currentVideo } from '@stores/visualizerStore.js';
+	import { currentTrack, currentVideo, setVideoIndex } from '@stores/visualizerStore.js';
 	import { playlist } from '@stores/userDataStore.js';
 
 	// Local state to listen for pointer down during swipe or scroll (down or not)
@@ -23,12 +23,19 @@ But isolates the logic that listens to the body event
 
 	// When the track is changed, the video is changed as well
 	function handleTrackChange(bool) {
+		setVideoIndex(bool);
+		// 0---->10
 		if (bool && $currentTrack < $playlist.items.length - 1) {
 			$currentTrack += 1;
-			$currentVideo += 1;
+			// Loop back to the beginning of the playlist 10->0
+		} else if (bool) {
+			$currentTrack = 0;
+			// 0<----10
 		} else if ($currentTrack > 0) {
 			$currentTrack -= 1;
-			$currentVideo -= 1;
+		} else {
+			// If we're in the first track and go back to last track in the playlist  10<-0
+			$currentTrack = $playlist.items.length - 1;
 		}
 	}
 

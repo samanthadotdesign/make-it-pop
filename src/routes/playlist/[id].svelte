@@ -19,7 +19,12 @@
 <script>
 	import { browser } from '$app/env';
 	import { playlists, playlist, trackAnalysis } from '@stores/userDataStore.js';
-	import { currentTrack, searchTerm, videosData } from '@stores/visualizerStore.js';
+	import {
+		currentTrack,
+		searchTerm,
+		videosData,
+		videoPlaylistLength
+	} from '@stores/visualizerStore.js';
 	import { page } from '$app/stores';
 	import EventListener from '@components/Playlist/EventListener.svelte';
 	import Controls from '@components/Controls.svelte';
@@ -39,6 +44,9 @@
 	// update data inside store instead of reactive statement because we only want to this once
 	searchTerm.set(randomTerm);
 	videosData.set(videos);
+
+	console.log('*** VIDEOS ***', videos);
+	videoPlaylistLength.set(videos?.videos?.length ?? 0);
 
 	$: {
 		$trackAnalysis = getTrackAnalysis($currentTrack, playlistId);
