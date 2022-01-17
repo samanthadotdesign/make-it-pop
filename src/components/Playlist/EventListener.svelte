@@ -8,7 +8,12 @@ But isolates the logic that listens to the body event
 <script>
 	import { onMount } from 'svelte';
 	import { windowObject } from '@stores/layoutStore.js';
-	import { currentTrack, currentVideo, setVideoIndex } from '@stores/visualizerStore.js';
+	import {
+		currentTrack,
+		currentVideo,
+		setVideoIndex,
+		setAudioIndex
+	} from '@stores/visualizerStore.js';
 	import { playlist } from '@stores/userDataStore.js';
 
 	// Local state to listen for pointer down during swipe or scroll (down or not)
@@ -21,30 +26,12 @@ But isolates the logic that listens to the body event
 		$windowObject.width = width;
 	}
 
-	// When the track is changed, the video is changed as well
-	function handleTrackChange(bool) {
-		setVideoIndex(bool);
-		// 0---->10
-		if (bool && $currentTrack < $playlist.items.length - 1) {
-			$currentTrack += 1;
-			// Loop back to the beginning of the playlist 10->0
-		} else if (bool) {
-			$currentTrack = 0;
-			// 0<----10
-		} else if ($currentTrack > 0) {
-			$currentTrack -= 1;
-		} else {
-			// If we're in the first track and go back to last track in the playlist  10<-0
-			$currentTrack = $playlist.items.length - 1;
-		}
-	}
-
 	// When the user is scrolling on desktop
 	function handleScroll(event) {
 		if (Math.sign(event.deltaY) == -1) {
-			handleTrackChange(true);
+			setAudioIndex(true);
 		} else if (Math.sign(event.deltaY) == 1) {
-			handleTrackChange(false);
+			setAudioIndex(false);
 		}
 	}
 
@@ -96,9 +83,9 @@ But isolates the logic that listens to the body event
 			// WE USE HAMMER TO HELP US CHANGE THE TRACK COUNTER
 			// If user is swiping left/up, they are looking for the next track & vice versa
 			if (['left', 'left-down', 'left-up', 'up'].includes(direction)) {
-				handleTrackChange(true);
+				setAudioIndex(true);
 			} else if (['right', 'right-down', 'right-up', 'down'].includes(direction)) {
-				handleTrackChange(false);
+				setAudioIndex(false);
 			}
 		});
 

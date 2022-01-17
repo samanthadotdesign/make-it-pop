@@ -62,6 +62,16 @@ trusted events
 		}
 	});
 
+	// Every time playStatus changes, play or pauseMedia() will be triggered
+	playStatus.subscribe(async () => {
+		await tick();
+		if ($playStatus) {
+			playMedia();
+		} else {
+			pauseMedia();
+		}
+	});
+
 	// Triggers change in audio when track ends automatically
 	function audioEndedHandler(event) {
 		setAudioIndex(true);
@@ -82,32 +92,9 @@ trusted events
 		video.pause();
 	}
 
-	// Change player signal from play to pause
-	function togglePlay() {
-		if (!$playStatus) {
-			playMedia();
-		} else {
-			pauseMedia();
-		}
-		$playStatus = !$playStatus;
-		console.log('*** PLAY STATUS', $playStatus);
-	}
-
 	// What to handle: change the song, but it stopped playing until i hit the play button
 	console.log('play status on load', $playStatus);
 </script>
-
-<button
-	id="startButton"
-	class="w-24 h-24 rounded-full border-solid border-2 border-black"
-	on:click={togglePlay}
->
-	{#if !$playStatus}
-		PLAY
-	{:else}
-		PAUSE
-	{/if}
-</button>
 
 <audio
 	bind:this={audio}
@@ -125,8 +112,3 @@ trusted events
 	class="w-full aspect-video"
 	on:ended={videoEndedHandler}
 />
-
-<div class="fixed bottom-0 left-0 right-0 flex justify-between items-center p-6">
-	<button id="prevButton"> prev </button>
-	<button id="nextButton"> next </button>
-</div>
