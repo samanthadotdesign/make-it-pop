@@ -26,6 +26,8 @@ trusted events
 2. Store playStatus variable in the store, we use it also to manage auto-hide different components 
  -->
 <script>
+	import { tick } from 'svelte';
+
 	import {
 		currentVideo,
 		videosData,
@@ -43,20 +45,43 @@ trusted events
 	let audio;
 	let videoIsPlaying;
 
+	/* WATCH/COMPUTED */
+
 	$: currentTrackData = $playlist?.items?.[$currentTrack];
 	$: currentVideoData = $videosData.videos[$currentVideo];
+
+	// On load, if the playStatus is true, keep playing the music
+	// We keep track of the song with currentTrack, we declare it as a dependency using subscribe
+	// This code will run every time currentTrack changes
+	// tick forces the code block to wait until all state changes are resolved and applied to the DOM
+	currentTrack.subscribe(async () => {
+		if ($playStatus) {
+			await tick();
+			playMedia();
+		}
+	});
 
 	// Triggers change in video when video ends automatically
 	function videoEndedHandler(event) {
 		setVideoIndex(true);
 	}
 
+	function playMedia() {
+		audio.play();
+		video.play();
+	}
+
+	function pauseMedia() {
+		audio.pause();
+		video.pause();
+	}
+
 	// Change player signal from play to pause
 	function togglePlay() {
 		if (!$playStatus) {
-			audio.play();
+			playMedia();
 		} else {
-			audio.pause();
+			pauseMedia();
 		}
 		$playStatus = !$playStatus;
 		console.log('*** PLAY STATUS', $playStatus);
@@ -66,23 +91,17 @@ trusted events
 	console.log('play status on load', $playStatus);
 </script>
 
-{#if !$playStatus}
-	<button
-		id="startButton"
-		class="w-24 h-24 rounded-full border-solid border-2 border-black"
-		on:click={togglePlay}
-		>Play
-	</button>
-{/if}
-
-{#if $playStatus}
-	<button
-		id="pauseButton"
-		class="w-24 h-24 rounded-full border-solid border-2 border-black"
-		on:click={togglePlay}
-		>Pause
-	</button>
-{/if}
+<button
+	id="startButton"
+	class="w-24 h-24 rounded-full border-solid border-2 border-black"
+	on:click={togglePlay}
+>
+	{#if !$playStatus}
+		PLAY
+	{:else}
+		PAUSE
+	{/if}
+</button>
 
 <audio bind:this={audio} src={`/audio/${playlistId}/${currentTrackData?.track.id}.mp3`} />
 
@@ -93,7 +112,11 @@ trusted events
 	crossOrigin="anonymous"
 	playsinline
 	muted={true}
-	autoplay={true}
 	class="w-full aspect-video"
 	on:ended={videoEndedHandler}
 />
+
+<div class="fixed bottom-0 left-0 right-0 flex justify-between items-center p-6">
+	<button id="prevButton"> prev </button>
+	<button id="nextButton"> next </button>
+</div>

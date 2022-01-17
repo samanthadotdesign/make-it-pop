@@ -74,11 +74,11 @@
 
 <EventListener />
 <Controls title={playlistName} />
-<h1>
+<!-- <h1>
 	{#each $playlist.items as trackObject}
 		<p>{trackObject.track.name}</p>
 	{/each}
-</h1>
+</h1> -->
 <AudioVisualizer />
 
 <!-- GETTING VIDEO URLS
