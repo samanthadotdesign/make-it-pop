@@ -33,7 +33,8 @@ trusted events
 		videosData,
 		setVideoIndex,
 		currentTrack,
-		playStatus
+		playStatus,
+		setAudioIndex
 	} from '@stores/visualizerStore.js';
 	import { playlist } from '@stores/userDataStore.js';
 
@@ -60,6 +61,11 @@ trusted events
 			playMedia();
 		}
 	});
+
+	// Triggers change in audio when track ends automatically
+	function audioEndedHandler(event) {
+		setAudioIndex(true);
+	}
 
 	// Triggers change in video when video ends automatically
 	function videoEndedHandler(event) {
@@ -103,7 +109,11 @@ trusted events
 	{/if}
 </button>
 
-<audio bind:this={audio} src={`/audio/${playlistId}/${currentTrackData?.track.id}.mp3`} />
+<audio
+	bind:this={audio}
+	src={`/audio/${playlistId}/${currentTrackData?.track.id}.mp3`}
+	on:ended={audioEndedHandler}
+/>
 
 <video
 	bind:this={video}
