@@ -2,7 +2,7 @@
 	"name": "makeitpop",
 	"version": "0.0.1",
 	"scripts": {
-		"dev:only": "svelte-kit dev",
+		"dev:only": "svelte-kit dev vite --host",
 		"build:only": "svelte-kit build",
 		"package": "svelte-kit package",
 		"preview": "svelte-kit preview",
