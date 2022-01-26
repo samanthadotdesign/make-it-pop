@@ -7,8 +7,9 @@
 import queryString from 'query-string'
 import { serialize } from 'cookie'
 
-export const get = (/* req, context */) => {
-  // Create a random id as an authentication id 
+export const get = ( /*req, context */) => {
+
+    // Create a random id as an authentication id 
     const auth_id = Math.random().toString(36).slice(5, 11).toUpperCase()
     const query = queryString.stringify({
       response_type: 'code',
@@ -17,6 +18,7 @@ export const get = (/* req, context */) => {
       client_id: import.meta.env.VITE_CLIENT_ID,
       redirect_uri: import.meta.env.VITE_REDIRECT_URI,
     })
+
     return {
 			status: 302, // HTTPS Status for permanent redirection (301), temporary redirection (302)
 			headers: {
