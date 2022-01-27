@@ -43,7 +43,6 @@ export const get = async ( req, /* context */) => {
         }
     })
     .then(response => {
-			console.log("CHECKING AXIOS RESPONSE",response && response.status, response.body);
 
 			const {data, status, error, body} = response 
 			return {status, data, error, body}
@@ -57,16 +56,13 @@ export const get = async ( req, /* context */) => {
 	const {error, data: finalResponseBody} = response
 	const {access_token, expires_in, refresh_token} = finalResponseBody
 	
-	console.log("CHECKING FINAL RESPONSE", finalResponseBody, access_token, refresh_token)
-
+	
 	let res
 
 	// To make POST request on behalf of the user, we use the access_token & refresh_token
 	if (access_token && refresh_token) {
-		
-		console.log("SUCCESS")
 		res= {
-			status: 200, // HTTPS Status for permanent redirection (301), temporary redirection (302)
+			status: 302, // HTTPS Status for permanent redirection (301), temporary redirection (302)
 			headers: {
 				'set-cookie': [
 					setCookieValue(
@@ -105,15 +101,10 @@ export const get = async ( req, /* context */) => {
 			},
 		}
 	} else if (error){
-
-		console.log("FAILED")
 		res = {
 			status:400,
 			text:"BAD REQUEST"
 		}
 	}
-
-	console.log("CHECKING RES", res)
-
 	return res
 }
