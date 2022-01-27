@@ -102,8 +102,10 @@ export const get = async ( req, /* context */) => {
 		}
 	} else if (error){
 		res = {
-			status:400,
-			text:"BAD REQUEST"
+			status:302,
+			headers:{
+				location:`${import.meta.env.VITE_NODE_ENV == 'production' ? "https://makeitpop.ml":"http://localhost:3000"}/?error=Unauthorized`
+			}
 		}
 	}
 	return res
