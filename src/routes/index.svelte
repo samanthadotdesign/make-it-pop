@@ -1,3 +1,16 @@
+<script context="module">
+	// On page load, get the user's cookies on the server side, send to the store
+	import { parse } from 'cookie';
+	/** @type {import('@sveltejs/kit').Load} */
+	export async function load({ params, fetch, error, status, session }) {
+		console.log('CHECKING SESSION', session);
+
+		return {
+			props: {}
+		};
+	}
+</script>
+
 <script>
 	import RecordView from '../components/Playlist/RecordView.svelte';
 	import ListView from '../components/Playlist/ListView.svelte';
