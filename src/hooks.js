@@ -17,10 +17,12 @@ export async function handle({ event, resolve }) {
 	// Since we created cookies using env variable name, we should fetch cookie keys from env variables
 
 	// If client has access token, we modify the request object
-	if (cookies[import.meta.env.VITE_ACCESS_TOKEN]) {
+	if (cookies[import.meta.env.VITE_ACCESS_TOKEN] && cookies[import.meta.env.VITE_REFRESH_TOKEN]) {
 		const access_token = cookies[import.meta.env.VITE_ACCESS_TOKEN];
+		const refresh_token = cookies[import.meta.env.VITE_ACCESS_TOKEN];
 		if (access_token) {
 			event.locals.access_token = access_token;
+			event.locals.refresh_token = refresh_token;
 			return resolve(event);
 		}
 	}
@@ -37,5 +39,6 @@ export async function handle({ event, resolve }) {
 /** @type {import('@sveltejs/kit').GetSession} */
 export function getSession(request) {
 	const access_token = request?.locals?.access_token;
-	return access_token ? { access_token } : {};
+	const refresh_token = request?.locals?.refresh_token;
+	return access_token && refresh_token ? { access_token, refresh_token } : {};
 }

@@ -1,23 +1,33 @@
-import {writable} from "svelte/store"
+import { writable } from 'svelte/store';
 
 // 1. Curated list of colours
 // 2. Randomize organization of colours in the array
 // 3. Fetch in order of index
-export const colorsArray = ['#000', '#ccc', "#f8f8f8", "#6195ED"]
+export const colorsArray = [
+	'#000',
+	'#ccc',
+	'#f8f8f8',
+	'#6195ED',
+	'#EE7A4F',
+	'#4FEEAC',
+	'#EE554F',
+	'#EEE84F',
+	'#4F9AEE'
+];
 
-function randomizeColors (array){
-	let currentIndex = array.length,  randomIndex;
-  while (currentIndex != 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
+function randomizeColors(array) {
+	let currentIndex = array.length,
+		randomIndex;
+	while (currentIndex != 0) {
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex--;
+		[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+	}
 
-  return array;
+	return array;
 }
 
-export const colors = randomizeColors(colorsArray)
+export const colors = randomizeColors(colorsArray);
 
 // Scroll info
-export const windowObject = writable({width:0, height:0})
+export const windowObject = writable({ width: 0, height: 0 });
