@@ -5,15 +5,16 @@
 	/** @type {import('@sveltejs/kit').Load} */
 	export async function load({ params, fetch, error, status, session }) {
 		// If user has connected Spotify, we get the single playlist
-		const { id } = params;
 		if (session['access_token']) {
+			const { id } = params;
 			const fetchedPlaylist = await getPlaylist(session, id);
 			return {
 				props: {
 					fetchedPlaylist,
 					playlistId: id,
 					videos: await fetchVideos(randomTerm),
-					randomTerm
+					randomTerm,
+					session
 				}
 			};
 		}
@@ -25,7 +26,8 @@
 				fetchedPlaylist: await res.json(), // res.json() returns a promise
 				playlistId: params.id, // store playlist id & name locally
 				videos: await fetchVideos(randomTerm),
-				randomTerm
+				randomTerm,
+				session: null
 			}
 		};
 	}
@@ -43,20 +45,22 @@
 		currentTrack,
 		searchTerm,
 		videosData,
-		videoPlaylistLength
+		videoPlaylistLength,
+		sessionData
 	} from '@stores/visualizerStore.js';
 	import { page } from '$app/stores';
 	import EventListener from '@components/Playlist/EventListener.svelte';
 	import Controls from '@components/Controls.svelte';
 	import Index from '../index.svelte';
 	import AudioVisualizer from '@components/AudioVisualizer.svelte';
+	import { getTrackAnalysisFromSpotify } from '@utils/spotifyAPI.js';
 
 	export let fetchedPlaylist;
 	export let playlistId;
 	export let playlistName;
-
 	export let randomTerm;
 	export let videos;
+	export let session;
 
 	// On runtime, fetchedPlaylist will be automatically populated from context="module" props
 	$playlist = fetchedPlaylist;
@@ -64,8 +68,8 @@
 	// update data inside store instead of reactive statement because we only want to this once
 	searchTerm.set(randomTerm);
 	videosData.set(videos);
-
 	videoPlaylistLength.set(videos?.videos?.length ?? 0);
+	sessionData.set(session);
 
 	$: {
 		$trackAnalysis = getTrackAnalysis($currentTrack, playlistId);
@@ -75,10 +79,20 @@
 		// browser checks what is the runtime environment so we only run it on the client side
 		// fetch is polyfill
 		if (browser) {
+			let result;
 			const trackId = $playlist['items'][currentTrack]['track']['id'];
+
+			// If the user is connected to Spotify
+			if (sessionData['access_token']) {
+				result = await getTrackAnalysisFromSpotify(sessionData, trackId);
+				console.log('*****SPOTIFY TRACK ANALYSIS*****', result);
+				return result;
+			}
+			// If the user is loading app for the first time
 			const url = `/json/audio-analysis/${playlistId}/${trackId}.json`;
 			const res = await fetch(url);
-			const result = await res.json();
+			result = await res.json();
+			console.log('*****LOCAL TRACK ANALYSIS****', result);
 			return result;
 		} else {
 			return {};

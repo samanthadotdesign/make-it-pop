@@ -29,6 +29,18 @@ export async function getPlaylist(session, id) {
 	return result;
 }
 
+export async function getTrackAnalysisFromSpotify(session, trackId) {
+	const { access_token } = session;
+	const result = await apiGet({ route: `audio-analysis/${trackId}`, accessToken: access_token });
+	return result;
+}
+
+export async function getTrackFromSpotify(session, trackId) {
+	const { access_token } = session;
+	const result = await apiGet({ route: `track/${trackId}`, accessToken: access_token });
+	return result;
+}
+
 /**
  * When Spotify's tokens expire, we want to refresh and get new session data to get new tokens
  * @returns modified refreshed access_token
@@ -41,7 +53,6 @@ async function refresh() {
 			route: `${PROJECT_ROOT}/api/authentication/refresh?token=${refresh_token}`,
 			accessToken: access_token
 		});
-
 		session.set({ access_token: data.access_token, refresh_token: data.refresh_token });
 		return data.access_token;
 	} catch (e) {
@@ -76,6 +87,6 @@ export async function apiGet({ route, cache = false, accessToken, dropRoot = fal
 			}
 		}
 	} catch (e) {
-		window.location.replace(`${PROJECT_ROOT}/api/authentication/login`); // eslint-disable-line
+		window.location.replace(`${PROJECT_ROOT}/api/authentication/login`);
 	}
 }
