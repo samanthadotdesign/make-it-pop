@@ -1,8 +1,23 @@
 <script context="module">
 	import { randomTerm } from '@stores/visualizerStore.js';
 	import { fetchVideos } from '@utils/videoAPI';
+	import { getPlaylist } from '@utils/spotifyAPI';
 	/** @type {import('@sveltejs/kit').Load} */
-	export async function load({ params, fetch, error, status }) {
+	export async function load({ params, fetch, error, status, session }) {
+		// If user has connected Spotify, we get the single playlist
+		const { id } = params;
+		if (session['access_token']) {
+			const fetchedPlaylist = await getPlaylist(session, id);
+			return {
+				props: {
+					fetchedPlaylist,
+					playlistId: id,
+					videos: await fetchVideos(randomTerm),
+					randomTerm
+				}
+			};
+		}
+		// When user loads for the first time
 		const url = `/json/playlists/${params.id}.json`;
 		const res = await fetch(url);
 		return {

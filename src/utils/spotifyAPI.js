@@ -23,6 +23,12 @@ export async function getUserPlaylists(session) {
 	return result;
 }
 
+export async function getPlaylist(session, id) {
+	const { access_token } = session;
+	const result = await apiGet({ route: `playlists/${id}`, accessToken: access_token });
+	return result;
+}
+
 /**
  * When Spotify's tokens expire, we want to refresh and get new session data to get new tokens
  * @returns modified refreshed access_token
