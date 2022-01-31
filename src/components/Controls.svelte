@@ -3,13 +3,24 @@
 	export let title;
 	import { playStatus, setAudioIndex } from '@stores/visualizerStore.js';
 	import { play, pause, previous, next } from '@utils/spotifyAPI';
-	import { session } from '$app/stores';
+	import { session, page } from '$app/stores';
+	import { playlist } from '@stores/userDataStore';
+
+	import { currentTrack } from '@stores/visualizerStore.js';
+
+	const { params } = $page;
+	const { id: playlistId } = params;
+
+	$: trackId = $playlist?.tracks['items']?.[$currentTrack]?.['track']['id'];
 
 	// Change player signal from play to pause
 	function togglePlay() {
 		$playStatus = !$playStatus;
 		if ($playStatus) {
-			play($session);
+			console.log('CHECKING TRACK ID DEPENDNECIES', $playlist, $currentTrack);
+			const context_uri = `spotify:playlist:${playlistId}`;
+			const uri = `spotify:track:${trackId}`;
+			play($session, { context_uri, offset: { uri } });
 		} else {
 			pause($session);
 		}

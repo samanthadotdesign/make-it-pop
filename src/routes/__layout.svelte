@@ -2,12 +2,11 @@
 	import '../styles/global-output.css';
 	import Nav from '../components/Nav.svelte';
 	import { deviceSettings } from '@stores/spotify';
-	$: {
-		console.log('DEVICE SETTINGS CHANGE', $deviceSettings);
-	}
+
+	import { session } from '$app/stores';
 </script>
 
-{#if !$deviceSettings['active']}
+{#if $session['access_token'] && !$deviceSettings['active']}
 	<div class="fixed w-screen h-screen left-0 top-0 flex bg-black/50 items-center justify-center">
 		<h1 class="text-white text-3xl text-center font-bold uppercase">
 			choose the right device to continue

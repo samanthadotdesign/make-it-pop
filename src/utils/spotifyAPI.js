@@ -51,13 +51,13 @@ export async function getAvailableDevices(session) {
 /**
  * Play function forces Spotify player to play in the device ID
  */
-export async function play(session, songs = null) {
+export async function play(session, body = null) {
 	console.log('SESSION', session);
 	const { access_token } = session;
 	const { id } = get(deviceSettings);
 	return await apiPut({
 		route: `me/player/play?device_id=${id}`,
-		args: songs,
+		args: body,
 		accessToken: access_token
 	});
 }
