@@ -2,10 +2,16 @@
 	import Searchbar from '@components/Searchbar.svelte';
 	export let title;
 	import { playStatus, setAudioIndex } from '@stores/visualizerStore.js';
+	import { play } from '@utils/spotifyAPI';
+	import { session } from '$app/stores';
 
 	// Change player signal from play to pause
 	function togglePlay() {
 		$playStatus = !$playStatus;
+		if ($playStatus) {
+			console.log('CHECKING PLAY FUNCTION', play);
+			play($session);
+		}
 	}
 </script>
 

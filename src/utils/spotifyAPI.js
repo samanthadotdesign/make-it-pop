@@ -11,7 +11,7 @@
 
 import axios from 'axios';
 import { get } from 'svelte/store';
-import { session } from '$app/stores';
+import { deviceSettings } from '@stores/spotify';
 
 const CACHE = new Set();
 const ROOT = 'https://api.spotify.com/v1';
@@ -39,6 +39,28 @@ export async function getTrackFromSpotify(session, trackId) {
 	const { access_token } = session;
 	const result = await apiGet({ route: `track/${trackId}`, accessToken: access_token });
 	return result;
+}
+
+// Get all available devices from the user to make sure that we are playing on the make it pop instance and it is active
+export async function getAvailableDevices(session) {
+	const { access_token } = session;
+	const result = await apiGet({ route: `me/player/devices`, accessToken: access_token });
+	return result;
+}
+
+/**
+ * Play function forces Spotify player to play in the device ID
+ */
+export async function play(session, songs = null) {
+	console.log('SESSION', session);
+	const { access_token } = session;
+	const { id } = get(deviceSettings);
+	console.log('********id********', id);
+	return await apiPut({
+		route: `me/player/play?device_id=${id}`,
+		args: songs,
+		accessToken: access_token
+	});
 }
 
 /**
@@ -88,5 +110,23 @@ export async function apiGet({ route, cache = false, accessToken, dropRoot = fal
 		}
 	} catch (e) {
 		window.location.replace(`${PROJECT_ROOT}/api/authentication/login`);
+	}
+}
+
+/**
+ * apiPut will submit data to route
+ * @param {object, str} args
+ * @returns status
+ */
+export async function apiPut({ route, args, accessToken }) {
+	const headers = { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' };
+	try {
+		const { data } = await axios.put(`${ROOT}/${route}`, args, { headers });
+		return data;
+	} catch ({ response }) {
+		if (response.status === 401) {
+			const token = refresh();
+			return apiPut({ route, args, accessToken: token });
+		}
 	}
 }
