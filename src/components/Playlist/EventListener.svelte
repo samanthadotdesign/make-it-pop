@@ -16,6 +16,9 @@ But isolates the logic that listens to the body event
 	} from '@stores/visualizerStore.js';
 	import { playlist } from '@stores/userDataStore.js';
 
+	import { previous, next } from '@utils/spotifyAPI';
+	import { session } from '$app/stores';
+
 	// Local state to listen for pointer down during swipe or scroll (down or not)
 	let height;
 	let width;
@@ -29,8 +32,10 @@ But isolates the logic that listens to the body event
 	// When the user is scrolling on desktop
 	function handleScroll(event) {
 		if (Math.sign(event.deltaY) == -1) {
+			next($session);
 			setAudioIndex(true);
 		} else if (Math.sign(event.deltaY) == 1) {
+			previous($session);
 			setAudioIndex(false);
 		}
 	}
@@ -83,8 +88,10 @@ But isolates the logic that listens to the body event
 			// WE USE HAMMER TO HELP US CHANGE THE TRACK COUNTER
 			// If user is swiping left/up, they are looking for the next track & vice versa
 			if (['left', 'left-down', 'left-up', 'up'].includes(direction)) {
+				next($session);
 				setAudioIndex(true);
 			} else if (['right', 'right-down', 'right-up', 'down'].includes(direction)) {
+				previous($session);
 				setAudioIndex(false);
 			}
 		});

@@ -2,15 +2,16 @@
 	import Searchbar from '@components/Searchbar.svelte';
 	export let title;
 	import { playStatus, setAudioIndex } from '@stores/visualizerStore.js';
-	import { play } from '@utils/spotifyAPI';
+	import { play, pause, previous, next } from '@utils/spotifyAPI';
 	import { session } from '$app/stores';
 
 	// Change player signal from play to pause
 	function togglePlay() {
 		$playStatus = !$playStatus;
 		if ($playStatus) {
-			console.log('CHECKING PLAY FUNCTION', play);
 			play($session);
+		} else {
+			pause($session);
 		}
 	}
 </script>
@@ -33,6 +34,22 @@
 </button>
 
 <div class="fixed bottom-0 left-0 right-0 flex justify-between items-center p-6">
-	<button id="prevButton" on:click={() => setAudioIndex(false)}> prev </button>
-	<button id="nextButton" on:click={() => setAudioIndex(true)}> next </button>
+	<button
+		id="prevButton"
+		on:click={() => {
+			previous($session);
+			setAudioIndex(false);
+		}}
+	>
+		prev
+	</button>
+	<button
+		id="nextButton"
+		on:click={() => {
+			next($session);
+			setAudioIndex(true);
+		}}
+	>
+		next
+	</button>
 </div>

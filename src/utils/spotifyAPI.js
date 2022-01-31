@@ -55,12 +55,26 @@ export async function play(session, songs = null) {
 	console.log('SESSION', session);
 	const { access_token } = session;
 	const { id } = get(deviceSettings);
-	console.log('********id********', id);
 	return await apiPut({
 		route: `me/player/play?device_id=${id}`,
 		args: songs,
 		accessToken: access_token
 	});
+}
+
+export async function pause(session) {
+	const { access_token } = session;
+	return apiPut({ route: 'me/player/pause', args: null, accessToken: access_token });
+}
+
+export async function next(session) {
+	const { access_token } = session;
+	return apiPost({ route: 'me/player/next', args: null, accessToken: access_token });
+}
+
+export async function previous(session) {
+	const { access_token } = session;
+	return apiPost({ route: 'me/player/previous', args: null, accessToken: access_token });
 }
 
 /**
@@ -125,7 +139,20 @@ export async function apiPut({ route, args, accessToken }) {
 		return data;
 	} catch ({ response }) {
 		if (response.status === 401) {
-			const token = refresh();
+			const token = refresh({ access_token: accessToken });
+			return apiPut({ route, args, accessToken: token });
+		}
+	}
+}
+
+export async function apiPost({ route, args, accessToken, root = ROOT }) {
+	const headers = { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' };
+	try {
+		const { data } = await axios.post(`${root}/${route}`, args, { headers });
+		return data;
+	} catch ({ response }) {
+		if (response.status === 401) {
+			const token = refresh({ access_token: accessToken });
 			return apiPut({ route, args, accessToken: token });
 		}
 	}
