@@ -19,7 +19,6 @@ export const randomTerm = defaultTermsArray[Math.floor(Math.random() * defaultTe
 
 export const searchTerm = writable('');
 export const videosData = writable([]);
-export const sessionData = writable();
 
 // Loops back the video when the length of the videos end
 // If the user goes back to previous track, go back to previous video

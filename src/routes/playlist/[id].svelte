@@ -13,8 +13,7 @@
 					fetchedPlaylist,
 					playlistId: id,
 					videos: await fetchVideos(randomTerm),
-					randomTerm,
-					session
+					randomTerm
 				}
 			};
 		}
@@ -26,14 +25,14 @@
 				fetchedPlaylist: await res.json(), // res.json() returns a promise
 				playlistId: params.id, // store playlist id & name locally
 				videos: await fetchVideos(randomTerm),
-				randomTerm,
-				session: null
+				randomTerm
 			}
 		};
 	}
 </script>
 
 <script>
+	import { onMount } from 'svelte';
 	import { browser } from '$app/env';
 	import {
 		playlists,
@@ -45,8 +44,7 @@
 		currentTrack,
 		searchTerm,
 		videosData,
-		videoPlaylistLength,
-		sessionData
+		videoPlaylistLength
 	} from '@stores/visualizerStore.js';
 	import { page } from '$app/stores';
 	import EventListener from '@components/Playlist/EventListener.svelte';
@@ -54,13 +52,14 @@
 	import Index from '../index.svelte';
 	import AudioVisualizer from '@components/AudioVisualizer.svelte';
 	import { getTrackAnalysisFromSpotify } from '@utils/spotifyAPI.js';
+	import { initializePlayer } from '@utils/spotifyPlayer.js';
+	import { session } from '$app/stores';
 
 	export let fetchedPlaylist;
 	export let playlistId;
 	export let playlistName;
 	export let randomTerm;
 	export let videos;
-	export let session;
 
 	// On runtime, fetchedPlaylist will be automatically populated from context="module" props
 	$playlist = fetchedPlaylist;
@@ -69,7 +68,6 @@
 	searchTerm.set(randomTerm);
 	videosData.set(videos);
 	videoPlaylistLength.set(videos?.videos?.length ?? 0);
-	sessionData.set(session);
 
 	$: {
 		$trackAnalysis = getTrackAnalysis($currentTrack, playlistId);
@@ -83,8 +81,8 @@
 			const trackId = $playlist['items'][currentTrack]['track']['id'];
 
 			// If the user is connected to Spotify
-			if (sessionData['access_token']) {
-				result = await getTrackAnalysisFromSpotify(sessionData, trackId);
+			if ($session['access_token']) {
+				result = await getTrackAnalysisFromSpotify($session, trackId);
 				console.log('*****SPOTIFY TRACK ANALYSIS*****', result);
 				return result;
 			}

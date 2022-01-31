@@ -34,13 +34,12 @@ trusted events
 		setVideoIndex,
 		currentTrack,
 		playStatus,
-		setAudioIndex,
-		sessionData
+		setAudioIndex
 	} from '@stores/visualizerStore.js';
 	import { playlist } from '@stores/userDataStore.js';
 	import { getTrackFromSpotify } from '@utils/spotifyAPI.js';
 
-	import { page } from '$app/stores';
+	import { page, session } from '$app/stores';
 	const { params } = $page;
 	const { id: playlistId } = params;
 
@@ -98,7 +97,7 @@ trusted events
 	console.log('play status on load', $playStatus);
 </script>
 
-{#if !sessionData['access_token']}
+{#if !$session['access_token']}
 	<!-- Not yet playing from Spotify API -->
 	<audio
 		bind:this={audio}
