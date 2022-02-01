@@ -53,9 +53,10 @@ export function setVideoIndex(direction) {
 export function setAudioIndex(bool) {
 	const audioIndex = get(currentTrack);
 	const playlistLength = get(playlist);
+
 	setVideoIndex(bool);
 	// 0---->10
-	if (bool && audioIndex < playlistLength.items.length - 1) {
+	if (bool && audioIndex < playlistLength.tracks.items.length - 1) {
 		currentTrack.set(audioIndex + 1);
 		// Loop back to the beginning of the playlist 10->0
 	} else if (bool) {
@@ -65,6 +66,6 @@ export function setAudioIndex(bool) {
 		currentTrack.set(audioIndex - 1);
 	} else {
 		// If we're in the first track and go back to last track in the playlist  10<-0
-		currentTrack.set(playlistLength.items.length - 1);
+		currentTrack.set(playlistLength.tracks.items.length - 1);
 	}
 }

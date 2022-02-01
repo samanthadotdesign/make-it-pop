@@ -38,7 +38,8 @@
 		playlists,
 		playlist,
 		trackAnalysis,
-		getPlaylistProperty
+		getPlaylistProperty,
+		previousPlaylistId
 	} from '@stores/userDataStore.js';
 	import {
 		currentTrack,
@@ -73,12 +74,24 @@
 		$trackAnalysis = getTrackAnalysis($currentTrack, playlistId);
 	}
 
+	$: {
+		console.log('CHECKING IDS', $previousPlaylistId, playlistId);
+		// Call this function once when we are in the record view, changes every time that we change the playlist id
+		// If we are in a new playlist, reset currentTrack to index 0
+		if ($previousPlaylistId !== playlistId) {
+			console.log('CHECKING CURRENT TRACK', $currentTrack);
+			$currentTrack = 0;
+		}
+		// If we are in the same playlist, currentTrack should be the same and we should play where we left off
+		$previousPlaylistId = playlistId;
+	}
+
 	async function getTrackAnalysis(currentTrack, playlistId) {
 		// browser checks what is the runtime environment so we only run it on the client side
 		// fetch is polyfill
 		if (browser) {
 			let result;
-			const trackId = $playlist['items'][currentTrack]['track']['id'];
+			const trackId = $playlist?.track?.['items'][currentTrack]['track']['id'];
 
 			// If the user is connected to Spotify
 			if ($session['access_token']) {

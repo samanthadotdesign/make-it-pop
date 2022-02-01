@@ -49,7 +49,7 @@ trusted events
 
 	/* WATCH/COMPUTED */
 
-	$: currentTrackData = $playlist?.items?.[$currentTrack];
+	$: currentTrackData = $playlist?.tracks?.items?.[$currentTrack];
 	$: currentVideoData = $videosData.videos[$currentVideo];
 
 	// On load, if the playStatus is true, keep playing the music
@@ -84,12 +84,14 @@ trusted events
 	}
 
 	function playMedia() {
-		audio.play();
+		const { access_token } = $session;
+		if (!access_token) audio.play();
 		video.play();
 	}
 
 	function pauseMedia() {
-		audio.pause();
+		const { access_token } = $session;
+		if (!access_token) audio.pause();
 		video.pause();
 	}
 

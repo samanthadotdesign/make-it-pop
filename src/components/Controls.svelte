@@ -17,7 +17,7 @@
 	function togglePlay() {
 		$playStatus = !$playStatus;
 		if ($playStatus) {
-			console.log('CHECKING TRACK ID DEPENDNECIES', $playlist, $currentTrack);
+			console.log('CHECKING TRACK ID DEPENDNECIES', $currentTrack, trackId);
 			const context_uri = `spotify:playlist:${playlistId}`;
 			const uri = `spotify:track:${trackId}`;
 			play($session, { context_uri, offset: { uri } });

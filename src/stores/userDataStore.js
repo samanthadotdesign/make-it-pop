@@ -23,3 +23,5 @@ export function getPlaylistProperty(playlistId, property = 'name') {
 	const currentPlaylist = playlistsArray.find((playlist) => playlist.id == playlistId);
 	return currentPlaylist[property];
 }
+
+export const previousPlaylistId = writable('');

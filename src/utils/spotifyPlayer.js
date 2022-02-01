@@ -37,13 +37,13 @@ export async function initializePlayer(access_token) {
 		const currentTrackData = get(playlist)?.items?.[get(currentTrack)];
 
 		const {
-			position,
-			duration,
+			/* position,
+			duration, */
 			paused,
-			track_window: { next_tracks, current_track }
+			track_window: { /* next_tracks,  */ current_track }
 		} = o;
 
-		console.log('CHECKING PLAYER STATE', position, duration, paused, next_tracks, current_track);
+		//console.log('CHECKING PLAYER STATE', position, duration, paused, next_tracks, current_track);
 		if (!currentTrackData || currentTrackData.id !== current_track.id) {
 			/* commit('SET_CURRENT_TRACK', current_track)
         commit('SET_ACTIVE_INTERVALS', null)
@@ -74,11 +74,11 @@ export async function checkIfDeviceActive(access_token) {
 	const { devices } = await getAvailableDevices({ access_token });
 
 	const { id } = get(deviceSettings);
-	console.log('CHECKING DEVICES', devices, id);
+	//console.log('CHECKING DEVICES', devices, id);
 	const sdkStatus = devices.find((device) => {
 		return device.id == id;
 	});
-	console.log('CHECKING DEVICE', sdkStatus);
+	//console.log('CHECKING DEVICE', sdkStatus);
 	const { is_active } = sdkStatus;
 	deviceSettings.set({ ...get(deviceSettings), active: is_active });
 

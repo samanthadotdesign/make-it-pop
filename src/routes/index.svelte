@@ -27,7 +27,6 @@
 	import { playlists } from '@stores/userDataStore';
 	import { session } from '$app/stores';
 	export let initialPlaylists;
-	import { initializePlayer, loadSpotifySDK } from '@utils/spotifyPlayer.js';
 
 	// Current view is RecordView
 	let view = 'record';
@@ -36,19 +35,9 @@
 	const handleToggle = () => {
 		view = view == 'record' ? 'list' : 'record';
 	};
-	// Updating the playlists store to user's Spotify playlist if it exists, onMount allows it to run only once
+
 	onMount(() => {
 		if (initialPlaylists) $playlists = initialPlaylists;
-		// We initialize Spotify on initial page load bc the loaded spotify-js file from app.html requires it
-
-		// 1. Define Spotify initialization. This is not calling the script's method
-		window.onSpotifyWebPlaybackSDKReady = async () => {
-			console.log('CHECKING SPOTIFY SDK READY');
-			const { access_token } = $session;
-			initializePlayer(access_token);
-		};
-		// 2. Load SpotifySDK after we define Spotify initialization callback
-		loadSpotifySDK();
 	});
 </script>
 
