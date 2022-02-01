@@ -1,7 +1,7 @@
 <script context="module">
 	import { randomTerm } from '@stores/visualizerStore.js';
 	import { fetchVideos } from '@utils/videoAPI';
-	import { getPlaylist } from '@utils/spotifyAPI';
+	import { getPlaylist, getUserPlaylists } from '@utils/spotifyAPI';
 	/** @type {import('@sveltejs/kit').Load} */
 	export async function load({ params, fetch, error, status, session }) {
 		// If user has connected Spotify, we get the single playlist
@@ -20,6 +20,15 @@
 		// When user loads for the first time
 		const url = `/json/playlists/${params.id}.json`;
 		const res = await fetch(url);
+
+		// If the fetch fails
+		if (res.status == 404) {
+			return {
+				status: 302,
+				redirect: '/'
+			};
+		}
+
 		return {
 			props: {
 				fetchedPlaylist: await res.json(), // res.json() returns a promise
@@ -107,11 +116,28 @@
 			return {};
 		}
 	}
-	playlistName = getPlaylistProperty(playlistId);
+
+	onMount(() => {
+		playlistName = getPlaylistProperty(playlistId);
+		// If the user is logged in, user will have access to the playlist
+		// We respond with the property we're trying to get or false
+		// It's false when we don't have the data loaded for user's playlists
+		if (playlistName == false) {
+			// We retrigger the getUserPlaylists
+			getUserPlaylists($session).then((result) => {
+				// Reassign to store value of playlists
+				$playlists = result;
+				// Now we're able to get the playlist name
+				playlistName = getPlaylistProperty(playlistId);
+			});
+		}
+	});
 </script>
 
 <EventListener />
-<Controls title={playlistName} />
+{#key $playlists.items}
+	<Controls title={playlistName} />
+{/key}
 <!-- <h1>
 	{#each $playlist.items as trackObject}
 		<p>{trackObject.track.name}</p>

@@ -49,6 +49,7 @@ export function setVideoIndex(direction) {
 	}
 }
 
+// setAudioIndex changes the previous track id and playStatus
 // When the track is changed, the video is changed as well
 export function setAudioIndex(bool) {
 	const audioIndex = get(currentTrack);
