@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import { playlist } from '@stores/userDataStore.js';
+import { playlist, previousTrackId } from '@stores/userDataStore.js';
 
 // currentTrack is the index on the playlist
 export const currentTrack = writable(0);
@@ -53,19 +53,29 @@ export function setVideoIndex(direction) {
 export function setAudioIndex(bool) {
 	const audioIndex = get(currentTrack);
 	const playlistLength = get(playlist);
-
+	let newIndex = null;
+	let trackId = null;
+	// When user clicks next/prev, change playStatus (which affects controls "play/pause")
+	playStatus.set(true);
 	setVideoIndex(bool);
+
+	// Behaviour for controlling next/prev
 	// 0---->10
 	if (bool && audioIndex < playlistLength.tracks.items.length - 1) {
-		currentTrack.set(audioIndex + 1);
+		newIndex = audioIndex + 1;
 		// Loop back to the beginning of the playlist 10->0
 	} else if (bool) {
-		currentTrack.set(0);
+		newIndex = 0;
 		// 0<----10
 	} else if (audioIndex > 0) {
-		currentTrack.set(audioIndex - 1);
+		newIndex = audioIndex - 1;
 	} else {
 		// If we're in the first track and go back to last track in the playlist  10<-0
-		currentTrack.set(playlistLength.tracks.items.length - 1);
+		newIndex = playlistLength.tracks.items.length - 1;
 	}
+	currentTrack.set(newIndex);
+
+	// Change the previous track id to new track id
+	trackId = playlistLength?.tracks['items']?.[newIndex]?.['track']['id'];
+	previousTrackId.set(trackId);
 }
