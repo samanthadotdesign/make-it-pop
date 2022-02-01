@@ -25,3 +25,4 @@ export function getPlaylistProperty(playlistId, property = 'name') {
 }
 
 export const previousPlaylistId = writable('');
+export const previousTrackId = writable('');

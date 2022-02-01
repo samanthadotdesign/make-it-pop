@@ -4,7 +4,7 @@
 	import { playStatus, setAudioIndex } from '@stores/visualizerStore.js';
 	import { play, pause, previous, next } from '@utils/spotifyAPI';
 	import { session, page } from '$app/stores';
-	import { playlist } from '@stores/userDataStore';
+	import { playlist, previousTrackId } from '@stores/userDataStore';
 
 	import { currentTrack } from '@stores/visualizerStore.js';
 
@@ -17,10 +17,17 @@
 	function togglePlay() {
 		$playStatus = !$playStatus;
 		if ($playStatus) {
-			console.log('CHECKING TRACK ID DEPENDNECIES', $currentTrack, trackId);
 			const context_uri = `spotify:playlist:${playlistId}`;
 			const uri = `spotify:track:${trackId}`;
-			play($session, { context_uri, offset: { uri } });
+			let args = null;
+
+			// If we are on a different track, start the track from the beginning
+			if ($previousTrackId !== trackId) {
+				args = { context_uri, offset: { uri } };
+			}
+			$previousTrackId = trackId;
+			// Else, play the track from where we paused if it's the same
+			play($session, args);
 		} else {
 			pause($session);
 		}
