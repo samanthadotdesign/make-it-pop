@@ -21,7 +21,7 @@
 		const url = `/json/playlists/${params.id}.json`;
 		const res = await fetch(url);
 
-		// If the fetch fails
+		// If the fetch fails, redirect user to the homepage
 		if (res.status == 404) {
 			return {
 				status: 302,
@@ -98,7 +98,7 @@
 		// fetch is polyfill
 		if (browser) {
 			let result;
-			const trackId = $playlist?.track?.['items'][currentTrack]['track']['id'];
+			const trackId = $playlist?.tracks?.['items'][currentTrack]['track']['id'];
 
 			// If the user is connected to Spotify
 			if ($session['access_token']) {
@@ -117,6 +117,7 @@
 		}
 	}
 
+	// We only want to get the playlist name once
 	onMount(() => {
 		playlistName = getPlaylistProperty(playlistId);
 		// If the user is logged in, user will have access to the playlist

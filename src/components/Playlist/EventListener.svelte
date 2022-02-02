@@ -30,6 +30,7 @@ But isolates the logic that listens to the body event
 	}
 
 	// When the user is scrolling on desktop
+	// Debounce -> execute a command a certain number of times so that we don't break by scrolling too quickly
 	function handleScroll(event) {
 		if (Math.sign(event.deltaY) == -1) {
 			next($session);
