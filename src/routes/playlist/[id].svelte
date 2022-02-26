@@ -2,6 +2,7 @@
 	import { randomTerm } from '@stores/visualizerStore.js';
 	import { fetchVideos } from '@utils/videoAPI';
 	import { getPlaylist, getUserPlaylists } from '@utils/spotifyAPI';
+	import { intervalTypes } from '@stores/player';
 	/** @type {import('@sveltejs/kit').Load} */
 	export async function load({ params, fetch, error, status, session }) {
 		// If user has connected Spotify, we get the single playlist
@@ -47,6 +48,7 @@
 		playlists,
 		playlist,
 		trackAnalysis,
+		songVolume,
 		getPlaylistProperty,
 		previousPlaylistId
 	} from '@stores/userDataStore.js';
@@ -80,7 +82,8 @@
 	videoPlaylistLength.set(videos?.videos?.length ?? 0);
 
 	$: {
-		$trackAnalysis = getTrackAnalysis($currentTrack, playlistId);
+		$trackAnalysis = getTrackAnalysis($currentTrack, playlistId)['trackAnalysis'];
+		$songVolume = getTrackAnalysis($currentTrack, playlistId)['songVolume'];
 	}
 
 	$: {
@@ -93,25 +96,60 @@
 		$previousPlaylistId = playlistId;
 	}
 
+	/**
+	 * @param currentTrack
+	 * @param playlistId
+	 * @returns track object that has all the metadata about the track (not the track key inside the track analysis object)
+	 */
 	async function getTrackAnalysis(currentTrack, playlistId) {
 		// browser checks what is the runtime environment so we only run it on the client side
 		// fetch is polyfill
 		if (browser) {
-			let result;
+			let analysis;
 			const trackId = $playlist?.tracks?.['items'][currentTrack]['track']['id'];
 
 			// If the user is connected to Spotify
 			if ($session['access_token']) {
-				result = await getTrackAnalysisFromSpotify($session, trackId);
-				console.log('*****SPOTIFY TRACK ANALYSIS*****', result);
-				return result;
+				analysis = await getTrackAnalysisFromSpotify($session, trackId);
+				console.log('*****SPOTIFY TRACK ANALYSIS*****', analysis);
+			} else {
+				// If the user is loading app for the first time
+				const url = `/json/audio-analysis/${playlistId}/${trackId}.json`;
+				const res = await fetch(url);
+				analysis = await res.json();
 			}
-			// If the user is loading app for the first time
-			const url = `/json/audio-analysis/${playlistId}/${trackId}.json`;
-			const res = await fetch(url);
-			result = await res.json();
-			console.log('*****LOCAL TRACK ANALYSIS****', result);
-			return result;
+
+			intervalTypes.forEach((t) => {
+				const type = analysis[t];
+				type[0].duration = type[0].start + type[0].duration;
+				type[0].start = 0;
+				// Get duration of the last interval in seconds
+				type[type.length - 1].duration = track.duration_ms / 1000 - type[type.length - 1].start;
+				type.forEach((interval) => {
+					// For each object inside the beats, if there is a loudness_max_time, make it into milliseconds
+					if (interval.loudness_max_time) {
+						interval.loudness_max_time = interval.loudness_max_time * 1000;
+					}
+					interval.start = interval.start * 1000;
+					interval.duration = interval.duration * 1000;
+					// Redefine all the other properties as milliseconds
+				});
+			});
+			const volume = analysis.segments.reduce((acc, val) => {
+				acc.push(val.loudness_max);
+				acc.push(val.loudness_start);
+				return acc;
+			}, []);
+			// voloume = [0,1,0.5,0.7,1,0.2]
+			// VOLUME NORMALIZATION to so visualizer won't look subtle if the volume is too soft
+			const _min = min(volume);
+			const _mean = mean(volume);
+
+			// Commit volume & track analysis the store
+			return {
+				trackAnalysis: analysis,
+				songVolume: { min: _min, mean: _mean }
+			};
 		} else {
 			return {};
 		}
