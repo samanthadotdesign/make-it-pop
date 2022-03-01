@@ -82,8 +82,11 @@
 	videoPlaylistLength.set(videos?.videos?.length ?? 0);
 
 	$: {
-		$trackAnalysis = getTrackAnalysis($currentTrack, playlistId)['trackAnalysis'];
-		$songVolume = getTrackAnalysis($currentTrack, playlistId)['songVolume'];
+		/* const fetchedTrackAnalysis = getTrackAnalysis($currentTrack, playlistId)
+		$trackAnalysis = fetchedTrackAnalysis?.['trackAnalysis'];
+		$songVolume = fetchedTrackAnalysis?.['songVolume']; */
+
+		getTrackAnalysis($currentTrack, playlistId);
 	}
 
 	$: {
@@ -119,7 +122,7 @@
 				analysis = await res.json();
 			}
 
-			intervalTypes.forEach((t) => {
+			$intervalTypes.forEach((t) => {
 				const type = analysis[t];
 				type[0].duration = type[0].start + type[0].duration;
 				type[0].start = 0;
@@ -140,18 +143,21 @@
 				acc.push(val.loudness_start);
 				return acc;
 			}, []);
-			// voloume = [0,1,0.5,0.7,1,0.2]
+			// volume = [0,1,0.5,0.7,1,0.2]
 			// VOLUME NORMALIZATION to so visualizer won't look subtle if the volume is too soft
 			const _min = min(volume);
 			const _mean = mean(volume);
 
 			// Commit volume & track analysis the store
-			return {
+
+			//const fetchedTrackAnalysis = getTrackAnalysis($currentTrack, playlistId)
+			$trackAnalysis = analysis;
+			$songVolume = { min: _min, mean: _mean };
+
+			/* return {
 				trackAnalysis: analysis,
 				songVolume: { min: _min, mean: _mean }
-			};
-		} else {
-			return {};
+			}; */
 		}
 	}
 
