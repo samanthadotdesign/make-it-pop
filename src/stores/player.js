@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import ease from '@mobilabs/easing';
 import { interpolateNumber } from 'd3-interpolate';
 import { scaleLinear } from 'd3-scale';
@@ -43,29 +43,32 @@ async function _getVolume(trackProgressMs) {
 	const values = [];
 	const index = await getSegment(progress);
 
+	const _trackAnalysis = get(trackAnalysis);
+	const _volumeConfig = get(volumeConfig);
+
 	// If it's the track analysis or the end of the track analysis
-	if (!trackAnalysis || !trackAnalysis.segments[index + 1]) return 1;
+	if (!_trackAnalysis || !_trackAnalysis.segments[index + 1]) return 1;
 
 	// Volume smoothing
-	for (let i = -volumeConfig.volumeSmoothing; i <= volumeConfig.volumeSmoothing; i += 1) {
-		const multiplier = parseFloat(volumeConfig.volumeReferenceMultiplier);
+	for (let i = -_volumeConfig.volumeSmoothing; i <= _volumeConfig.volumeSmoothing; i += 1) {
+		const multiplier = parseFloat(_volumeConfig.volumeReferenceMultiplier);
 		// Pushing more data points / segments into base array
 		// Data points don't actually have any properties yet
-		if (trackAnalysis.segments[index + i * multiplier]) {
-			base.push(trackAnalysis.segments[index + i * multiplier].loudness_max);
-			base.push(trackAnalysis.segments[index + i * multiplier].loudness_start);
+		if (_trackAnalysis.segments[index + i * multiplier]) {
+			base.push(_trackAnalysis.segments[index + i * multiplier].loudness_max);
+			base.push(_trackAnalysis.segments[index + i * multiplier].loudness_start);
 		}
 	}
 
 	// Populating the new data points that we just created with the correct data
 	for (
-		let i = -parseFloat(volumeConfig.volumeSmoothing);
-		i <= parseFloat(volumeConfig.volumeSmoothing);
+		let i = -parseFloat(_volumeConfig.volumeSmoothing);
+		i <= parseFloat(_volumeConfig.volumeSmoothing);
 		i += 1
 	) {
-		const p = progress + i * volumeConfig.volumeReferenceMultiplier;
+		const p = progress + i * _volumeConfig.volumeReferenceMultiplier;
 		const index = await getSegment(p);
-		const segment = trackAnalysis.segments[index];
+		const segment = _trackAnalysis.segments[index];
 		const { start, duration } = segment;
 		const elapsed = p - start;
 		segment.elapsed = elapsed;
@@ -78,7 +81,7 @@ async function _getVolume(trackProgressMs) {
 			elapsed: _elapsed,
 			start: _start
 		} = segment;
-		const next = trackAnalysis.segments?.[index + 1]?.loudness_start;
+		const next = _trackAnalysis.segments?.[index + 1]?.loudness_start;
 		const current = start + elapsed;
 		if (_elapsed < loudness_max_time) {
 			// ease.linear(current time, beginning value, change in value, duration)
@@ -89,7 +92,7 @@ async function _getVolume(trackProgressMs) {
 			const __start = _start + loudness_max_time;
 			const __elapsed = current - __start;
 			const __duration = _duration - loudness_max_time;
-			const progress = ease.linear(_elapsed, 0, 1, loudness_max_time);
+			const progress = ease.linear(__elapsed, 0, 1, __duration);
 			const volume = interpolateNumber(loudness_max, next)(progress);
 			values.push(volume);
 		}
@@ -100,6 +103,8 @@ async function _getVolume(trackProgressMs) {
 
 // Constantly triggers this function and pass the track progress in milliseconds
 function determineActiveIntervals(trackProgressMs) {
+	const _intervalTypes = get(intervalTypes);
+
 	if (!trackAnalysis) return;
 	const determineInterval = (type) => {
 		const analysis = trackAnalysis[type];
@@ -110,7 +115,7 @@ function determineActiveIntervals(trackProgressMs) {
 		}
 	};
 
-	const active = intervalTypes.reduce((acc, type) => {
+	const active = _intervalTypes.reduce((acc, type) => {
 		const index = determineInterval(type);
 		const interval = { ...trackAnalysis[type][index], index };
 		const { start, duration } = interval;
@@ -120,31 +125,12 @@ function determineActiveIntervals(trackProgressMs) {
 		acc[type] = interval;
 		return acc;
 	}, {});
-
-	/* 
-    CURRENTLY ACTIVE 
-    active: {
-      beats: {
-        start: dec,
-        duration: time in ms,
-        index: 1,
-        elapsed: time in ms,
-        progres: perrcentage 0 -100%,
-        beatValue?: 
-      },
-      bars: {
-        start: dec,
-        duration: time in ms,
-        index: 1,
-        elapsed: time in ms,
-        progres: perrcentage 0 -100%,
-      },
-    }
-    */
 	playerActiveIntervals.set(active);
 }
 
-// Using time position relative to the song to sync
+/**
+ * Using time position relative to the song to sync
+ */
 export async function sync() {
 	if (!window.$player) return;
 	const _state = (await window?.$player?.getCurrentState()) || null;
@@ -158,7 +144,8 @@ export async function sync() {
  * Configs for queues[name] object
  */
 export function registerVolumeQueue({ name, totalSamples, smoothing }) {
-	const queues = cloneDeep(volumeQueues);
+	const _volumeQueues = get(volumeQueues);
+	const queues = cloneDeep(_volumeQueues);
 	queues[name] = {
 		values: [],
 		volume: 0.5,
@@ -175,7 +162,8 @@ export function registerVolumeQueue({ name, totalSamples, smoothing }) {
  * Reset all the values of the queues properties to []
  */
 export function resetVolumeQueues() {
-	const queues = cloneDeep(volumeQueues);
+	const _volumeQueues = get(volumeQueues);
+	const queues = cloneDeep(_volumeQueues);
 	for (let key in queues) {
 		queues[key].values = [];
 	}
@@ -183,17 +171,19 @@ export function resetVolumeQueues() {
 }
 
 export function getVolume() {
+	const _playerActiveIntervals = get(playerActiveIntervals);
+	const _trackAnalysis = get(trackAnalysis);
 	// If no active intervals bc we haven't initialized the song yet, the volume is 1
-	if (!playerActiveIntervals) return 1;
+	if (!_playerActiveIntervals) return 1;
 
 	const { loudness_max, loudness_start, loudness_max_time, duration, elapsed, start, index } =
-		cloneDeep(playerActiveIntervals.segments);
+		cloneDeep(_playerActiveIntervals.segments);
 
 	// The track analysis segments are over (index + 1 = if there is a next segment)
 	// If there are no next segments, return 0.5 as the volume value
-	if (!trackAnalysis.segments || !trackAnalysis.segments[index + 1]) return 0.5;
+	if (!_trackAnalysis.segments || !_trackAnalysis.segments[index + 1]) return 0.5;
 
-	const next = trackAnalysis.segments?.[index + 1]?.loudness_start;
+	const next = _trackAnalysis.segments?.[index + 1]?.loudness_start;
 	const current = start + elapsed;
 	const easing = 'linear';
 
@@ -215,8 +205,9 @@ export function getVolume() {
 
 export async function processVolumeQueues() {
 	// Get all the volumes. Make a deep clone if there are playerActiveIntervals
+	const _volumeQueues = get(volumeQueues);
 	const volume = await getVolume();
-	const queues = cloneDeep(volumeQueues);
+	const queues = cloneDeep(_volumeQueues);
 	// For every single volume queue,
 	for (let key in queues) {
 		// queue[key].values = values of each property
