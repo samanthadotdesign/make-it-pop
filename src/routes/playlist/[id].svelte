@@ -66,6 +66,7 @@
 	import { getTrackAnalysisFromSpotify } from '@utils/spotifyAPI.js';
 	import { initializePlayer } from '@utils/spotifyPlayer.js';
 	import { session } from '$app/stores';
+	import { min, mean } from 'd3-array';
 
 	export let fetchedPlaylist;
 	export let playlistId;
@@ -100,13 +101,14 @@
 	}
 
 	/**
-	 * @param currentTrack
+	 * @param currentTrack – index of current song
 	 * @param playlistId
 	 * @returns track object that has all the metadata about the track (not the track key inside the track analysis object)
 	 */
 	async function getTrackAnalysis(currentTrack, playlistId) {
 		// browser checks what is the runtime environment so we only run it on the client side
-		// fetch is polyfill
+		const track = $playlist?.tracks?.['items'][currentTrack];
+
 		if (browser) {
 			let analysis;
 			const trackId = $playlist?.tracks?.['items'][currentTrack]['track']['id'];

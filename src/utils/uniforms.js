@@ -1,3 +1,4 @@
+// Configuration object for the visualization
 export function buildUniforms(uni) {
 	const uniforms = { ...uni };
 	// cloning the object that is being referenced somewhere else to avoid side effects by modifying the variable
