@@ -22,12 +22,26 @@ But isolates the logic that listens to the body event
 	// Local state to listen for pointer down during swipe or scroll (down or not)
 	let height;
 	let width;
+	let changeTrackFlag = false;
 
 	// When dependencies, height & width change, they will be reassigned to the $windowObject.height & width
 	$: {
 		$windowObject.height = height;
 		$windowObject.width = width;
 	}
+
+	const debounce = (callback, delay) => {
+		if (!changeTrackFlag) {
+			console.log('IM NOT BEING IGNORED');
+			changeTrackFlag = true;
+			setTimeout(() => {
+				changeTrackFlag = false;
+			}, delay);
+			callback();
+		} else {
+			console.log('IM BEING IGNORED');
+		}
+	};
 
 	// When the user is scrolling on desktop
 	// Debounce -> execute a command a certain number of times so that we don't break by scrolling too quickly
@@ -104,4 +118,12 @@ But isolates the logic that listens to the body event
 	});
 </script>
 
-<svelte:window on:mousewheel={handleScroll} bind:innerHeight={height} bind:innerWidth={width} />
+<svelte:window
+	on:mousewheel={(event) => {
+		debounce(() => {
+			handleScroll(event);
+		}, 1000);
+	}}
+	bind:innerHeight={height}
+	bind:innerWidth={width}
+/>
