@@ -1,12 +1,16 @@
 import { writable } from 'svelte/store';
 import ease from '@mobilabs/easing';
-import interpolateNumber from 'd3-interpolate';
-import scaleLinear from 'd3-scale';
+import { interpolateNumber } from 'd3-interpolate';
+import { scaleLinear } from 'd3-scale';
+import { min, max, mean } from 'd3-array';
+import cloneDeep from 'lodash/cloneDeep';
+
 import {
 	trackAnalysis,
 	volumeConfig,
 	playerActiveIntervals,
-	playerVolume
+	playerVolume,
+	volumeQueues
 } from '@stores/userDataStore.js';
 
 export const intervalTypes = writable(['segments', 'tatums', 'beats', 'bars', 'sections']);
@@ -148,4 +152,85 @@ export async function sync() {
 	const { position } = _state;
 	playerVolume.set(Math.pow(await _getVolume(position), 3));
 	await determineActiveIntervals(position);
+}
+
+/**
+ * Configs for queues[name] object
+ */
+export function registerVolumeQueue({ name, totalSamples, smoothing }) {
+	const queues = cloneDeep(volumeQueues);
+	queues[name] = {
+		values: [],
+		volume: 0.5,
+		average: 0.5,
+		min: 0,
+		max: 1,
+		totalSamples,
+		smoothing
+	};
+	volumeQueues.set(queues);
+}
+
+/**
+ * Reset all the values of the queues properties to []
+ */
+export function resetVolumeQueues() {
+	const queues = cloneDeep(volumeQueues);
+	for (let key in queues) {
+		queues[key].values = [];
+	}
+	volumeQueues.set(queues);
+}
+
+export function getVolume() {
+	// If no active intervals bc we haven't initialized the song yet, the volume is 1
+	if (!playerActiveIntervals) return 1;
+
+	const { loudness_max, loudness_start, loudness_max_time, duration, elapsed, start, index } =
+		cloneDeep(playerActiveIntervals.segments);
+
+	// The track analysis segments are over (index + 1 = if there is a next segment)
+	// If there are no next segments, return 0.5 as the volume value
+	if (!trackAnalysis.segments || !trackAnalysis.segments[index + 1]) return 0.5;
+
+	const next = trackAnalysis.segments?.[index + 1]?.loudness_start;
+	const current = start + elapsed;
+	const easing = 'linear';
+
+	if (elapsed < loudness_max_time) {
+		const progress = ease(Math.max(Math.min(1, elapsed / loudness_max_time), 0), easing);
+		return interpolateNumber(loudness_start, loudness_max)(progress);
+	} else {
+		// The elapsed time is greater than or equal the loudness_max_time
+		// reaches end of the segment
+		// We still interpolate that last point, going to the next one and already know what it looks like
+		const _start = start + loudness_max_time;
+		const _elapsed = current - _start;
+		const _duration = duration - loudness_max_time;
+		const progress = ease(Math.max(Math.min(1, _elapsed / _duration), 0), easing);
+		return interpolateNumber(loudness_max, next)(progress);
+		// Interpolating the end of one segment & the beginning of the next one
+	}
+}
+
+export async function processVolumeQueues() {
+	// Get all the volumes. Make a deep clone if there are playerActiveIntervals
+	const volume = await getVolume();
+	const queues = cloneDeep(volumeQueues);
+	// For every single volume queue,
+	for (let key in queues) {
+		// queue[key].values = values of each property
+		queues[key].values.unshift(volume);
+		// Until values array length is equal to number of total samples, we're going to pop the last value
+		while (queues[key].values.length > queues[key].totalSamples) queues[key].values.pop();
+		queues[key].average = mean(queues[key].values);
+		queues[key].min = min(queues[key].values);
+		queues[key].max = max(queues[key].values);
+		const sizeScale = scaleLinear([queues[key].min, queues[key].average], [0, 1]);
+		// Get the last value of the values array
+		const latest = mean(queues[key].values.slice(0, queues[key].smoothing));
+		// Formatting the data to get the value to be between 0 to 1to get expected behaviour
+		queues[key].volume = sizeScale(latest);
+	}
+	volumeQueues.set(queues);
 }
