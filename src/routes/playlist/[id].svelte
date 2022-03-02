@@ -48,7 +48,6 @@
 		playlists,
 		playlist,
 		trackAnalysis,
-		songVolume,
 		getPlaylistProperty,
 		previousPlaylistId
 	} from '@stores/userDataStore.js';
@@ -58,9 +57,11 @@
 		videosData,
 		videoPlaylistLength
 	} from '@stores/visualizerStore.js';
+	import { songVolume } from '@stores/player.js';
 	import { page } from '$app/stores';
 	import EventListener from '@components/Playlist/EventListener.svelte';
 	import Controls from '@components/Controls.svelte';
+	import Sketch from '@components/Sketch.svelte';
 	import Index from '../index.svelte';
 	import AudioVisualizer from '@components/AudioVisualizer.svelte';
 	import { getTrackAnalysisFromSpotify } from '@utils/spotifyAPI.js';
@@ -181,6 +182,7 @@
 	});
 </script>
 
+<Sketch />
 <EventListener />
 {#key $playlists.items}
 	<Controls title={playlistName} />

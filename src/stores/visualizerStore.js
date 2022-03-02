@@ -1,10 +1,13 @@
 import { writable, get } from 'svelte/store';
 import { playlist, previousTrackId } from '@stores/userDataStore.js';
+import { playStatus } from './player';
+
+// tick is the signal to request general refresh
+export const tick = writable(false);
 
 // currentTrack is the index on the playlist
 export const currentTrack = writable(0);
 
-export const playStatus = writable(false);
 // currentVideo is the index of current video playing for a song
 // There can be multiple videos per track
 export const currentVideo = writable(0);
@@ -19,6 +22,18 @@ export const randomTerm = defaultTermsArray[Math.floor(Math.random() * defaultTe
 
 export const searchTerm = writable('');
 export const videosData = writable([]);
+export const tweenDuration = writable(350);
+
+const initialUniform = {
+	speed: { min: 0, max: 0.1, value: 0.042, step: '0.001', type: 'number', name: 'speed' },
+	bump: { min: 0, max: 1, value: 0.42, step: 0.01, type: 'number', name: 'bump' },
+	zoom: { min: 0, max: 20, value: 8.48, step: 0.01, type: 'number', name: 'zoom' },
+	contrast: { name: 'contrast', type: 'number', min: 0, max: 3, value: 1.42, step: 0.01 },
+	ballSize: { name: 'ballSize', type: 'number', min: 0, max: 1, value: 0.21, step: 0.01 },
+	mirror: { name: 'mirror', type: 'boolean', value: false },
+	mirrorTween: { type: 'boolean', value: false, visible: false, name: 'mirrorTween' },
+	mirrorTweenProgress: { type: 'number', value: 0, visible: false, name: 'mirrorTweenProgress' }
+};
 
 // Loops back the video when the length of the videos end
 // If the user goes back to previous track, go back to previous video

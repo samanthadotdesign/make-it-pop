@@ -4,17 +4,31 @@ import { interpolateNumber } from 'd3-interpolate';
 import { scaleLinear } from 'd3-scale';
 import { min, max, mean } from 'd3-array';
 import cloneDeep from 'lodash/cloneDeep';
-``;
-
-import {
-	trackAnalysis,
-	volumeConfig,
-	playerActiveIntervals,
-	playerVolume,
-	volumeQueues
-} from '@stores/userDataStore.js';
-
+import { trackAnalysis } from '@stores/userDataStore.js';
+import { tweenDuration } from '@stores/visualizerStore';
 export const intervalTypes = writable(['segments', 'tatums', 'beats', 'bars', 'sections']);
+
+// VOLUME
+
+// Settings for volume smoothing
+export const volumeConfig = writable({
+	volumeSmoothing: 30,
+	volumeReference: 20,
+	volumeReferenceMultiplier: 2
+});
+
+// Interpolating data from track analysis for visualizer
+// 'player' prefix in the variable name refers to the object available in the DOM
+export const playerActiveIntervals = writable({});
+export const playerVolume = writable();
+export const songVolume = writable({});
+export const volumeQueues = writable({});
+
+// INITIAL STATES
+export const shuffleInterval = 'bars';
+export const shuffleIntervalMultiplier = 2;
+export const connected = false;
+export const playStatus = writable(false);
 
 /**
  * @param {*} progress track progress in milliseconds
@@ -22,8 +36,8 @@ export const intervalTypes = writable(['segments', 'tatums', 'beats', 'bars', 's
  */
 async function getSegment(progress) {
 	try {
-		const analysis = trackAnalysis.segments;
-		console.log('get segment - track analysis here', analysis);
+		const _trackAnalysis = get(trackAnalysis);
+		const analysis = _trackAnalysis.segments;
 		for (let i = 0; i < analysis.length; i += 1) {
 			if (i === analysis.length - 1) return i;
 			if (analysis[i].start < progress && progress < analysis[i + 1].start) return i;
@@ -106,9 +120,10 @@ async function _getVolume(trackProgressMs) {
 function determineActiveIntervals(trackProgressMs) {
 	const _intervalTypes = get(intervalTypes);
 
-	if (!trackAnalysis) return;
+	const _trackAnalysis = get(trackAnalysis);
+	if (!_trackAnalysis) return;
 	const determineInterval = (type) => {
-		const analysis = trackAnalysis[type];
+		const analysis = _trackAnalysis[type];
 		for (let i = 0; i < analysis.length; i += 1) {
 			// If it's the last interval, return itself
 			if (i === analysis.length - 1) return i;
@@ -118,7 +133,7 @@ function determineActiveIntervals(trackProgressMs) {
 
 	const active = _intervalTypes.reduce((acc, type) => {
 		const index = determineInterval(type);
-		const interval = { ...trackAnalysis[type][index], index };
+		const interval = { ..._trackAnalysis[type][index], index };
 		const { start, duration } = interval;
 		const elapsed = trackProgressMs - start;
 		interval.elapsed = elapsed;

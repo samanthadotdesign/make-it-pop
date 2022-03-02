@@ -8,7 +8,7 @@ Interaction behaviour
 1. Different videos for the entire length of the song
 2. When the song changes, change the video
 3. When we run out of videos, loop back to the beginning 
-E.g song 0, video 0–5 -> song 1, video 3–6
+E.g song 0, video 0–5 -> song 1, videxo 3–6
 --------------------------------------------------
 Play audio (local files)
 0. Fetch the actual track id from array & handle the prev/next
@@ -33,9 +33,11 @@ trusted events
 		videosData,
 		setVideoIndex,
 		currentTrack,
-		playStatus,
 		setAudioIndex
 	} from '@stores/visualizerStore.js';
+
+	import { playStatus } from '@stores/player.js';
+
 	import { playlist } from '@stores/userDataStore.js';
 	import { getTrackFromSpotify } from '@utils/spotifyAPI.js';
 
@@ -84,15 +86,19 @@ trusted events
 	}
 
 	function playMedia() {
-		const { access_token } = $session;
-		if (!access_token) audio.play();
-		video.play();
+		if (video && audio) {
+			const { access_token } = $session;
+			if (!access_token) audio.play();
+			video.play();
+		}
 	}
 
 	function pauseMedia() {
-		const { access_token } = $session;
-		if (!access_token) audio.pause();
-		video.pause();
+		if (video && audio) {
+			const { access_token } = $session;
+			if (!access_token) audio.pause();
+			video.pause();
+		}
 	}
 
 	// What to handle: change the song, but it stopped playing until i hit the play button

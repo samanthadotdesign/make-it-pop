@@ -12,6 +12,7 @@
 import axios from 'axios';
 import { get } from 'svelte/store';
 import { deviceSettings } from '@stores/spotify';
+import { session } from '$app/stores';
 
 const CACHE = new Set();
 const ROOT = 'https://api.spotify.com/v1';

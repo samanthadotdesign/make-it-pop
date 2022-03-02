@@ -1,10 +1,12 @@
 <script>
 	import Searchbar from '@components/Searchbar.svelte';
 	export let title;
-	import { playStatus, setAudioIndex } from '@stores/visualizerStore.js';
+	import { setAudioIndex } from '@stores/visualizerStore.js';
 	import { play, pause, previous, next } from '@utils/spotifyAPI';
 	import { session, page } from '$app/stores';
 	import { playlist, previousTrackId } from '@stores/userDataStore';
+
+	import { playStatus } from '@stores/player.js';
 
 	import { currentTrack } from '@stores/visualizerStore.js';
 
