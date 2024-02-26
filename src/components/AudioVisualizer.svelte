@@ -41,6 +41,8 @@ trusted events
 	import { playlist } from '@stores/userDataStore.js';
 	import { getTrackFromSpotify } from '@utils/spotifyAPI.js';
 
+	import ThreeScene from '@utils/threeScene.svelte';
+
 	import { page, session } from '$app/stores';
 	const { params } = $page;
 	const { id: playlistId } = params;
@@ -121,6 +123,8 @@ trusted events
 	crossOrigin="anonymous"
 	playsinline
 	muted={true}
-	class="w-full aspect-video"
+	class="w-full aspect-video hidden"
 	on:ended={videoEndedHandler}
 />
+
+<ThreeScene />

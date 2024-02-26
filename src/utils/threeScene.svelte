@@ -1,4 +1,5 @@
-import { onMount } from 'svelte';
+<script>
+	import { onMount } from 'svelte';
 	import * as THREE from 'three';
 
 	import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
@@ -6,6 +7,9 @@ import { onMount } from 'svelte';
 	import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 	import { BloomPass } from 'three/examples/jsm/postprocessing/BloomPass.js';
 	import { CopyShader } from 'three/examples/jsm/shaders/CopyShader.js';
+
+	let init;
+	let animate;
 
 	onMount(() => {
 		let container;
@@ -30,12 +34,9 @@ import { onMount } from 'svelte';
 			ygrid = 10;
 
 		const startButton = document.getElementById('startButton');
-		startButton.addEventListener('click', function () {
-			init();
-			animate();
-		});
+		startButton.addEventListener('click', function () {});
 
-		function init() {
+		init = () => {
 			/* const overlay = document.getElementById('overlay');
 			overlay.remove(); */
 
@@ -134,7 +135,7 @@ import { onMount } from 'svelte';
 			//
 
 			window.addEventListener('resize', onWindowResize);
-		}
+		};
 
 		function onWindowResize() {
 			windowHalfX = window.innerWidth / 2;
@@ -163,11 +164,11 @@ import { onMount } from 'svelte';
 
 		//
 
-		function animate() {
+		animate = () => {
 			requestAnimationFrame(animate);
 
 			render();
-		}
+		};
 
 		let h,
 			counter = 1;
@@ -215,3 +216,13 @@ import { onMount } from 'svelte';
 			composer.render();
 		}
 	});
+</script>
+
+<button
+	on:click={() => {
+		init();
+		animate();
+	}}
+>
+	start animation
+</button>
