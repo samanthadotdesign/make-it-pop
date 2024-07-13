@@ -88,18 +88,24 @@ trusted events
 	}
 
 	function playMedia() {
-		if (video && audio) {
-			const { access_token } = $session;
-			if (!access_token) audio.play();
+		if (video) {
 			video.play();
+		}
+
+		// This will only run on offline mode.
+		if (audio) {
+			audio.play();
 		}
 	}
 
 	function pauseMedia() {
-		if (video && audio) {
-			const { access_token } = $session;
-			if (!access_token) audio.pause();
+		if (video) {
 			video.pause();
+		}
+
+		// This will only run on offline mode.
+		if (audio) {
+			audio.pause();
 		}
 	}
 
@@ -107,6 +113,7 @@ trusted events
 	console.log('play status on load', $playStatus);
 </script>
 
+<!-- For offline mode -->
 {#if !$session['access_token']}
 	<!-- Not yet playing from Spotify API -->
 	<audio
@@ -123,7 +130,8 @@ trusted events
 	crossOrigin="anonymous"
 	playsinline
 	muted={true}
-	class="w-full aspect-video hidden"
+	autoplay={$playStatus ? true : false}
+	class="w-full aspect-video"
 	on:ended={videoEndedHandler}
 />
 

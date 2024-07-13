@@ -65,8 +65,6 @@
 
 			texture = new THREE.VideoTexture(video);
 
-			//
-
 			let i, j, ox, oy, geometry;
 
 			const ux = 1 / xgrid;
