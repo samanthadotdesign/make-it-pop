@@ -61,7 +61,6 @@
 	import { page } from '$app/stores';
 	import EventListener from '@components/Playlist/EventListener.svelte';
 	import Controls from '@components/Controls.svelte';
-	import Sketch from '@components/Sketch.svelte';
 	import Index from '../index.svelte';
 	import AudioVisualizer from '@components/AudioVisualizer.svelte';
 	import { getTrackAnalysisFromSpotify } from '@utils/spotifyAPI.js';
@@ -182,7 +181,6 @@
 	});
 </script>
 
-<Sketch />
 <EventListener />
 {#key $playlists.items}
 	<Controls title={playlistName} />

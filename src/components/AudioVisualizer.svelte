@@ -26,7 +26,7 @@ trusted events
 2. Store playStatus variable in the store, we use it also to manage auto-hide different components 
  -->
 <script>
-	import { tick } from 'svelte';
+	import { tick, onMount } from 'svelte';
 
 	import {
 		currentVideo,
@@ -35,6 +35,8 @@ trusted events
 		currentTrack,
 		setAudioIndex
 	} from '@stores/visualizerStore.js';
+
+	import Sketch from '@components/Sketch.svelte';
 
 	import { playStatus } from '@stores/player.js';
 
@@ -136,3 +138,5 @@ trusted events
 />
 
 <ThreeScene />
+
+<Sketch />
