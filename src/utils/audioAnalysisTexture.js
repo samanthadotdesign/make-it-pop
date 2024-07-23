@@ -155,6 +155,9 @@ export default class AudioAnalysisTexture {
 		// Track analysis pitches (three group) to create different colors
 		let color = `${red}, ${green}, ${blue}`;
 
+		/* ---- REFERENCE THE COLOUR HERE DIRECTLY ---- */
+		/* INTENSITY WORKS AS IS */
+
 		// depending on the distance between the points (larger)
 		// the colour and size of the mask is smaller and more faded
 
