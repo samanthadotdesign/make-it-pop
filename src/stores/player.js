@@ -1,4 +1,4 @@
-import { writable, get } from 'svelte/store';
+import { writable, get, derived } from 'svelte/store';
 import ease from '@mobilabs/easing';
 import { interpolateNumber } from 'd3-interpolate';
 import { scaleLinear } from 'd3-scale';
@@ -241,3 +241,42 @@ export async function processVolumeQueues() {
 	}
 	volumeQueues.set(queues);
 }
+
+// Values for scene
+// beatConfidence = x, loudnessAverage = y
+export const loudnessAverage = derived(playerActiveIntervals, ($playerActiveIntervals) => {
+	return (
+		($playerActiveIntervals?.segments?.loudness_start +
+			$playerActiveIntervals?.segments?.loudness_max) /
+		2
+		/* --- TO DO: PLAY AROUND WITH SEGMENT DATA TO GET MORE DYNAMIC VALUES ---- */
+	);
+});
+
+export const beatConfidence = derived(playerActiveIntervals, ($playerActiveIntervals) => {
+	return $playerActiveIntervals?.beats?.confidence;
+});
+
+export const red = derived(playerActiveIntervals, ($playerActiveIntervals) => {
+	return (
+		$playerActiveIntervals?.segments?.pitches.slice(0, 3).reduce((accumulator, currentValue) => {
+			return accumulator + currentValue;
+		}) / 3
+	);
+});
+
+export const blue = derived(playerActiveIntervals, ($playerActiveIntervals) => {
+	return (
+		$playerActiveIntervals?.segments?.pitches.slice(4, 7).reduce((accumulator, currentValue) => {
+			return accumulator + currentValue;
+		}) / 3
+	);
+});
+
+export const green = derived(playerActiveIntervals, ($playerActiveIntervals) => {
+	return (
+		$playerActiveIntervals?.segments?.pitches.slice(8, 11).reduce((accumulator, currentValue) => {
+			return accumulator + currentValue;
+		}) / 3
+	);
+});

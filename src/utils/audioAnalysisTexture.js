@@ -53,6 +53,7 @@ export default class AudioAnalysisTexture {
 	}
 
 	addPoint(point) {
+		console.log('point on threeJS scene', point);
 		// called externally (not called in the constructor)
 		let force = 0; // these are the properties of the point
 		let vx = 0;
@@ -92,7 +93,7 @@ export default class AudioAnalysisTexture {
 		let agePart = 1 / this.maxAge;
 
 		this.trail.forEach((point, i) => {
-			// the mouse momvements (stores hisotry of where mouse has been)
+			// the mouse movements (stores hisotry of where mouse has been)
 			// eath path that the mouse takes
 			// point = {force, x, y, vx, vy,
 			// age = how long ago from the moment the mouse has moved}
@@ -123,11 +124,13 @@ export default class AudioAnalysisTexture {
 	}
 
 	// this is what draws the paths
+	// scaling parameter to fit under browser size
+	// x and y are percentages (beatConfidence, loudnessAverage)
 	drawPoint(point) {
 		// the area of the opacity mask
 		const pos = {
-			x: point.x * this.width,
-			y: (1 - point.y) * this.height
+			x: (point.x * this.width) / 100,
+			y: (point.y * this.height) / 100
 		};
 
 		const radius = this.radius;
@@ -149,7 +152,7 @@ export default class AudioAnalysisTexture {
 		let red = ((point.vx + 1) / 2) * 255;
 		let green = ((point.vy + 1) / 2) * 255;
 		let blue = intensity * 255;
-
+		// Track analysis pitches (three group) to create different colors
 		let color = `${red}, ${green}, ${blue}`;
 
 		// depending on the distance between the points (larger)
@@ -161,6 +164,7 @@ export default class AudioAnalysisTexture {
 		ctx.shadowBlur = radius * 1; // (default 0)
 		ctx.shadowColor = `rgba(${color},${0.2 * intensity})`; // (default transparent black)
 
+		// Track analysis loudness connected to ThreeJS scene intensity
 		this.ctx.beginPath();
 		this.ctx.fillStyle = 'rgba(255,0,0,1)';
 		this.ctx.arc(pos.x - offset, pos.y - offset, radius, 0, Math.PI * 2);

@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 	import { interpolate } from 'd3-interpolate';
 	import { buildUniforms, getTweenableChanges, getBooleanChanges } from '@utils/uniforms';
 	import cloneDeep from 'lodash/cloneDeep';
@@ -8,6 +9,11 @@
 		shuffleIntervalMultiplier,
 		playerVolume,
 		playerActiveIntervals,
+		loudnessAverage,
+		beatConfidence,
+		red,
+		green,
+		blue,
 		playStatus,
 		sync
 	} from '@stores/player.js';
@@ -44,26 +50,43 @@
 		}, 25);
 	}
 
-	onMount(() => {
-		const audioAnalysisTexture = new AudioAnalysisTexture({ debug: true });
+	// Setting x and y coordinates using trackAnalysis store data
+	// beatConfidence = 0 to 1
+	// loudness = -60 to 0
+	let audioAnalysisTexture;
 
-		function onMouseMovement(event) {
-			const point = {
-				x: event?.clientX / window.innerWidth,
-				y: event?.clientY / window.innerHeight
-			};
-
-			audioAnalysisTexture.addPoint(point);
+	$: {
+		if (audioAnalysisTexture) {
+			if ($loudnessAverage && $beatConfidence) {
+				/* ----- PLAY AROUND WITH NORMALIZING THE VALUES FOR X, Y POINTS ---- */
+				const x = $beatConfidence * 100;
+				const y = ($loudnessAverage * 100) / -60;
+				audioAnalysisTexture.addPoint({ x, y });
+				/* ----- ADD THE COLOUR MAP IN (255, 255, 255) HERE ----- */
+			}
 		}
+	}
+
+	onMount(() => {
+		audioAnalysisTexture = new AudioAnalysisTexture({ debug: true });
+
+		// function onMouseMovement(event) {
+		// 	const point = {
+		// 		x: event?.clientX / window.innerWidth,
+		// 		y: event?.clientY / window.innerHeight
+		// 	};
+
+		// 	audioAnalysisTexture.addPoint(point);
+		// }
 
 		function canvasTick() {
 			audioAnalysisTexture.update();
 			requestAnimationFrame(canvasTick);
 		}
 
-		window.addEventListener('pointermove', (event) => {
-			onMouseMovement(event);
-		});
+		// window.addEventListener('pointermove', (event) => {
+		// 	onMouseMovement(event);
+		// });
 
 		canvasTick();
 	});
