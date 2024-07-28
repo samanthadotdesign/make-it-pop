@@ -33,9 +33,6 @@
 			xgrid = 20,
 			ygrid = 10;
 
-		const startButton = document.getElementById('startButton');
-		startButton.addEventListener('click', function () {});
-
 		init = () => {
 			/* const overlay = document.getElementById('overlay');
 			overlay.remove(); */
@@ -58,10 +55,6 @@
 			container.appendChild(renderer.domElement);
 
 			video = document.getElementById('video');
-			video.play();
-			video.addEventListener('play', function () {
-				this.currentTime = 3;
-			});
 
 			texture = new THREE.VideoTexture(video);
 
@@ -116,8 +109,6 @@
 
 			renderer.autoClear = false;
 
-			document.addEventListener('mousemove', onDocumentMouseMove);
-
 			// postprocessing
 
 			const renderModel = new RenderPass(scene, camera);
@@ -153,11 +144,6 @@
 				uvs[i] = (uvs[i] + offsetx) * unitx;
 				uvs[i + 1] = (uvs[i + 1] + offsety) * unity;
 			}
-		}
-
-		function onDocumentMouseMove(event) {
-			mouseX = event.clientX - windowHalfX;
-			mouseY = (event.clientY - windowHalfY) * 0.3;
 		}
 
 		//
@@ -215,3 +201,12 @@
 		}
 	});
 </script>
+
+<button
+	on:click={() => {
+		init();
+		animate();
+	}}
+>
+	start animation
+</button>

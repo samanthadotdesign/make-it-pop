@@ -5,7 +5,6 @@ import { scaleLinear } from 'd3-scale';
 import { min, max, mean } from 'd3-array';
 import cloneDeep from 'lodash/cloneDeep';
 import { trackAnalysis } from '@stores/userDataStore.js';
-import { tweenDuration } from '@stores/visualizerStore';
 export const intervalTypes = writable(['segments', 'tatums', 'beats', 'bars', 'sections']);
 
 // VOLUME
@@ -257,38 +256,27 @@ export const beatConfidence = derived(playerActiveIntervals, ($playerActiveInter
 });
 
 export const tempo = derived(playerActiveIntervals, ($playerActiveIntervals) => {
-	console.log('tempo', $playerActiveIntervals?.sections?.tempo);
-	return $playerActiveIntervals?.sections?.tempo; //113.93
+	return $playerActiveIntervals?.sections?.tempo;
 });
 
-/* VALUES USED IN THREEJS TEXTURE WHICH RETURNS A SUBSCRIBABLE OBJECTS – NEED $ TO REFERENCE THE VALUE */
+function getPercentage(startpos, endpos, currentpos) {
+	var distance = endpos - startpos; // 100-(-100)
+	var displacement = currentpos - startpos; // -43-(-100)
+	return (displacement / distance) * 100;
+}
 
+// Range of timbre is from -100 to 100
+// Getting percentage of the reference value * 255
 export const red = derived(playerActiveIntervals, ($playerActiveIntervals) => {
-	return (
-		($playerActiveIntervals?.segments?.pitches.slice(0, 3).reduce((accumulator, currentValue) => {
-			return accumulator + currentValue;
-		}) /
-			3) *
-		255
-	);
+	const reference = $playerActiveIntervals?.segments?.timbre[1];
+	const percentageFromValue = getPercentage(-300, 100, reference);
+	return percentageFromValue;
 });
 
 export const blue = derived(playerActiveIntervals, ($playerActiveIntervals) => {
-	return (
-		($playerActiveIntervals?.segments?.pitches.slice(4, 7).reduce((accumulator, currentValue) => {
-			return accumulator + currentValue;
-		}) /
-			3) *
-		255
-	);
+	return (-$playerActiveIntervals?.segments?.timbre[2] / 3) * 255;
 });
 
 export const green = derived(playerActiveIntervals, ($playerActiveIntervals) => {
-	return (
-		($playerActiveIntervals?.segments?.pitches.slice(8, 11).reduce((accumulator, currentValue) => {
-			return accumulator + currentValue;
-		}) /
-			3) *
-		255
-	);
+	return ($playerActiveIntervals?.segments?.timbre[3] / 3) * 255;
 });

@@ -133,10 +133,10 @@ trusted events
 	playsinline
 	muted={true}
 	autoplay={$playStatus ? true : false}
-	class="w-full aspect-video hidden"
+	class="w-full aspect-video"
 	on:ended={videoEndedHandler}
 />
 
 <ThreeScene />
 
-<Sketch />
+<!-- <Sketch /> -->

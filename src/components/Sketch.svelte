@@ -65,9 +65,8 @@
 				const y = ($loudnessAverage * 100) / -60;
 
 				const point = { x, y, red: $red, green: $green, blue: $blue };
-				console.log('playerActiveIntervals', $playerActiveIntervals);
+				console.log('point', point);
 				audioAnalysisTexture.addPoint(point);
-				/* ----- ADD THE COLOUR MAP IN (255, 255, 255) HERE ----- */
 			}
 		}
 	}
