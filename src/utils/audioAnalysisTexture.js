@@ -53,7 +53,7 @@ export default class AudioAnalysisTexture {
 	}
 
 	addPoint(point) {
-		console.log('point on threeJS scene', point);
+		const { red, green, blue } = point;
 		// called externally (not called in the constructor)
 		let force = 0; // these are the properties of the point
 		let vx = 0;
@@ -84,7 +84,7 @@ export default class AudioAnalysisTexture {
 		// pushing a new point to the trail
 		// this is how we produce the trail
 		// age : 0, every mouse trail starts with age of 0 and lives for 64ms
-		this.trail.push({ x: point.x, y: point.y, age: 0, force, vx, vy });
+		this.trail.push({ x: point.x, y: point.y, age: 0, force, vx, vy, red, green, blue });
 	}
 
 	update() {
@@ -127,6 +127,8 @@ export default class AudioAnalysisTexture {
 	// scaling parameter to fit under browser size
 	// x and y are percentages (beatConfidence, loudnessAverage)
 	drawPoint(point) {
+		const { red, green, blue } = point;
+
 		// the area of the opacity mask
 		const pos = {
 			x: (point.x * this.width) / 100,
@@ -149,9 +151,9 @@ export default class AudioAnalysisTexture {
 		// intensity is decreasing constantly
 		// value that we use to create the fade – because it's constantly getting smaller
 		// rgb (255,255,255) => white mask that allows us to see the actual color of the plane
-		let red = ((point.vx + 1) / 2) * 255;
+		/* let red = ((point.vx + 1) / 2) * 255;
 		let green = ((point.vy + 1) / 2) * 255;
-		let blue = intensity * 255;
+		let blue = intensity * 255; */
 		// Track analysis pitches (three group) to create different colors
 		let color = `${red}, ${green}, ${blue}`;
 

@@ -116,7 +116,6 @@
 			// If the user is connected to Spotify
 			if ($session['access_token']) {
 				analysis = await getTrackAnalysisFromSpotify($session, trackId);
-				console.log('*****SPOTIFY TRACK ANALYSIS*****', analysis);
 			} else {
 				// If the user is loading app for the first time
 				const url = `/json/audio-analysis/${playlistId}/${trackId}.json`;

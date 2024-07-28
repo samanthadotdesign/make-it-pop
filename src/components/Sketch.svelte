@@ -15,6 +15,7 @@
 		green,
 		blue,
 		playStatus,
+		tempo,
 		sync
 	} from '@stores/player.js';
 	import { tweenDuration, tick } from '@stores/visualizerStore.js';
@@ -57,11 +58,15 @@
 
 	$: {
 		if (audioAnalysisTexture) {
+			// if audio analysis texture exists, then add a point using the normalized value
 			if ($loudnessAverage && $beatConfidence) {
 				/* ----- PLAY AROUND WITH NORMALIZING THE VALUES FOR X, Y POINTS ---- */
 				const x = $beatConfidence * 100;
 				const y = ($loudnessAverage * 100) / -60;
-				audioAnalysisTexture.addPoint({ x, y });
+
+				const point = { x, y, red: $red, green: $green, blue: $blue };
+				console.log('playerActiveIntervals', $playerActiveIntervals);
+				audioAnalysisTexture.addPoint(point);
 				/* ----- ADD THE COLOUR MAP IN (255, 255, 255) HERE ----- */
 			}
 		}
@@ -91,7 +96,3 @@
 		canvasTick();
 	});
 </script>
-
-<h3>
-	{JSON.stringify(activeIntervals)}
-</h3>

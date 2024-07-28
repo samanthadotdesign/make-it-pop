@@ -133,7 +133,7 @@ trusted events
 	playsinline
 	muted={true}
 	autoplay={$playStatus ? true : false}
-	class="w-full aspect-video"
+	class="w-full aspect-video hidden"
 	on:ended={videoEndedHandler}
 />
 

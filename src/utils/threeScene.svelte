@@ -215,12 +215,3 @@
 		}
 	});
 </script>
-
-<button
-	on:click={() => {
-		init();
-		animate();
-	}}
->
-	start animation
-</button>

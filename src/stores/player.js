@@ -242,14 +242,13 @@ export async function processVolumeQueues() {
 	volumeQueues.set(queues);
 }
 
-// Values for scene
+/* TRACK ANALYSIS  */
 // beatConfidence = x, loudnessAverage = y
 export const loudnessAverage = derived(playerActiveIntervals, ($playerActiveIntervals) => {
 	return (
 		($playerActiveIntervals?.segments?.loudness_start +
 			$playerActiveIntervals?.segments?.loudness_max) /
 		2
-		/* --- TO DO: PLAY AROUND WITH SEGMENT DATA TO GET MORE DYNAMIC VALUES ---- */
 	);
 });
 
@@ -257,26 +256,39 @@ export const beatConfidence = derived(playerActiveIntervals, ($playerActiveInter
 	return $playerActiveIntervals?.beats?.confidence;
 });
 
+export const tempo = derived(playerActiveIntervals, ($playerActiveIntervals) => {
+	console.log('tempo', $playerActiveIntervals?.sections?.tempo);
+	return $playerActiveIntervals?.sections?.tempo; //113.93
+});
+
+/* VALUES USED IN THREEJS TEXTURE WHICH RETURNS A SUBSCRIBABLE OBJECTS – NEED $ TO REFERENCE THE VALUE */
+
 export const red = derived(playerActiveIntervals, ($playerActiveIntervals) => {
 	return (
-		$playerActiveIntervals?.segments?.pitches.slice(0, 3).reduce((accumulator, currentValue) => {
+		($playerActiveIntervals?.segments?.pitches.slice(0, 3).reduce((accumulator, currentValue) => {
 			return accumulator + currentValue;
-		}) / 3
+		}) /
+			3) *
+		255
 	);
 });
 
 export const blue = derived(playerActiveIntervals, ($playerActiveIntervals) => {
 	return (
-		$playerActiveIntervals?.segments?.pitches.slice(4, 7).reduce((accumulator, currentValue) => {
+		($playerActiveIntervals?.segments?.pitches.slice(4, 7).reduce((accumulator, currentValue) => {
 			return accumulator + currentValue;
-		}) / 3
+		}) /
+			3) *
+		255
 	);
 });
 
 export const green = derived(playerActiveIntervals, ($playerActiveIntervals) => {
 	return (
-		$playerActiveIntervals?.segments?.pitches.slice(8, 11).reduce((accumulator, currentValue) => {
+		($playerActiveIntervals?.segments?.pitches.slice(8, 11).reduce((accumulator, currentValue) => {
 			return accumulator + currentValue;
-		}) / 3
+		}) /
+			3) *
+		255
 	);
 });

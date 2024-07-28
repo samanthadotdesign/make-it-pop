@@ -32,14 +32,12 @@ But isolates the logic that listens to the body event
 
 	const debounce = (callback, delay) => {
 		if (!changeTrackFlag) {
-			console.log('IM NOT BEING IGNORED');
 			changeTrackFlag = true;
 			setTimeout(() => {
 				changeTrackFlag = false;
 			}, delay);
 			callback();
 		} else {
-			console.log('IM BEING IGNORED');
 		}
 	};
 
