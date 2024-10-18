@@ -2,211 +2,291 @@
 	import { onMount } from 'svelte';
 	import * as THREE from 'three';
 
-	import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-	import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-	import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
-	import { BloomPass } from 'three/examples/jsm/postprocessing/BloomPass.js';
-	import { CopyShader } from 'three/examples/jsm/shaders/CopyShader.js';
+	import { EffectComposer, RenderPass, EffectPass } from 'postprocessing';
 
-	let init;
+	import RippleEffect from './RippleEffect';
+	import AudioAnalysisTexture from './audioAnalysisTexture';
+	import { Planes } from './Planes';
+
+	import { get } from 'svelte/store';
+	import { interpolate } from 'd3-interpolate';
+	import { buildUniforms, getTweenableChanges, getBooleanChanges } from '@utils/uniforms';
+	import cloneDeep from 'lodash/cloneDeep';
+	import {
+		shuffleInterval,
+		shuffleIntervalMultiplier,
+		playerVolume,
+		playerActiveIntervals,
+		loudnessAverage,
+		beatConfidence,
+		red,
+		green,
+		blue,
+		playStatus,
+		tempo,
+		sync
+	} from '@stores/player.js';
+	import { tweenDuration, tick as dateTick } from '@stores/visualizerStore.js';
+
+	import image1 from './13.jpg';
+	import image2 from './14.jpg';
+	import image3 from './15.jpg';
+
+	const images = [image1, image2, image3];
+
+	class Loader {
+		constructor() {
+			this.items = [];
+			this.loaded = [];
+		}
+		begin(name) {
+			this.items.push(name);
+		}
+		end(name) {
+			this.loaded.push(name);
+			if (this.loaded.length === this.items.length) {
+				this.onComplete();
+			}
+		}
+		onComplete() {}
+	}
+
+	export let video;
+
+	let initialize;
+	let initializeTexture;
+
 	let animate;
+	let audioAnalysisTexture;
+
+	let container;
+
+	let camera, scene, renderer, clock, raycaster, composer;
+
+	let texture, material, mesh;
+
+	let hitObjects, assets, data, subjects, loader, rippleEffect, mouse;
+
+	let disposed;
+
+	let mouseX = 0;
+	let mouseY = 0;
+
+	function loadAssets() {
+		return new Promise((resolve, reject) => {
+			// loadTextAssets(assets, loader);
+			console.log('subjects', subjects);
+
+			subjects.forEach((subject) => subject.load(loader));
+
+			loader.onComplete = () => {
+				resolve();
+			};
+		});
+	}
+
+	function initializeComposer() {
+		const renderPass = new RenderPass(scene, camera);
+		rippleEffect = new RippleEffect({ texture: audioAnalysisTexture.texture });
+		const waterPass = new EffectPass(camera, rippleEffect);
+		//const outputPass = new OutputPass();
+
+		waterPass.renderToScreen = true;
+		renderPass.renderToScreen = false;
+
+		composer.addPass(renderPass);
+		composer.addPass(waterPass);
+		//composer.addPass(outputPass);
+	}
+
+	initializeTexture = () => {
+		audioAnalysisTexture.initTexture();
+
+		const texture = new THREE.VideoTexture(video);
+
+		texture.colorSpace = THREE.SRGBColorSpace;
+
+		const parameters = {
+			color: 0xffffff,
+			map: texture
+		};
+
+		const material = new THREE.MeshBasicMaterial(parameters);
+
+		const cube = new THREE.Mesh(new THREE.BoxGeometry(20, 20, 20), material);
+
+		scene.add(cube);
+
+		addHitPlane();
+		initializeComposer();
+
+		tick();
+
+		window.addEventListener('resize', onResize);
+	};
+
+	function addHitPlane() {
+		const viewSize = getViewSize();
+
+		const geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.innerHeight, 1, 1);
+
+		const material = new THREE.MeshBasicMaterial();
+		const mesh = new THREE.Mesh(geometry, material);
+
+		hitObjects.push(mesh);
+	}
+
+	function getViewSize() {
+		const fovInRadians = (camera.fov * Math.PI) / 180;
+
+		const height = Math.abs(camera.position.z * Math.tan(fovInRadians / 2) * 2);
+
+		const result = {
+			width: height * camera.aspect,
+			height
+		};
+
+		return result;
+	}
+
+	function update() {
+		audioAnalysisTexture.update();
+	}
+
+	function render() {
+		composer.render(clock.getDelta());
+	}
+
+	function tick() {
+		if (disposed) return;
+
+		render();
+		update();
+
+		requestAnimationFrame(tick);
+	}
+
+	function onResize() {
+		camera.aspect = window.innerWidth / window.innerHeight;
+
+		camera.updateProjectionMatrix();
+		composer.setSize(window.innerWidth, window.innerHeight);
+
+		subjects.forEach((subject) => {
+			subject.onResize(window.innerWidth, window.innerHeight);
+		});
+	}
+
+	initialize = () => {
+		renderer = new THREE.WebGLRenderer({
+			antialias: false
+		});
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.setPixelRatio(window.devicePixelRatio);
+
+		composer = new EffectComposer(renderer);
+
+		document.body.append(renderer.domElement);
+		renderer.domElement.id = 'webGLApp';
+
+		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+		camera.position.z = 50;
+		disposed = false;
+		scene = new THREE.Scene();
+
+		const light = new THREE.DirectionalLight(0xffffff, 3);
+		light.position.set(0.5, 1, 1).normalize();
+		scene.add(light);
+
+		scene.background = new THREE.Color(0x161624);
+
+		clock = new THREE.Clock();
+
+		assets = {};
+		raycaster = new THREE.Raycaster();
+		hitObjects = [];
+
+		audioAnalysisTexture = new AudioAnalysisTexture();
+
+		subjects = [
+			new Planes(
+				{
+					getViewSize,
+					scene,
+					raycaster,
+					onPlaneHover: (plane) => {
+						console.log('plane', plane);
+					}
+				},
+				images,
+				video
+			)
+		];
+
+		tick = tick.bind(this);
+		onResize = onResize.bind(this);
+
+		initializeTexture = initializeTexture.bind(this);
+		loader = new Loader();
+		loadAssets().then(initializeTexture);
+	};
+
+	function onWindowResize() {
+		windowHalfX = window.innerWidth / 2;
+		windowHalfY = window.innerHeight / 2;
+
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		composer.setSize(window.innerWidth, window.innerHeight);
+	}
+
+	let _stop = null;
+	let intervalIndex = 0;
+
+	$: activeIntervals = $playerActiveIntervals;
+	$: volume = $playerVolume;
+
+	$: {
+		// Changing the tween duration depending on activeIntervals['bars'] which creates dynamic behaviour on the visualization
+		if (activeIntervals) {
+			const interval = activeIntervals[shuffleInterval];
+			if (interval || (interval && intervalIndex !== interval.index)) {
+				intervalIndex = interval.index;
+				if (intervalIndex % shuffleIntervalMultiplier == 0) {
+					tweenDuration.set(interval.duration * shuffleIntervalMultiplier * 0.9);
+				}
+			}
+		}
+	}
+
+	// Run loop when variables change, tick is the signal to request refresh
+	$: {
+		setInterval(() => {
+			if ($playStatus) {
+				dateTick.set(Date.now());
+				sync();
+			}
+		}, 25);
+	}
+
+	$: {
+		if (audioAnalysisTexture) {
+			// if audio analysis texture exists, then add a point using the normalized value
+			if ($loudnessAverage && $beatConfidence) {
+				/* ----- PLAY AROUND WITH NORMALIZING THE VALUES FOR X, Y POINTS ---- */
+				const x = $beatConfidence * 100;
+				const y = ($loudnessAverage * 100) / -60;
+
+				const point = { x, y, red: $red, green: $green, blue: $blue };
+				console.log('point', point);
+				audioAnalysisTexture.addPoint(point);
+			}
+		}
+	}
 
 	onMount(() => {
-		let container;
-
-		let camera, scene, renderer;
-
-		let video, texture, material, mesh;
-
-		let composer;
-
-		let mouseX = 0;
-		let mouseY = 0;
-
-		let windowHalfX = window.innerWidth / 2;
-		let windowHalfY = window.innerHeight / 2;
-
-		let cube_count;
-
-		const meshes = [],
-			materials = [],
-			xgrid = 20,
-			ygrid = 10;
-
-		init = () => {
-			/* const overlay = document.getElementById('overlay');
-			overlay.remove(); */
-
-			container = document.createElement('div');
-			document.body.appendChild(container);
-
-			camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
-			camera.position.z = 500;
-
-			scene = new THREE.Scene();
-
-			const light = new THREE.DirectionalLight(0xffffff);
-			light.position.set(0.5, 1, 1).normalize();
-			scene.add(light);
-
-			renderer = new THREE.WebGLRenderer();
-			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			container.appendChild(renderer.domElement);
-
-			video = document.getElementById('video');
-
-			texture = new THREE.VideoTexture(video);
-
-			let i, j, ox, oy, geometry;
-
-			const ux = 1 / xgrid;
-			const uy = 1 / ygrid;
-
-			const xsize = 480 / xgrid;
-			const ysize = 204 / ygrid;
-
-			const parameters = { color: 0xffffff, map: texture };
-
-			cube_count = 0;
-
-			for (i = 0; i < xgrid; i++) {
-				for (j = 0; j < ygrid; j++) {
-					ox = i;
-					oy = j;
-
-					geometry = new THREE.BoxGeometry(xsize, ysize, xsize);
-
-					change_uvs(geometry, ux, uy, ox, oy);
-
-					materials[cube_count] = new THREE.MeshLambertMaterial(parameters);
-
-					material = materials[cube_count];
-
-					material.hue = i / xgrid;
-					material.saturation = 1 - j / ygrid;
-
-					material.color.setHSL(material.hue, material.saturation, 0.5);
-
-					mesh = new THREE.Mesh(geometry, material);
-
-					mesh.position.x = (i - xgrid / 2) * xsize;
-					mesh.position.y = (j - ygrid / 2) * ysize;
-					mesh.position.z = 0;
-
-					mesh.scale.x = mesh.scale.y = mesh.scale.z = 1;
-
-					scene.add(mesh);
-
-					mesh.dx = 0.001 * (0.5 - Math.random());
-					mesh.dy = 0.001 * (0.5 - Math.random());
-
-					meshes[cube_count] = mesh;
-
-					cube_count += 1;
-				}
-			}
-
-			renderer.autoClear = false;
-
-			// postprocessing
-
-			const renderModel = new RenderPass(scene, camera);
-			const effectBloom = new BloomPass(1.3);
-			const effectCopy = new ShaderPass(CopyShader);
-
-			composer = new EffectComposer(renderer);
-
-			composer.addPass(renderModel);
-			composer.addPass(effectBloom);
-			composer.addPass(effectCopy);
-
-			//
-
-			window.addEventListener('resize', onWindowResize);
-		};
-
-		function onWindowResize() {
-			windowHalfX = window.innerWidth / 2;
-			windowHalfY = window.innerHeight / 2;
-
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			composer.setSize(window.innerWidth, window.innerHeight);
-		}
-
-		function change_uvs(geometry, unitx, unity, offsetx, offsety) {
-			const uvs = geometry.attributes.uv.array;
-
-			for (let i = 0; i < uvs.length; i += 2) {
-				uvs[i] = (uvs[i] + offsetx) * unitx;
-				uvs[i + 1] = (uvs[i + 1] + offsety) * unity;
-			}
-		}
-
-		//
-
-		animate = () => {
-			requestAnimationFrame(animate);
-
-			render();
-		};
-
-		let h,
-			counter = 1;
-
-		function render() {
-			const time = Date.now() * 0.00005;
-
-			camera.position.x += (mouseX - camera.position.x) * 0.05;
-			camera.position.y += (-mouseY - camera.position.y) * 0.05;
-
-			camera.lookAt(scene.position);
-
-			for (let i = 0; i < cube_count; i++) {
-				material = materials[i];
-
-				h = ((360 * (material.hue + time)) % 360) / 360;
-				material.color.setHSL(h, material.saturation, 0.5);
-			}
-
-			if (counter % 1000 > 200) {
-				for (let i = 0; i < cube_count; i++) {
-					mesh = meshes[i];
-
-					mesh.rotation.x += 10 * mesh.dx;
-					mesh.rotation.y += 10 * mesh.dy;
-
-					mesh.position.x -= 150 * mesh.dx;
-					mesh.position.y += 150 * mesh.dy;
-					mesh.position.z += 300 * mesh.dx;
-				}
-			}
-
-			if (counter % 1000 === 0) {
-				for (let i = 0; i < cube_count; i++) {
-					mesh = meshes[i];
-
-					mesh.dx *= -1;
-					mesh.dy *= -1;
-				}
-			}
-
-			counter++;
-
-			renderer.clear();
-			composer.render();
-		}
+		initialize();
 	});
 </script>
-
-<button
-	on:click={() => {
-		init();
-		animate();
-	}}
->
-	start animation
-</button>

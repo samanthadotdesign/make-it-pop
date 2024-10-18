@@ -24,7 +24,7 @@ export default class AudioAnalysisTexture {
 		this.trail = [];
 		this.last = null;
 
-		if (options.debug) {
+		if (options && options?.debug) {
 			this.width = window.innerWidth;
 			this.height = window.innerHeight;
 
@@ -33,7 +33,7 @@ export default class AudioAnalysisTexture {
 
 		this.initTexture();
 
-		if (options.debug) document.body.append(this.canvas);
+		if (options?.debug) document.body.append(this.canvas);
 	}
 
 	initTexture() {

@@ -137,6 +137,6 @@ trusted events
 	on:ended={videoEndedHandler}
 />
 
-<ThreeScene />
+<ThreeScene {video} />
 
 <!-- <Sketch /> -->

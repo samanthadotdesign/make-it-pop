@@ -45,6 +45,7 @@
 		"request": "^2.88.2",
 		"svelte-inline-svg": "^1.0.8",
 		"svelte-preprocess": "^4.10.1",
-		"three": "^0.136.0"
+		"postprocessing": "^6.36.0",
+		"three": "^0.167.1"
 	}
 }
