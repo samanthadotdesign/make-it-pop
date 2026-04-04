@@ -63,7 +63,7 @@
 
 	let camera, scene, renderer, clock, raycaster, composer;
 
-	let texture, material, mesh, videoCube;
+	let texture, material, mesh, videoCube, videoPlane;
 
 	let hitObjects, assets, data, subjects, loader, rippleEffect, mouse;
 
@@ -108,6 +108,51 @@
 	initializeTexture = () => {
 		audioAnalysisTexture.initTexture();
 
+		// Full-screen video plane — RippleEffect distorts this
+		if (video) {
+			const videoTexture = new THREE.VideoTexture(video);
+			videoTexture.colorSpace = THREE.SRGBColorSpace;
+			const viewSize = getViewSize();
+			const planeGeo = new THREE.PlaneGeometry(viewSize.width, viewSize.height);
+
+			// Cover shader — crops UVs to maintain video aspect ratio (like object-fit: cover)
+			const planeMat = new THREE.ShaderMaterial({
+				uniforms: {
+					uVideo: { value: videoTexture },
+					uScreenAspect: { value: window.innerWidth / window.innerHeight },
+					uVideoAspect: { value: 16 / 9 }
+				},
+				vertexShader: `
+					varying vec2 vUv;
+					void main() {
+						vUv = uv;
+						gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+					}
+				`,
+				fragmentShader: `
+					uniform sampler2D uVideo;
+					uniform float uScreenAspect;
+					uniform float uVideoAspect;
+					varying vec2 vUv;
+					void main() {
+						vec2 uv = vUv;
+						float ratio = uScreenAspect / uVideoAspect;
+						if (ratio < 1.0) {
+							// screen is narrower than video — crop sides
+							uv.x = uv.x * ratio + (1.0 - ratio) * 0.5;
+						} else {
+							// screen is wider than video — crop top/bottom
+							uv.y = uv.y / ratio + (1.0 - 1.0 / ratio) * 0.5;
+						}
+						gl_FragColor = texture2D(uVideo, uv);
+					}
+				`
+			});
+
+			videoPlane = new THREE.Mesh(planeGeo, planeMat);
+			scene.add(videoPlane);
+		}
+
 		addHitPlane();
 		initializeComposer();
 
@@ -147,9 +192,10 @@
 		scrollVelocity = Math.abs(scrollY - prevScrollY);
 		prevScrollY = scrollY;
 		if (rippleEffect) {
-			const targetDistortion = Math.min(scrollVelocity * 0.02, 1.0);
+			const targetDistortion = Math.min(scrollVelocity * 0.08, 1.0);
 			const current = rippleEffect.uniforms.get('uScrollVelocity').value;
 			rippleEffect.uniforms.get('uScrollVelocity').value += (targetDistortion - current) * 0.1;
+			rippleEffect.uniforms.get('uTime').value = clock.getElapsedTime();
 		}
 	}
 
@@ -168,9 +214,15 @@
 
 	function onResize() {
 		camera.aspect = window.innerWidth / window.innerHeight;
-
 		camera.updateProjectionMatrix();
 		composer.setSize(window.innerWidth, window.innerHeight);
+
+		if (videoPlane) {
+			const viewSize = getViewSize();
+			videoPlane.geometry.dispose();
+			videoPlane.geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height);
+			videoPlane.material.uniforms.uScreenAspect.value = window.innerWidth / window.innerHeight;
+		}
 
 		subjects.forEach((subject) => {
 			subject.onResize(window.innerWidth, window.innerHeight);
