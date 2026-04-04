@@ -19,7 +19,7 @@ export async function handle({ event, resolve }) {
 	// If client has access token, we modify the request object
 	if (cookies[import.meta.env.VITE_ACCESS_TOKEN] && cookies[import.meta.env.VITE_REFRESH_TOKEN]) {
 		const access_token = cookies[import.meta.env.VITE_ACCESS_TOKEN];
-		const refresh_token = cookies[import.meta.env.VITE_ACCESS_TOKEN];
+		const refresh_token = cookies[import.meta.env.VITE_REFRESH_TOKEN];
 		if (access_token) {
 			event.locals.access_token = access_token;
 			event.locals.refresh_token = refresh_token;

@@ -56,7 +56,7 @@ trusted events
 	/* WATCH/COMPUTED */
 
 	$: currentTrackData = $playlist?.tracks?.items?.[$currentTrack];
-	$: currentVideoData = $videosData.videos[$currentVideo];
+	$: currentVideoData = $videosData?.videos?.[$currentVideo];
 
 	// On load, if the playStatus is true, keep playing the music
 	// We keep track of the song with currentTrack, we declare it as a dependency using subscribe
@@ -128,7 +128,7 @@ trusted events
 <video
 	bind:this={video}
 	id="video"
-	src={currentVideoData.video_files[0].link}
+	src={currentVideoData?.video_files?.[0]?.link}
 	crossOrigin="anonymous"
 	playsinline
 	muted={true}

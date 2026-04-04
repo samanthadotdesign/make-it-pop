@@ -124,7 +124,9 @@ export async function apiGet({ route, cache = false, accessToken, dropRoot = fal
 			}
 		}
 	} catch (e) {
-		window.location.replace(`${PROJECT_ROOT}/api/authentication/login`);
+		if (typeof window !== 'undefined') {
+			window.location.replace(`${PROJECT_ROOT}/api/auth/login`);
+		}
 	}
 }
 

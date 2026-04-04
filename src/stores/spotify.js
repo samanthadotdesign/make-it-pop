@@ -9,7 +9,7 @@ export function login() {
 		`${
 			import.meta.env.VITE_NODE_ENV == 'production'
 				? 'https://makeitpop.ml'
-				: 'http://localhost:3000'
+				: import.meta.env.VITE_PROJECT_ROOT
 		}/api/auth/login`
 	);
 }
