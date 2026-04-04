@@ -36,7 +36,7 @@
 	}
 </script>
 
-<div class="flex justify-between items-center px-8 py-6 ">
+<div class="flex justify-between items-center px-8 py-6" style="position: relative; z-index: 2;">
 	<h1>{title}</h1>
 	<Searchbar />
 </div>
@@ -44,6 +44,7 @@
 <button
 	id="startButton"
 	class="w-24 h-24 rounded-full border-solid border-2 border-black"
+	style="position: relative; z-index: 2;"
 	on:click={togglePlay}
 >
 	{#if !$playStatus}
@@ -53,7 +54,7 @@
 	{/if}
 </button>
 
-<div class="fixed bottom-0 left-0 right-0 flex justify-between items-center p-6">
+<div class="fixed bottom-0 left-0 right-0 flex justify-between items-center p-6" style="z-index: 2;">
 	<button
 		id="prevButton"
 		on:click={() => {

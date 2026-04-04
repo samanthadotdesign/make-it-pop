@@ -58,7 +58,6 @@ export async function getAvailableDevices(session) {
  * Play function forces Spotify player to play in the device ID
  */
 export async function play(session, body = null) {
-	console.log('SESSION', session);
 	const { access_token } = session;
 	const { id } = get(deviceSettings);
 	return await apiPut({
@@ -121,7 +120,6 @@ export async function apiGet({ route, cache = false, accessToken, dropRoot = fal
 		try {
 			const { data } = await axios.get(dropRoot ? route : `${ROOT}/${route}`, { headers });
 			if (cache) CACHE[route] = data;
-			console.log('DATA FROM SPOTIFY API', data);
 			return data;
 		} catch ({ response }) {
 			if (response.status === 401) {

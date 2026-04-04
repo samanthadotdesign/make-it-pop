@@ -180,15 +180,20 @@
 	});
 </script>
 
+<svelte:head>
+	<style>
+		body { overflow: hidden; }
+	</style>
+</svelte:head>
+
 <EventListener />
-{#key $playlists.items}
-	<Controls title={playlistName} />
-{/key}
-<!-- <h1>
-	{#each $playlist.items as trackObject}
-		<p>{trackObject.track.name}</p>
-	{/each}
-</h1> -->
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none;">
+	{#key $playlists.items}
+		<div style="pointer-events: all;">
+			<Controls title={playlistName} />
+		</div>
+	{/key}
+</div>
 <AudioVisualizer />
 
 <!-- GETTING VIDEO URLS

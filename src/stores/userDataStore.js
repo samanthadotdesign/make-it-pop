@@ -15,6 +15,9 @@ export const playlist = writable({});
 // JSON data for single track analysis
 export const trackAnalysis = writable({});
 
+// Cache for track analyses keyed by trackId — avoids re-fetching on track change
+export const trackAnalysisCache = {};
+
 // Fallback is the playlist name
 // If we don't add getPlaylistPropert(0, "name"), then
 export function getPlaylistProperty(playlistId, property = 'name') {

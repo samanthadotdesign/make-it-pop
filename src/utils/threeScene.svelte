@@ -63,9 +63,15 @@
 
 	let camera, scene, renderer, clock, raycaster, composer;
 
-	let texture, material, mesh;
+	let texture, material, mesh, videoCube;
 
 	let hitObjects, assets, data, subjects, loader, rippleEffect, mouse;
+
+	// Scroll tracking
+	let scrollY = 0;
+	let prevScrollY = 0;
+	let scrollVelocity = 0;
+	let targetPlaneY = 0;
 
 	let disposed;
 
@@ -102,21 +108,6 @@
 	initializeTexture = () => {
 		audioAnalysisTexture.initTexture();
 
-		const texture = new THREE.VideoTexture(video);
-
-		texture.colorSpace = THREE.SRGBColorSpace;
-
-		const parameters = {
-			color: 0xffffff,
-			map: texture
-		};
-
-		const material = new THREE.MeshBasicMaterial(parameters);
-
-		const cube = new THREE.Mesh(new THREE.BoxGeometry(20, 20, 20), material);
-
-		scene.add(cube);
-
 		addHitPlane();
 		initializeComposer();
 
@@ -151,6 +142,15 @@
 
 	function update() {
 		audioAnalysisTexture.update();
+
+		// Scroll velocity drives ripple distortion
+		scrollVelocity = Math.abs(scrollY - prevScrollY);
+		prevScrollY = scrollY;
+		if (rippleEffect) {
+			const targetDistortion = Math.min(scrollVelocity * 0.02, 1.0);
+			const current = rippleEffect.uniforms.get('uScrollVelocity').value;
+			rippleEffect.uniforms.get('uScrollVelocity').value += (targetDistortion - current) * 0.1;
+		}
 	}
 
 	function render() {
@@ -179,15 +179,21 @@
 
 	initialize = () => {
 		renderer = new THREE.WebGLRenderer({
-			antialias: false
+			antialias: false,
+			alpha: true
 		});
+		renderer.setClearColor(0x000000, 0);
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		renderer.setPixelRatio(window.devicePixelRatio);
 
 		composer = new EffectComposer(renderer);
 
-		document.body.append(renderer.domElement);
+		container.appendChild(renderer.domElement);
 		renderer.domElement.id = 'webGLApp';
+
+		window.addEventListener('scroll', () => {
+			scrollY = window.scrollY;
+		});
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
 		camera.position.z = 50;
@@ -198,7 +204,7 @@
 		light.position.set(0.5, 1, 1).normalize();
 		scene.add(light);
 
-		scene.background = new THREE.Color(0x161624);
+		scene.background = null;
 
 		clock = new THREE.Clock();
 
@@ -261,16 +267,6 @@
 		}
 	}
 
-	// Run loop when variables change, tick is the signal to request refresh
-	$: {
-		setInterval(() => {
-			if ($playStatus) {
-				dateTick.set(Date.now());
-				sync();
-			}
-		}, 25);
-	}
-
 	$: {
 		if (audioAnalysisTexture) {
 			// if audio analysis texture exists, then add a point using the normalized value
@@ -288,5 +284,22 @@
 
 	onMount(() => {
 		initialize();
+
+		const syncInterval = setInterval(() => {
+			if ($playStatus) {
+				dateTick.set(Date.now());
+				sync();
+			}
+		}, 25);
+
+		return () => {
+			clearInterval(syncInterval);
+			disposed = true;
+		};
 	});
 </script>
+
+<div
+	bind:this={container}
+	style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none;"
+/>
