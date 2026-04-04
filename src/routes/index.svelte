@@ -1,19 +1,25 @@
 <script context="module">
-	// On page load, get the user's cookies on the server side, send to the store
-	import { parse } from 'cookie';
-	import { getUserPlaylists } from '@utils/spotifyAPI.js';
+	import { getUserPlaylists, getMe } from '@utils/spotifyAPI.js';
 
-	// load is the lifecycle where session data can be checked
 	/** @type {import('@sveltejs/kit').Load} */
 	export async function load({ params, fetch, error, status, session }) {
 		const { access_token } = session;
 		let initialPlaylists = null;
+		let spotifyUser = null;
 		if (access_token) {
-			initialPlaylists = await getUserPlaylists(session);
+			console.log('spotify auth found, fetching user data...');
+			[initialPlaylists, spotifyUser] = await Promise.all([
+				getUserPlaylists(session),
+				getMe(session)
+			]);
+			console.log('spotify user:', spotifyUser);
+		} else {
+			console.log('no spotify auth token found');
 		}
 		return {
 			props: {
-				initialPlaylists
+				initialPlaylists,
+				spotifyUser
 			}
 		};
 	}
@@ -27,21 +33,32 @@
 	import { playlists } from '@stores/userDataStore';
 	import { session } from '$app/stores';
 	export let initialPlaylists;
+	export let spotifyUser;
 
-	// Current view is RecordView
 	let view = 'record';
 
-	// Checks itself to reassign to 'list' or 'record'
 	const handleToggle = () => {
 		view = view == 'record' ? 'list' : 'record';
 	};
 
 	onMount(() => {
-		if (initialPlaylists) $playlists = initialPlaylists;
+		if (initialPlaylists) {
+			$playlists = initialPlaylists;
+			console.log('spotify is connected', spotifyUser?.display_name);
+			console.log(`${initialPlaylists.total} playlists returned`);
+		}
 	});
 </script>
 
 <div class="flex flex-col">
+	{#if spotifyUser}
+		<p class="px-8 pt-4 text-sm opacity-60">Connected as {spotifyUser.display_name}</p>
+	{/if}
+
+	{#if initialPlaylists}
+		<p class="px-8 text-sm opacity-60">{initialPlaylists.total} playlists loaded</p>
+	{/if}
+
 	<!-- Button -->
 	<button on:click={handleToggle} class="ml-auto mr-6 p-6 cursor-pointer">
 		{#key view}

@@ -52,68 +52,51 @@ export const get = async (req /* context */) => {
 			}
 		})
 		.then((response) => {
-			const { data, status, error, body } = response;
-			return { status, data, error, body };
+			const { data, status, body } = response;
+			return { status, data, body };
 		})
 		.catch(function (error) {
-			console.log('ERROR WHILE REQUESTING TOKENS', error);
+			console.log('ERROR WHILE REQUESTING TOKENS', error?.response?.data || error);
+			return { error: error?.response?.data || error };
 		});
 
-	const { error, data: finalResponseBody } = response;
+	const baseUrl =
+		import.meta.env.VITE_NODE_ENV == 'production'
+			? 'https://makeitpop.ml'
+			: import.meta.env.VITE_PROJECT_ROOT;
+
+	if (!response || response.error) {
+		console.log('Token exchange failed', response?.error);
+		return { status: 302, headers: { location: `${baseUrl}/?error=TokenExchangeFailed` } };
+	}
+
+	const { data: finalResponseBody } = response;
 	const { access_token, expires_in, refresh_token } = finalResponseBody;
+
+	console.log('Token exchange successful, access_token:', access_token ? 'present' : 'missing');
+
+	const cookieOptions = {
+		secure: import.meta.env.VITE_NODE_ENV === 'production',
+		maxAge: Number(expires_in),
+		sameSite: 'Lax'
+	};
 
 	let res;
 
-	// To make POST request on behalf of the user, we use the access_token & refresh_token
 	if (access_token && refresh_token) {
-		res = {
-			status: 302, // HTTPS Status for permanent redirection (301), temporary redirection (302)
-			headers: {
-				'set-cookie': [
-					setCookieValue({
-						key: import.meta.env.VITE_ACCESS_TOKEN,
-						value: access_token,
-						options: {
-							secure: import.meta.env.VITE_NODE_ENV === 'production',
-							maxAge: Number(expires_in)
-						}
-					}),
-					setCookieValue({
-						key: import.meta.env.VITE_REFRESH_TOKEN,
-						value: refresh_token,
-						options: {
-							secure: import.meta.env.VITE_NODE_ENV === 'production',
-							maxAge: Number(expires_in)
-						}
-					}),
-					setCookieValue({
-						key: import.meta.env.VITE_REFRESH_CODE,
-						value: code,
-						options: {
-							secure: import.meta.env.VITE_NODE_ENV === 'production',
-							maxAge: Number(expires_in)
-						}
-					})
-				],
-				// Redirect to home which checks for cookies
-				location: `${
-					import.meta.env.VITE_NODE_ENV == 'production'
-						? 'https://makeitpop.ml'
-						: 'http://localhost:3000'
-				}/`
-			}
-		};
-	} else if (error) {
 		res = {
 			status: 302,
 			headers: {
-				location: `${
-					import.meta.env.VITE_NODE_ENV == 'production'
-						? 'https://makeitpop.ml'
-						: 'http://localhost:3000'
-				}/?error=Unauthorized`
+				'set-cookie': [
+					setCookieValue({ key: import.meta.env.VITE_ACCESS_TOKEN, value: access_token, options: cookieOptions }),
+					setCookieValue({ key: import.meta.env.VITE_REFRESH_TOKEN, value: refresh_token, options: cookieOptions }),
+					setCookieValue({ key: import.meta.env.VITE_REFRESH_CODE, value: code, options: cookieOptions })
+				],
+				location: `${baseUrl}/`
 			}
 		};
+	} else {
+		res = { status: 302, headers: { location: `${baseUrl}/?error=Unauthorized` } };
 	}
 	return res;
 };

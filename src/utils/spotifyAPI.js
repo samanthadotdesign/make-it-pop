@@ -18,6 +18,11 @@ const CACHE = new Set();
 const ROOT = 'https://api.spotify.com/v1';
 const PROJECT_ROOT = import.meta.env.VITE_PROJECT_ROOT;
 
+export async function getMe(session) {
+	const { access_token } = session;
+	return await apiGet({ route: 'me', accessToken: access_token });
+}
+
 export async function getUserPlaylists(session) {
 	const { access_token } = session;
 	const result = await apiGet({ route: 'me/playlists', accessToken: access_token });
@@ -116,6 +121,7 @@ export async function apiGet({ route, cache = false, accessToken, dropRoot = fal
 		try {
 			const { data } = await axios.get(dropRoot ? route : `${ROOT}/${route}`, { headers });
 			if (cache) CACHE[route] = data;
+			console.log('DATA FROM SPOTIFY API', data);
 			return data;
 		} catch ({ response }) {
 			if (response.status === 401) {
