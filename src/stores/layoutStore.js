@@ -31,3 +31,6 @@ export const colors = randomizeColors(colorsArray);
 
 // Scroll info
 export const windowObject = writable({ width: 0, height: 0 });
+
+// Homepage view toggle (record | list)
+export const navView = writable('record');

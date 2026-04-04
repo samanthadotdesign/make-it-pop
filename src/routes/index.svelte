@@ -29,17 +29,11 @@
 	import { onMount } from 'svelte';
 	import RecordView from '../components/Playlist/RecordView.svelte';
 	import ListView from '../components/Playlist/ListView.svelte';
-	import InlineSvg from 'svelte-inline-svg';
 	import { playlists } from '@stores/userDataStore';
 	import { session } from '$app/stores';
+	import { navView } from '@stores/layoutStore';
 	export let initialPlaylists;
 	export let spotifyUser;
-
-	let view = 'record';
-
-	const handleToggle = () => {
-		view = view == 'record' ? 'list' : 'record';
-	};
 
 	onMount(() => {
 		if (initialPlaylists) {
@@ -50,7 +44,7 @@
 	});
 </script>
 
-<div class="flex flex-col">
+<div class="flex flex-col" style="padding-top: 5rem;">
 	{#if spotifyUser}
 		<p class="px-8 pt-4 text-sm opacity-60">Connected as {spotifyUser.display_name}</p>
 	{/if}
@@ -59,15 +53,7 @@
 		<p class="px-8 text-sm opacity-60">{initialPlaylists.total} playlists loaded</p>
 	{/if}
 
-	<!-- Button -->
-	<button on:click={handleToggle} class="ml-auto mr-6 p-6 cursor-pointer">
-		{#key view}
-			<InlineSvg src={`/images/${view == 'record' ? 'list' : 'record'}.svg`} />
-		{/key}
-	</button>
-
-	<!-- Conditional rendering -->
-	{#if view == 'record'}
+	{#if $navView === 'record'}
 		<RecordView />
 	{:else}
 		<ListView />
