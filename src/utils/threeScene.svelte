@@ -64,6 +64,7 @@
 	let camera, scene, renderer, clock, raycaster, composer;
 
 	let texture, material, mesh, videoCube, videoPlane;
+	let currentScrollFlip = 0;
 
 	let hitObjects, assets, data, subjects, loader, rippleEffect, mouse;
 
@@ -71,6 +72,7 @@
 	let scrollY = 0;
 	let prevScrollY = 0;
 	let scrollVelocity = 0;
+	let scrollDirection = 0;
 	let targetPlaneY = 0;
 
 	let disposed;
@@ -108,15 +110,12 @@
 	initializeTexture = () => {
 		audioAnalysisTexture.initTexture();
 
-		// Full-screen video plane — RippleEffect distorts this
 		if (video) {
 			const videoTexture = new THREE.VideoTexture(video);
 			videoTexture.colorSpace = THREE.SRGBColorSpace;
 			const viewSize = getViewSize();
-			const planeGeo = new THREE.PlaneGeometry(viewSize.width, viewSize.height);
 
-			// Cover shader — crops UVs to maintain video aspect ratio (like object-fit: cover)
-			const planeMat = new THREE.ShaderMaterial({
+			const mat = new THREE.ShaderMaterial({
 				uniforms: {
 					uVideo: { value: videoTexture },
 					uScreenAspect: { value: window.innerWidth / window.innerHeight },
@@ -138,18 +137,17 @@
 						vec2 uv = vUv;
 						float ratio = uScreenAspect / uVideoAspect;
 						if (ratio < 1.0) {
-							// screen is narrower than video — crop sides
 							uv.x = uv.x * ratio + (1.0 - ratio) * 0.5;
 						} else {
-							// screen is wider than video — crop top/bottom
 							uv.y = uv.y / ratio + (1.0 - 1.0 / ratio) * 0.5;
 						}
-						gl_FragColor = texture2D(uVideo, uv);
+						gl_FragColor = vec4(texture2D(uVideo, uv).rgb, 1.0);
 					}
 				`
 			});
 
-			videoPlane = new THREE.Mesh(planeGeo, planeMat);
+			const geo = new THREE.PlaneGeometry(viewSize.width, viewSize.height);
+			videoPlane = new THREE.Mesh(geo, mat);
 			scene.add(videoPlane);
 		}
 
@@ -188,13 +186,15 @@
 	function update() {
 		audioAnalysisTexture.update();
 
-		// Scroll velocity drives ripple distortion
-		scrollVelocity = Math.abs(scrollY - prevScrollY);
-		prevScrollY = scrollY;
+		// Decay scroll velocity, slower decay = more fluid linger
+		scrollVelocity *= 0.88;
+
+		// Lerp toward target — 0.08 = snappy lead-in, slow snap-back
+		const targetFlip = Math.min(scrollVelocity / 200, 1.0) * scrollDirection;
+		currentScrollFlip += (targetFlip - currentScrollFlip) * 0.08;
+
 		if (rippleEffect) {
-			const targetDistortion = Math.min(scrollVelocity * 0.08, 1.0);
-			const current = rippleEffect.uniforms.get('uScrollVelocity').value;
-			rippleEffect.uniforms.get('uScrollVelocity').value += (targetDistortion - current) * 0.1;
+			rippleEffect.uniforms.get('uScrollFlip').value = currentScrollFlip;
 			rippleEffect.uniforms.get('uTime').value = clock.getElapsedTime();
 		}
 	}
@@ -217,11 +217,13 @@
 		camera.updateProjectionMatrix();
 		composer.setSize(window.innerWidth, window.innerHeight);
 
+		const viewSize = getViewSize();
+		const newGeo = new THREE.PlaneGeometry(viewSize.width, viewSize.height);
+		const newAspect = window.innerWidth / window.innerHeight;
 		if (videoPlane) {
-			const viewSize = getViewSize();
 			videoPlane.geometry.dispose();
-			videoPlane.geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height);
-			videoPlane.material.uniforms.uScreenAspect.value = window.innerWidth / window.innerHeight;
+			videoPlane.geometry = newGeo;
+			videoPlane.material.uniforms.uScreenAspect.value = newAspect;
 		}
 
 		subjects.forEach((subject) => {
@@ -243,9 +245,29 @@
 		container.appendChild(renderer.domElement);
 		renderer.domElement.id = 'webGLApp';
 
-		window.addEventListener('scroll', () => {
-			scrollY = window.scrollY;
-		});
+		window.addEventListener('wheel', (e) => {
+			scrollVelocity = Math.min(Math.abs(e.deltaY), 200);
+			scrollDirection = e.deltaY > 0 ? 1 : -1;
+		}, { passive: true });
+
+		let touchStartY = 0;
+		let touchPrevY = 0;
+		window.addEventListener('touchstart', (e) => {
+			touchStartY = e.touches[0].clientY;
+			touchPrevY = e.touches[0].clientY;
+		}, { passive: true });
+		window.addEventListener('touchmove', (e) => {
+			const currentY = e.touches[0].clientY;
+			// Total distance from start drives intensity, per-frame delta drives direction
+			const totalDelta = touchStartY - currentY;
+			const frameDelta = touchPrevY - currentY;
+			touchPrevY = currentY;
+			scrollVelocity = Math.min(Math.abs(totalDelta) * 1.2, 200);
+			if (Math.abs(frameDelta) > 0.5) scrollDirection = frameDelta > 0 ? 1 : -1;
+		}, { passive: true });
+		window.addEventListener('touchend', () => {
+			// Let velocity decay naturally — no hard reset
+		}, { passive: true });
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
 		camera.position.z = 50;

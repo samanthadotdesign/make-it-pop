@@ -6,7 +6,7 @@ export class RippleEffect extends Effect {
 		super('RippleEffect', fragment, {
 			uniforms: new Map([
 				['uTexture', new THREE.Uniform(options.texture)],
-				['uScrollVelocity', new THREE.Uniform(0.0)],
+				['uScrollFlip', new THREE.Uniform(0.0)],
 				['uTime', new THREE.Uniform(0.0)]
 			])
 		});
@@ -17,28 +17,35 @@ export default RippleEffect;
 const fragment = `
 
 uniform sampler2D uTexture;
-uniform float uScrollVelocity;
+uniform float uScrollFlip;  // signed -1 to 1, driven by scroll velocity + direction
 uniform float uTime;
 
 void mainUv(inout vec2 uv) {
-        // Always-on wave distortion — independent of audio data
-        float wave = sin(uv.y * 8.0 + uTime * 0.5) * 0.06
-                   + sin(uv.x * 6.0 + uTime * 0.3) * 0.05;
-        uv.x += wave;
-        uv.y += wave * 0.5;
+    // Ambient wave — always on, gentle
+    float wave = sin(uv.y * 5.0 + uTime * 0.5) * 0.018
+               + sin(uv.x * 4.0 + uTime * 0.35) * 0.012;
+    uv.x += wave;
+    uv.y += wave * 0.4;
 
-        // Scroll-driven amplification
-        float scrollWave = sin(uv.y * 5.0 + uTime) * uScrollVelocity * 0.5;
-        uv.x += scrollWave;
-        uv.y += scrollWave * 0.3;
+    // Scroll smear — peaks at vertical center (sin(y*PI) = 0 at edges, 1 at middle)
+    // Horizontal pull in scroll direction + slight vertical stretch
+    float belly = sin(uv.y * PI);
+    float smearX = belly * uScrollFlip * 0.9;
+    float smearY = belly * abs(uScrollFlip) * 0.12;
+    uv.x += smearX;
+    uv.y += smearY;
 
-        // Audio texture ripple on top (when data is present)
-        vec4 tex = texture2D(uTexture, uv);
-        float vx = -(tex.r * 2. - 1.);
-        float vy = -(tex.g * 2. - 1.);
-        float intensity = tex.b;
-        uv.x += vx * intensity * 0.2;
-        uv.y += vy * intensity * 0.2;
-    }
+    // Secondary ripple across horizontal axis for more fluid feel
+    float ripple = sin(uv.x * PI * 1.5 + uTime * 0.4) * abs(uScrollFlip) * 0.08;
+    uv.y += ripple;
+
+    // Audio texture ripple on top
+    vec4 tex = texture2D(uTexture, uv);
+    float vx = -(tex.r * 2. - 1.);
+    float vy = -(tex.g * 2. - 1.);
+    float intensity = tex.b;
+    uv.x += vx * intensity * 0.2;
+    uv.y += vy * intensity * 0.2;
+}
 
 `;

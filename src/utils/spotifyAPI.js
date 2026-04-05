@@ -92,7 +92,8 @@ async function refresh() {
 	try {
 		const { data } = await apiGet({
 			route: `${PROJECT_ROOT}/api/authentication/refresh?token=${refresh_token}`,
-			accessToken: access_token
+			accessToken: access_token,
+			dropRoot: true
 		});
 		session.set({ access_token: data.access_token, refresh_token: data.refresh_token });
 		return data.access_token;
@@ -128,9 +129,7 @@ export async function apiGet({ route, cache = false, accessToken, dropRoot = fal
 			}
 		}
 	} catch (e) {
-		if (typeof window !== 'undefined') {
-			window.location.replace(`${PROJECT_ROOT}/api/auth/login`);
-		}
+		console.log('apiGet error', e);
 	}
 }
 
@@ -144,11 +143,8 @@ export async function apiPut({ route, args, accessToken }) {
 	try {
 		const { data } = await axios.put(`${ROOT}/${route}`, args, { headers });
 		return data;
-	} catch ({ response }) {
-		if (response.status === 401) {
-			const token = refresh({ access_token: accessToken });
-			return apiPut({ route, args, accessToken: token });
-		}
+	} catch (err) {
+		console.log('apiPut error', err?.response?.status, route);
 	}
 }
 
@@ -157,10 +153,7 @@ export async function apiPost({ route, args, accessToken, root = ROOT }) {
 	try {
 		const { data } = await axios.post(`${root}/${route}`, args, { headers });
 		return data;
-	} catch ({ response }) {
-		if (response.status === 401) {
-			const token = refresh({ access_token: accessToken });
-			return apiPut({ route, args, accessToken: token });
-		}
+	} catch (err) {
+		console.log('apiPost error', err?.response?.status, route);
 	}
 }
