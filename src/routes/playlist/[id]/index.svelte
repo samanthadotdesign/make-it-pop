@@ -59,6 +59,8 @@
 		videoPlaylistLength
 	} from '@stores/visualizerStore.js';
 	import { songVolume } from '@stores/player.js';
+	import { customVideos } from '@stores/cameraStore.js';
+	import { get } from 'svelte/store';
 	import { page } from '$app/stores';
 	import EventListener from '@components/Playlist/EventListener.svelte';
 	import Controls from '@components/Controls.svelte';
@@ -79,8 +81,11 @@
 
 	// update data inside store instead of reactive statement because we only want to this once
 	searchTerm.set(randomTerm);
-	videosData.set(videos);
-	videoPlaylistLength.set(videos?.videos?.length ?? 0);
+	// Don't overwrite videos if user has set custom videos from search or camera
+	if (!get(customVideos)) {
+		videosData.set(videos);
+		videoPlaylistLength.set(videos?.videos?.length ?? 0);
+	}
 
 	$: {
 		/* const fetchedTrackAnalysis = getTrackAnalysis($currentTrack, playlistId)
@@ -187,18 +192,18 @@
 </svelte:head>
 
 <EventListener />
-<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 1; pointer-events: none;"></div>
-<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none;">
+<AudioVisualizer />
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 2; pointer-events: none;"></div>
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 3; pointer-events: none;">
 	{#key $playlists.items}
 		<Controls title={playlistName} />
 	{/key}
 </div>
-<AudioVisualizer />
 
 <!-- Customize button — bottom right, above everything -->
 <a
 	href={`/playlist/${playlistId}/customize`}
-	style="position: fixed; bottom: 2rem; right: 2rem; z-index: 3; display: flex; align-items: center; justify-content: center;"
+	style="position: fixed; bottom: 2rem; right: 2rem; z-index: 4; display: flex; align-items: center; justify-content: center;"
 >
 	<InlineSvg src="/images/customize.svg" />
 </a>

@@ -5,7 +5,8 @@
 	import { page } from '$app/stores';
 	import { navView } from '@stores/layoutStore';
 
-	$: isPlaylistPage = $page.url.pathname.startsWith('/playlist');
+	$: isCustomizePage = $page.url.pathname.endsWith('/customize');
+	$: isPlaylistPage = $page.url.pathname.startsWith('/playlist') && !isCustomizePage;
 	$: isHomePage = $page.url.pathname === '/';
 
 	const handleToggle = () => {
@@ -13,6 +14,7 @@
 	};
 </script>
 
+{#if !isCustomizePage}
 <nav class="flex justify-between items-center px-8 py-6" style="position: fixed; top: 0; left: 0; right: 0; z-index: 3; color: {isPlaylistPage ? 'white' : 'black'};">
 	<a class="inline-block" href="/">ambient visual</a>
 	<div class="inline-block flex items-center gap-4">
@@ -35,3 +37,4 @@
 		{/if}
 	</div>
 </nav>
+{/if}

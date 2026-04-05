@@ -187,12 +187,12 @@
 	function update() {
 		audioAnalysisTexture.update();
 
-		// Decay scroll velocity, slower decay = more fluid linger
-		scrollVelocity *= 0.88;
+		// Fast decay so distortion peaks and snaps back quickly
+		scrollVelocity *= 0.78;
 
-		// Lerp toward target — 0.08 = snappy lead-in, slow snap-back
+		// Snappier lerp — peaks fast, snaps back clean
 		const targetFlip = Math.min(scrollVelocity / 200, 1.0) * scrollDirection;
-		currentScrollFlip += (targetFlip - currentScrollFlip) * 0.08;
+		currentScrollFlip += (targetFlip - currentScrollFlip) * 0.18;
 
 		if (rippleEffect) {
 			rippleEffect.uniforms.get('uScrollFlip').value = currentScrollFlip;
@@ -275,10 +275,11 @@
 			const totalDelta = touchStartY - currentY;
 			const frameDelta = touchEndY - currentY;
 			touchEndY = currentY;
-			scrollVelocity = Math.min(Math.abs(totalDelta) * 1.2, 200);
+			// Boost velocity aggressively so distortion peaks immediately
+			scrollVelocity = Math.min(Math.abs(totalDelta) * 3.5, 200);
 			if (Math.abs(frameDelta) > 0.5) scrollDirection = frameDelta > 0 ? 1 : -1;
-			// Navigate immediately when threshold crossed — no waiting for touchend
-			if (!touchNavigated && Math.abs(totalDelta) > 60) {
+			// Lower threshold = faster navigation trigger
+			if (!touchNavigated && Math.abs(totalDelta) > 40) {
 				touchNavigated = true;
 				setVideoIndex(totalDelta > 0);
 			}

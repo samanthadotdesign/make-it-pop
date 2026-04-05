@@ -83,11 +83,31 @@ trusted events
 	let video;
 	let audio;
 	let videoIsPlaying;
+	let preloadA; // preload buffer for next video
+	let preloadB; // preload buffer for prev video
 
 	/* WATCH/COMPUTED */
 
 	$: currentTrackData = $playlist?.tracks?.items?.[$currentTrack];
 	$: currentVideoData = $videosData?.videos?.[$currentVideo];
+
+	// Preload adjacent videos whenever currentVideo changes
+	$: if (!$cameraMode && $videosData?.videos) {
+		const videos = $videosData.videos;
+		const total = videos.length;
+		const nextIdx = ($currentVideo + 1) % total;
+		const prevIdx = ($currentVideo - 1 + total) % total;
+		const nextSrc = videos[nextIdx]?.video_files?.[0]?.link;
+		const prevSrc = videos[prevIdx]?.video_files?.[0]?.link;
+		if (preloadA && nextSrc && preloadA.src !== nextSrc) {
+			preloadA.src = nextSrc;
+			preloadA.load();
+		}
+		if (preloadB && prevSrc && preloadB.src !== prevSrc) {
+			preloadB.src = prevSrc;
+			preloadB.load();
+		}
+	}
 
 	// On load, if the playStatus is true, keep playing the music
 	// We keep track of the song with currentTrack, we declare it as a dependency using subscribe
@@ -161,6 +181,10 @@ trusted events
 	/>
 {/if}
 
+<!-- Preload buffers — invisible, just buffer next/prev -->
+<video bind:this={preloadA} muted playsinline preload="auto" style="display:none;" crossOrigin="anonymous" />
+<video bind:this={preloadB} muted playsinline preload="auto" style="display:none;" crossOrigin="anonymous" />
+
 <video
 	bind:this={video}
 	id="video"
@@ -168,9 +192,11 @@ trusted events
 	crossOrigin="anonymous"
 	playsinline
 	muted={true}
-	autoplay={$playStatus ? true : false}
+	autoplay={true}
+	preload="auto"
 	style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 0; visibility: hidden;"
 	on:ended={$cameraMode ? undefined : videoEndedHandler}
+	on:canplay={() => { if ($playStatus) video?.play().catch(() => {}); }}
 />
 
 <ThreeScene {video} />
