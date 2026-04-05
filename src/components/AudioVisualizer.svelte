@@ -44,7 +44,37 @@ trusted events
 	import { getTrackFromSpotify } from '@utils/spotifyAPI.js';
 
 	import ThreeScene from '@utils/threeScene.svelte';
+	import InlineSvg from 'svelte-inline-svg';
 	import { cameraMode, cameraStream } from '@stores/cameraStore.js';
+
+	let facingMode = 'user';
+	let isMobile = false;
+
+	onMount(() => {
+		isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+	});
+
+	async function flipCamera() {
+		if (!$cameraMode) return;
+		// Stop existing tracks
+		const current = $cameraStream;
+		if (current) current.getTracks().forEach(t => t.stop());
+
+		facingMode = facingMode === 'user' ? 'environment' : 'user';
+		try {
+			const newStream = await navigator.mediaDevices.getUserMedia({
+				video: { facingMode },
+				audio: false
+			});
+			cameraStream.set(newStream);
+			if (video) {
+				video.srcObject = newStream;
+				video.play().catch(() => {});
+			}
+		} catch (e) {
+			console.log('flip camera error', e);
+		}
+	}
 
 	import { page, session } from '$app/stores';
 	const { params } = $page;
@@ -145,4 +175,11 @@ trusted events
 
 <ThreeScene {video} />
 
-<!-- <Sketch /> -->
+{#if $cameraMode && isMobile}
+	<button
+		on:click={flipCamera}
+		style="position: fixed; bottom: 2rem; left: 2rem; z-index: 3; background: none; border: none; cursor: pointer; padding: 0;"
+	>
+		<InlineSvg src="/images/reverse.svg" />
+	</button>
+{/if}
