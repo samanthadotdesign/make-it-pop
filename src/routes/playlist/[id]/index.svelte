@@ -62,7 +62,6 @@
 	import { page } from '$app/stores';
 	import EventListener from '@components/Playlist/EventListener.svelte';
 	import Controls from '@components/Controls.svelte';
-	import Index from '../index.svelte';
 	import AudioVisualizer from '@components/AudioVisualizer.svelte';
 	import { getTrackAnalysisFromSpotify } from '@utils/spotifyAPI.js';
 	import { initializePlayer } from '@utils/spotifyPlayer.js';
@@ -199,7 +198,7 @@
 <!-- Customize button — bottom right, above everything -->
 <a
 	href={`/playlist/${playlistId}/customize`}
-	style="position: fixed; bottom: 2rem; right: 2rem; z-index: 3; display: flex; align-items: center; justify-content: center;"
+	style="position: fixed; bottom: 2rem; right: 2rem; z-index: 3; display: flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);"
 >
 	<InlineSvg src="/images/customize.svg" />
 </a>

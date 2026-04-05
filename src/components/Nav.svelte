@@ -20,9 +20,16 @@
 		{#if isHomePage}
 			<button on:click={handleToggle} class="cursor-pointer">
 				{#key $navView}
-					<InlineSvg src={`/images/${$navView === 'record' ? 'list' : 'record'}.svg`} />
+					<InlineSvg
+						src={`/images/${$navView === 'record' ? 'list' : 'record'}.svg`}
+						style={$navView !== 'record' ? 'filter: invert(1);' : ''}
+					/>
 				{/key}
 			</button>
+		{:else if isPlaylistPage}
+			<a href="/" style="display: flex; align-items: center;">
+				<InlineSvg src="/images/record.svg" />
+			</a>
 		{:else}
 			<Searchbar {isPlaylistPage} />
 		{/if}
