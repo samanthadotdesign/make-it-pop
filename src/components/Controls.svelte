@@ -40,10 +40,20 @@
 		on:click={togglePlay}
 		style="pointer-events: all; width: 8rem; height: 8rem; border-radius: 50%; border: 2px solid white; background: rgba(255,255,255,0.15); backdrop-filter: blur(4px); color: white; font-size: 1rem; letter-spacing: normal; cursor: pointer; align-self: flex-start;"
 	>
-		{#if !$playStatus}PLAY{:else}PAUSE{/if}
+		{#if !$playStatus}play{:else}pause{/if}
 	</button>
 </div>
 
-<!-- Prev / Next — hidden and non-interactive, kept for programmatic use -->
-<button id="prevButton" style="display: none;" on:click={() => { setAudioIndex(false); if ($session?.access_token) previous($session); }}></button>
-<button id="nextButton" style="display: none;" on:click={() => { setAudioIndex(true); if ($session?.access_token) next($session); }}></button>
+<!-- Prev / Next — hidden from UI but functional -->
+<div style="position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; z-index: 2; pointer-events: none;">
+	<button
+		id="prevButton"
+		style="pointer-events: all; opacity: 0; background: transparent; border: none; cursor: pointer; width: 4rem; height: 4rem;"
+		on:click={() => { setAudioIndex(false); if ($session?.access_token) previous($session); }}
+	></button>
+	<button
+		id="nextButton"
+		style="pointer-events: all; opacity: 0; background: transparent; border: none; cursor: pointer; width: 4rem; height: 4rem;"
+		on:click={() => { setAudioIndex(true); if ($session?.access_token) next($session); }}
+	></button>
+</div>

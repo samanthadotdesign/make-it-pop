@@ -198,7 +198,7 @@
 <!-- Customize button — bottom right, above everything -->
 <a
 	href={`/playlist/${playlistId}/customize`}
-	style="position: fixed; bottom: 2rem; right: 2rem; z-index: 3; display: flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);"
+	style="position: fixed; bottom: 2rem; right: 2rem; z-index: 3; display: flex; align-items: center; justify-content: center;"
 >
 	<InlineSvg src="/images/customize.svg" />
 </a>
