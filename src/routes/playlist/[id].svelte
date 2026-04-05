@@ -187,6 +187,7 @@
 </svelte:head>
 
 <EventListener />
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 1; pointer-events: none;"></div>
 <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none;">
 	{#key $playlists.items}
 		<Controls title={playlistName} />

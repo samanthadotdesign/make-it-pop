@@ -44,16 +44,6 @@
 	</button>
 </div>
 
-<!-- Prev / Next -->
-<div style="position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; z-index: 2; pointer-events: none;">
-	<button
-		id="prevButton"
-		style="pointer-events: all; color: white; background: transparent; border: none; cursor: pointer; font-size: 1rem; letter-spacing: normal;"
-		on:click={() => { setAudioIndex(false); if ($session?.access_token) previous($session); }}
-	>prev</button>
-	<button
-		id="nextButton"
-		style="pointer-events: all; color: white; background: transparent; border: none; cursor: pointer; font-size: 1rem; letter-spacing: normal;"
-		on:click={() => { setAudioIndex(true); if ($session?.access_token) next($session); }}
-	>next</button>
-</div>
+<!-- Prev / Next — hidden and non-interactive, kept for programmatic use -->
+<button id="prevButton" style="display: none;" on:click={() => { setAudioIndex(false); if ($session?.access_token) previous($session); }}></button>
+<button id="nextButton" style="display: none;" on:click={() => { setAudioIndex(true); if ($session?.access_token) next($session); }}></button>
