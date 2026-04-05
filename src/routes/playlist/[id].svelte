@@ -189,9 +189,7 @@
 <EventListener />
 <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none;">
 	{#key $playlists.items}
-		<div style="pointer-events: all;">
-			<Controls title={playlistName} />
-		</div>
+		<Controls title={playlistName} />
 	{/key}
 </div>
 <AudioVisualizer />

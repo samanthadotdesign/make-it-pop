@@ -91,12 +91,12 @@ trusted events
 
 	function playMedia() {
 		if (video) {
-			video.play();
+			video.play().catch(() => {});
 		}
 
 		// This will only run on offline mode.
 		if (audio) {
-			audio.play();
+			audio.play().catch(() => {});
 		}
 	}
 

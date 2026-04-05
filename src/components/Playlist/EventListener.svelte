@@ -16,8 +16,6 @@ But isolates the logic that listens to the body event
 	} from '@stores/visualizerStore.js';
 	import { playlist } from '@stores/userDataStore.js';
 
-	import { previous, next } from '@utils/spotifyAPI';
-	import { session } from '$app/stores';
 
 	// Local state to listen for pointer down during swipe or scroll (down or not)
 	let height;
@@ -45,10 +43,8 @@ But isolates the logic that listens to the body event
 	// Debounce -> execute a command a certain number of times so that we don't break by scrolling too quickly
 	function handleScroll(event) {
 		if (Math.sign(event.deltaY) == -1) {
-			next($session);
 			setAudioIndex(true);
 		} else if (Math.sign(event.deltaY) == 1) {
-			previous($session);
 			setAudioIndex(false);
 		}
 	}
@@ -101,23 +97,17 @@ But isolates the logic that listens to the body event
 			// WE USE HAMMER TO HELP US CHANGE THE TRACK COUNTER
 			// If user is swiping left/up, they are looking for the next track & vice versa
 			if (['left', 'left-down', 'left-up', 'up'].includes(direction)) {
-				next($session);
 				setAudioIndex(true);
 			} else if (['right', 'right-down', 'right-up', 'down'].includes(direction)) {
-				previous($session);
 				setAudioIndex(false);
 			}
 		});
 
-		// Prevent native function when pointer moves
-		document.body.addEventListener('touchmove', function (event) {
-			event.preventDefault();
-		});
 	});
 </script>
 
 <svelte:window
-	on:mousewheel={(event) => {
+	on:wheel={(event) => {
 		debounce(() => {
 			handleScroll(event);
 		}, 1000);

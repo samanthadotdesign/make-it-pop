@@ -12,6 +12,7 @@
 	import { interpolate } from 'd3-interpolate';
 	import { buildUniforms, getTweenableChanges, getBooleanChanges } from '@utils/uniforms';
 	import cloneDeep from 'lodash/cloneDeep';
+	import { setVideoIndex, setAudioIndex } from '@stores/visualizerStore.js';
 	import {
 		shuffleInterval,
 		shuffleIntervalMultiplier,
@@ -196,6 +197,17 @@
 		if (rippleEffect) {
 			rippleEffect.uniforms.get('uScrollFlip').value = currentScrollFlip;
 			rippleEffect.uniforms.get('uTime').value = clock.getElapsedTime();
+
+			// Drive play intensity from audio data when playing, fallback to 0.4 so wave is always visible
+			const _loudness = get(loudnessAverage);
+			const _beat = get(beatConfidence);
+			const _playing = get(playStatus);
+			let targetIntensity = 0.4; // always-on baseline
+			if (_playing && _loudness && _beat) {
+				targetIntensity = Math.min((_beat * 0.6) + (Math.abs(_loudness) / 60) * 0.4, 1.0);
+			}
+			const current = rippleEffect.uniforms.get('uPlayIntensity').value;
+			rippleEffect.uniforms.get('uPlayIntensity').value += (targetIntensity - current) * 0.1;
 		}
 	}
 
@@ -251,22 +263,25 @@
 		}, { passive: true });
 
 		let touchStartY = 0;
-		let touchPrevY = 0;
+		let touchEndY = 0;
+		let touchNavigated = false;
 		window.addEventListener('touchstart', (e) => {
 			touchStartY = e.touches[0].clientY;
-			touchPrevY = e.touches[0].clientY;
+			touchEndY = e.touches[0].clientY;
+			touchNavigated = false;
 		}, { passive: true });
 		window.addEventListener('touchmove', (e) => {
 			const currentY = e.touches[0].clientY;
-			// Total distance from start drives intensity, per-frame delta drives direction
 			const totalDelta = touchStartY - currentY;
-			const frameDelta = touchPrevY - currentY;
-			touchPrevY = currentY;
+			const frameDelta = touchEndY - currentY;
+			touchEndY = currentY;
 			scrollVelocity = Math.min(Math.abs(totalDelta) * 1.2, 200);
 			if (Math.abs(frameDelta) > 0.5) scrollDirection = frameDelta > 0 ? 1 : -1;
-		}, { passive: true });
-		window.addEventListener('touchend', () => {
-			// Let velocity decay naturally — no hard reset
+			// Navigate immediately when threshold crossed — no waiting for touchend
+			if (!touchNavigated && Math.abs(totalDelta) > 60) {
+				touchNavigated = true;
+				setVideoIndex(totalDelta > 0);
+			}
 		}, { passive: true });
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
@@ -350,7 +365,6 @@
 				const y = ($loudnessAverage * 100) / -60;
 
 				const point = { x, y, red: $red, green: $green, blue: $blue };
-				console.log('point', point);
 				audioAnalysisTexture.addPoint(point);
 			}
 		}

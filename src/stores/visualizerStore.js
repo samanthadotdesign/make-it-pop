@@ -17,7 +17,7 @@ export const defaultVideoPlaylistLength = 60;
 export const videoPlaylistLength = writable(defaultVideoPlaylistLength);
 
 // Get random search term for video API
-const defaultTermsArray = ['abstract expressionism', 'blurred', 'foliage', 'dramatic sky', 'beautiful zoom backgrounds', 'nature', 'underwater'];
+const defaultTermsArray = ['abstract expressionism', 'blurred', 'foliage', 'dramatic sky', 'universe', 'nature', 'underwater'];
 export const randomTerm = defaultTermsArray[Math.floor(Math.random() * defaultTermsArray.length)];
 
 export const searchTerm = writable('');
