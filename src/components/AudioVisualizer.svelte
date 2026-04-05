@@ -44,6 +44,7 @@ trusted events
 	import { getTrackFromSpotify } from '@utils/spotifyAPI.js';
 
 	import ThreeScene from '@utils/threeScene.svelte';
+	import { cameraMode, cameraStream } from '@stores/cameraStore.js';
 
 	import { page, session } from '$app/stores';
 	const { params } = $page;
@@ -111,8 +112,13 @@ trusted events
 		}
 	}
 
-	// What to handle: change the song, but it stopped playing until i hit the play button
-	console.log('play status on load', $playStatus);
+	// When camera mode activates, point the video element at the camera stream
+	$: if (video && $cameraMode && $cameraStream) {
+		video.srcObject = $cameraStream;
+		video.play().catch(() => {});
+	} else if (video && !$cameraMode) {
+		video.srcObject = null;
+	}
 </script>
 
 <!-- For offline mode -->
@@ -128,13 +134,13 @@ trusted events
 <video
 	bind:this={video}
 	id="video"
-	src={currentVideoData?.video_files?.[0]?.link}
+	src={$cameraMode ? undefined : currentVideoData?.video_files?.[0]?.link}
 	crossOrigin="anonymous"
 	playsinline
 	muted={true}
 	autoplay={$playStatus ? true : false}
 	style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 0; visibility: hidden;"
-	on:ended={videoEndedHandler}
+	on:ended={$cameraMode ? undefined : videoEndedHandler}
 />
 
 <ThreeScene {video} />
