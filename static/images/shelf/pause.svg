@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="pause">
+<path id="Left bar" d="M0 0H2V14H0V0Z" fill="black"/>
+<path id="Right bar" d="M6 0H8V14H6V0Z" fill="black"/>
+</g>
+</svg>

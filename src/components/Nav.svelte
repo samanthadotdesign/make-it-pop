@@ -1,40 +1,84 @@
 <script>
+	import { base } from '$app/paths';
+	import { page } from '$app/stores';
 	import { login } from '@stores/spotify.js';
 	import Searchbar from '@components/Searchbar.svelte';
 	import InlineSvg from 'svelte-inline-svg';
-	import { page } from '$app/stores';
-	import { navView } from '@stores/layoutStore';
+	import ShelfIcon from '@components/Playlist/ShelfIcon.svelte';
+	import { activeShelfRecord } from '@utils/shelfCatalog.js';
 
-	$: isCustomizePage = $page.url.pathname.endsWith('/customize');
-	$: isPlaylistPage = $page.url.pathname.startsWith('/playlist') && !isCustomizePage;
-	$: isHomePage = $page.url.pathname === '/';
-
-	const handleToggle = () => {
-		navView.update(v => v === 'record' ? 'list' : 'record');
-	};
+	$: pathname = $page.url.pathname.slice(base.length);
+	$: isCustomizePage = pathname.endsWith('/customize');
+	$: isAlbumPage = pathname.startsWith('/albums/');
+	$: isPlaylistPage = isAlbumPage || (pathname.startsWith('/playlist') && !isCustomizePage);
+	$: isHomePage = pathname === '/';
+	$: isListening = pathname.startsWith('/listen/');
 </script>
 
 {#if !isCustomizePage}
-<nav class="flex justify-between items-center px-8 py-6" style="position: fixed; top: 0; left: 0; right: 0; z-index: 3; color: {isPlaylistPage ? 'white' : 'black'};">
-	<a class="inline-block" href="/">ambient visual</a>
-	<div class="inline-block flex items-center gap-4">
-		<button on:click={login}>connect</button>
-		{#if isHomePage}
-			<button on:click={handleToggle} class="cursor-pointer">
-				{#key $navView}
-					<InlineSvg
-						src={`/images/${$navView === 'record' ? 'list' : 'record'}.svg`}
-						style={$navView !== 'record' ? 'filter: invert(1);' : ''}
-					/>
-				{/key}
-			</button>
-		{:else if isPlaylistPage}
-			<a href="/" style="display: flex; align-items: center;">
-				<InlineSvg src="/images/record.svg" />
-			</a>
-		{:else}
-			<Searchbar {isPlaylistPage} />
-		{/if}
-	</div>
-</nav>
+	<nav class:legacy-player={isPlaylistPage}>
+		<a href="{base}/">make it pop</a>
+		<div class="actions">
+			{#if !isHomePage && !isAlbumPage && !isListening}
+				<button on:click={login}>connect</button>
+			{/if}
+			{#if isHomePage}
+				<a class="icon-link" href="{base}{$activeShelfRecord.path}" aria-label="Open turntable">
+					<ShelfIcon name="deck" />
+				</a>
+			{:else if isListening}
+				<a class="icon-link" href="{base}/" aria-label="Back to the record shelf">
+					<ShelfIcon name="return" />
+				</a>
+			{:else if isPlaylistPage}
+				<a class="icon-link" href="{base}/" aria-label="Back to the record shelf">
+					<InlineSvg src="{base}/images/record.svg" />
+				</a>
+			{:else}
+				<Searchbar {isPlaylistPage} />
+			{/if}
+		</div>
+	</nav>
 {/if}
+
+<style>
+	nav {
+		position: fixed;
+		z-index: 3;
+		inset: 0 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 72px;
+		padding-inline: 32px 22px;
+		color: #151515;
+		pointer-events: none;
+	}
+
+	nav > a,
+	.actions {
+		pointer-events: auto;
+	}
+
+	.legacy-player {
+		color: white;
+	}
+
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.icon-link {
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+	}
+
+	.icon-link:hover {
+		background: #15151513;
+	}
+</style>
