@@ -1,12 +1,15 @@
 <script>
 	import { base } from '$app/paths';
-	import { onMount } from 'svelte';
-	import { primeListeningAudio } from '@utils/listeningAudio.js';
+	import { getContext, onMount } from 'svelte';
+	import { listeningSessionContext, primeListeningAudio } from '@utils/listeningAudio.js';
 	import { activeShelfRecord } from '@utils/shelfCatalog.js';
+	import NowPlaying from './NowPlaying.svelte';
 	import RecordArtwork from './RecordArtwork.svelte';
 	import ShelfIcon from './ShelfIcon.svelte';
 
 	export let items;
+
+	const listening = getContext(listeningSessionContext);
 
 	let scroller;
 	let row;
@@ -137,7 +140,17 @@
 	});
 </script>
 
-<div class="shelf" style="--shelf-tint: {current?.tint ?? '#7a77e8'}">
+<div
+	class="shelf"
+	class:has-now-playing={!!$listening}
+	style="--shelf-tint: {current?.tint ?? '#7a77e8'}"
+>
+	{#if $listening}
+		<div class="now-playing-row">
+			<NowPlaying session={$listening} />
+		</div>
+	{/if}
+
 	<div
 		class="scroller"
 		bind:this={scroller}
@@ -178,16 +191,18 @@
 	</div>
 
 	{#if current}
-		<div class="toolbar">
-			<p aria-live="polite">{current.name}</p>
-			<a
-				class="play"
-				href="{base}{current.path}{Array.isArray(current.tracks) ? '?play=1' : ''}"
-				aria-label="Play {current.name}"
-				on:click={() => Array.isArray(current.tracks) && primeListeningAudio()}
-			>
-				<ShelfIcon name="play" />
-			</a>
+		<div class="shelf-controls">
+			<div class="toolbar">
+				<p aria-live="polite">{current.name}</p>
+				<a
+					class="play"
+					href="{base}{current.path}{Array.isArray(current.tracks) ? '?play=1' : ''}"
+					aria-label="Play {current.name}"
+					on:click={() => Array.isArray(current.tracks) && primeListeningAudio()}
+				>
+					<ShelfIcon name="play" />
+				</a>
+			</div>
 		</div>
 	{/if}
 </div>
@@ -210,6 +225,10 @@
 		color: #151515;
 		background: linear-gradient(var(--wash), var(--ground));
 		transition: --shelf-tint 350ms ease;
+	}
+
+	.has-now-playing {
+		--top: calc(100px + env(safe-area-inset-top));
 	}
 
 	.scroller {
@@ -284,15 +303,25 @@
 		outline-offset: 4px;
 	}
 
-	.toolbar {
+	.shelf-controls {
 		position: absolute;
 		z-index: 2;
 		inset: auto 0 0;
+	}
+
+	.now-playing-row {
+		position: absolute;
+		z-index: 2;
+		inset: calc(36px + env(safe-area-inset-top)) 0 auto;
+		padding-inline: 16px;
+	}
+
+	.toolbar {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 12px;
-		height: var(--bottom);
+		height: calc(var(--toolbar-height) + env(safe-area-inset-bottom));
 		padding: 0 22px env(safe-area-inset-bottom) 32px;
 	}
 
@@ -312,6 +341,16 @@
 	@media (min-width: 768px) {
 		.shelf {
 			--bottom: 105px;
+			--shelf-controls-inset: clamp(20px, 8dvh, 65px);
+		}
+
+		.has-now-playing {
+			--top: 72px;
+			--bottom: 161px;
+		}
+
+		.now-playing-row {
+			inset: auto 0 calc(var(--shelf-controls-inset) + 80px);
 		}
 
 		.scroller {
@@ -335,10 +374,13 @@
 			top: clamp(calc(var(--size) / 2), calc(52.5dvh - var(--top)), 75%);
 		}
 
-		.toolbar {
-			inset: auto 50% clamp(20px, 8dvh, 65px) auto;
+		.shelf-controls {
+			inset: auto 50% var(--shelf-controls-inset) auto;
 			transform: translateX(50%);
 			width: min(440px, calc(100vw - 64px));
+		}
+
+		.toolbar {
 			height: 74px;
 		}
 	}

@@ -1,6 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
+	import { navigating } from '$app/stores';
 	import { onMount, tick } from 'svelte';
 	import {
 		getListeningAudio,
@@ -14,15 +15,19 @@
 
 	export let initialRecord;
 	export let autoplay = false;
+	export let visible = true;
+	export let returnToSession = false;
+	export let nowPlaying = null;
 
 	let record = initialRecord;
-	let routeRecordId = initialRecord.id;
+	let arrivalKey;
 	let deckVersion = 0;
 	let deck;
 	let audio;
 	let recordSource = null;
 	let trackIndex = record.tracks.findIndex(({ src }) => src);
 	let playing = false;
+	let started = false;
 	let cueing = false;
 	let paused = false;
 	let exchange = null;
@@ -30,12 +35,19 @@
 	let infoOpen = false;
 	let status = '';
 
+	$: if (audio) {
+		const key = visible ? `${initialRecord.id}:${autoplay}:${returnToSession}` : null;
+		if (arrivalKey !== key) {
+			arrivalKey = key;
+			if (visible) openRecord(initialRecord, autoplay, returnToSession);
+		}
+	}
 	$: track = record.tracks[trackIndex];
 	$: canPause = playing || cueing || exchange?.autoplay;
-	$: if (audio && initialRecord.id !== routeRecordId) {
-		routeRecordId = initialRecord.id;
-		if (initialRecord.id !== record.id) resetFromNavigation(initialRecord, autoplay);
-	}
+	$: canToggle = !!track?.src && (!exchange || !!exchange.record);
+	$: nowPlaying = started
+		? { record, track, status, canPause: !!canPause, canToggle, togglePlayback }
+		: null;
 
 	function cancelPlayback() {
 		request += 1;
@@ -54,6 +66,7 @@
 	function start(fromGesture = false) {
 		if (exchange || !record.tracks[trackIndex]?.src) return;
 		if (fromGesture) primeListeningAudio();
+		started = true;
 		cueing = true;
 		paused = false;
 		status = 'Cueing record…';
@@ -107,13 +120,34 @@
 		recordSource = null;
 		record = next;
 		trackIndex = next.tracks.findIndex(({ src }) => src);
-		activeShelfRecord.set(next);
+		if (visible) activeShelfRecord.set(next);
+	}
+
+	function openRecord(next, playOnArrival, returning) {
+		if (returning && started) {
+			// The indicator may have been clicked as the deck was swapping records.
+			if (next.id !== record.id) updatePlayerUrl(record);
+		} else if (next.id !== record.id) {
+			resetFromNavigation(next, playOnArrival);
+		} else if (playOnArrival && !playing && !cueing && !exchange?.autoplay) {
+			if (exchange?.record) exchange.autoplay = true;
+			else start();
+		}
+	}
+
+	function updatePlayerUrl(next) {
+		goto(`${base}${next.path}`, {
+			replaceState: true,
+			noscroll: true,
+			keepfocus: true
+		}).catch((error) => console.error('Could not update the selected record URL:', error));
 	}
 
 	async function resetFromNavigation(next, playOnArrival) {
 		cancelPlayback();
 		const navigationRequest = request;
 		exchange = null;
+		started = false;
 		paused = false;
 		infoOpen = false;
 		status = '';
@@ -165,12 +199,8 @@
 		exchange = null;
 		status = '';
 		if (swap.autoplay) start();
-		// Keep this deck mounted and keep Back pointing to the shelf.
-		goto(`${base}${swap.record.path}`, {
-			replaceState: true,
-			noscroll: true,
-			keepfocus: true
-		}).catch((error) => console.error('Could not update the selected record URL:', error));
+		// Leave the shelf in place if a record finishes while the listener is browsing.
+		if (visible && !$navigating) updatePlayerUrl(swap.record);
 	}
 
 	function chooseTrack(index) {
@@ -197,7 +227,6 @@
 		activeShelfRecord.set(record);
 		audio.addEventListener('ended', onEnded);
 		audio.addEventListener('error', onAudioError);
-		if (autoplay) start();
 		return () => {
 			cancelPlayback();
 			exchange = null;
@@ -209,7 +238,7 @@
 </script>
 
 <svelte:head>
-	<title>{record.name} · make it pop</title>
+	{#if visible}<title>{record.name} · make it pop</title>{/if}
 </svelte:head>
 
 <main class="room">
@@ -228,6 +257,7 @@
 				recordColor={record.treatment?.color ?? record.color}
 				labelColor={record.treatment?.label}
 				{recordSource}
+				{visible}
 				inspectable={paused && !exchange}
 				on:cue={onCue}
 				on:exchange={onExchange}
@@ -311,7 +341,7 @@
 				class="icon-button"
 				type="button"
 				aria-label={canPause ? 'Pause' : 'Play'}
-				disabled={!track?.src || (!!exchange && !exchange.record)}
+				disabled={!canToggle}
 				on:click={togglePlayback}
 			>
 				<ShelfIcon name={canPause ? 'pause' : 'play'} />

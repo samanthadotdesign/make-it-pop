@@ -24,6 +24,7 @@
 	export let labelColor;
 	export let recordSource = null;
 	export let inspectable = false;
+	export let visible = true;
 
 	const dispatch = createEventDispatcher();
 	const restingPhases = new Set(['product', 'paused', 'playing', 'exchange']);
@@ -45,6 +46,7 @@
 	let finishMotion = false;
 
 	$: if (model) applyRecordDesign(model, recordSource, recordColor, labelColor);
+	$: if (visible) needsDraw = true;
 
 	function applyRecordDesign(deck, source, color, label) {
 		const vinyl = deck.parts.VinylDisc.material;
@@ -259,8 +261,9 @@
 			controls.listenToKeyEvents(canvas);
 
 			function resize() {
-				const width = Math.max(1, canvas.clientWidth);
-				const height = Math.max(1, canvas.clientHeight);
+				const width = canvas.clientWidth;
+				const height = canvas.clientHeight;
+				if (!width || !height) return;
 				camera.aspect = width / height;
 				renderer.setSize(width, height, false);
 				needsDraw = true;
@@ -288,6 +291,12 @@
 				const motion = model.playback.update(step);
 				previousTime = now;
 				finishMotion = false;
+
+				// Keep playback cues and record swaps running without drawing behind the shelf.
+				if (!visible) {
+					publishMotion(motion);
+					return;
+				}
 
 				const rotation = reduceMotion ? 0 : motion.rotation;
 				const coverMoving = Math.abs(motion.cover - previousCover) > 0.0001;

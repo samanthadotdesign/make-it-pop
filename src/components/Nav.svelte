@@ -7,6 +7,8 @@
 	import ShelfIcon from '@components/Playlist/ShelfIcon.svelte';
 	import { activeShelfRecord } from '@utils/shelfCatalog.js';
 
+	export let sessionRecord = undefined;
+
 	$: pathname = $page.url.pathname.slice(base.length);
 	$: isCustomizePage = pathname.endsWith('/customize');
 	$: isAlbumPage = pathname.startsWith('/albums/');
@@ -16,14 +18,20 @@
 </script>
 
 {#if !isCustomizePage}
-	<nav class:legacy-player={isPlaylistPage}>
+	<nav class:legacy-player={isPlaylistPage} class:has-shelf-session={isHomePage && !!sessionRecord}>
 		<a href="{base}/">make it pop</a>
 		<div class="actions">
 			{#if !isHomePage && !isAlbumPage && !isListening}
 				<button on:click={login}>connect</button>
 			{/if}
 			{#if isHomePage}
-				<a class="icon-link" href="{base}{$activeShelfRecord.path}" aria-label="Open turntable">
+				<a
+					class="icon-link"
+					href="{base}{(sessionRecord ?? $activeShelfRecord).path}{sessionRecord
+						? '?return=1'
+						: ''}"
+					aria-label="Open turntable"
+				>
 					<ShelfIcon name="deck" />
 				</a>
 			{:else if isListening}
@@ -80,5 +88,11 @@
 
 	.icon-link:hover {
 		background: #15151513;
+	}
+
+	@media (max-width: 767px) {
+		.has-shelf-session {
+			display: none;
+		}
 	}
 </style>

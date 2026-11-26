@@ -1,3 +1,5 @@
+export const listeningSessionContext = Symbol('listening session');
+
 // Keep one media element across shelf navigation so browsers can retain its playback permission.
 let audio;
 let playbackGranted = false;
