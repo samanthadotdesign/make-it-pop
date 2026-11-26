@@ -3,7 +3,7 @@
 	import { get } from 'svelte/store';
 	import { interpolate } from 'd3-interpolate';
 	import { buildUniforms, getTweenableChanges, getBooleanChanges } from '@utils/uniforms';
-	import cloneDeep from 'lodash/cloneDeep';
+	import cloneDeep from 'lodash/cloneDeep.js';
 	import {
 		shuffleInterval,
 		shuffleIntervalMultiplier,

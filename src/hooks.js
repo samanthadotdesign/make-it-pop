@@ -1,4 +1,5 @@
 // src/hooks.js
+import { base } from '$app/paths';
 import { parse } from 'cookie';
 
 /**
@@ -12,6 +13,12 @@ import { parse } from 'cookie';
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
 	const { request } = event;
+	// The dev server can import the layout twice when opening a turntable directly.
+	// Start through the client router so the same layout owns playback on the shelf.
+	const options =
+		import.meta.env.DEV && event.url.pathname.startsWith(`${base}/listen/`)
+			? { ssr: false }
+			: undefined;
 
 	const cookies = parse(request.headers.get('cookie') || '');
 	// Since we created cookies using env variable name, we should fetch cookie keys from env variables
@@ -23,12 +30,12 @@ export async function handle({ event, resolve }) {
 		if (access_token) {
 			event.locals.access_token = access_token;
 			event.locals.refresh_token = refresh_token;
-			return resolve(event);
+			return resolve(event, options);
 		}
 	}
 	// If client doesn't have access token, we send a null to be checked inside getSession
 	event.locals.access_token = null;
-	return resolve(event);
+	return resolve(event, options);
 }
 
 /**

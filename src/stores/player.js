@@ -3,7 +3,7 @@ import ease from '@mobilabs/easing';
 import { interpolateNumber } from 'd3-interpolate';
 import { scaleLinear } from 'd3-scale';
 import { min, max, mean } from 'd3-array';
-import cloneDeep from 'lodash/cloneDeep';
+import cloneDeep from 'lodash/cloneDeep.js';
 import { trackAnalysis } from '@stores/userDataStore.js';
 export const intervalTypes = writable(['segments', 'tatums', 'beats', 'bars', 'sections']);
 

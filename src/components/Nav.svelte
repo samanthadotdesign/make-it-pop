@@ -1,4 +1,5 @@
 <script>
+	import { browser } from '$app/env';
 	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import { login } from '@stores/spotify.js';
@@ -15,10 +16,15 @@
 	$: isPlaylistPage = isAlbumPage || (pathname.startsWith('/playlist') && !isCustomizePage);
 	$: isHomePage = pathname === '/';
 	$: isListening = pathname.startsWith('/listen/');
+	$: turntablePath = (sessionRecord ?? $activeShelfRecord).path;
 </script>
 
 {#if !isCustomizePage}
-	<nav class:legacy-player={isPlaylistPage} class:has-shelf-session={isHomePage && !!sessionRecord}>
+	<nav
+		class:legacy-player={isPlaylistPage}
+		class:has-shelf-session={isHomePage && !!sessionRecord}
+		class:listening={isListening}
+	>
 		<a href="{base}/">make it pop</a>
 		<div class="actions">
 			{#if !isHomePage && !isAlbumPage && !isListening}
@@ -27,9 +33,7 @@
 			{#if isHomePage}
 				<a
 					class="icon-link"
-					href="{base}{(sessionRecord ?? $activeShelfRecord).path}{sessionRecord
-						? '?return=1'
-						: ''}"
+					href={browser ? `${base}${turntablePath}${sessionRecord ? '?return=1' : ''}` : undefined}
 					aria-label="Open turntable"
 				>
 					<ShelfIcon name="deck" />
@@ -66,6 +70,15 @@
 	nav > a,
 	.actions {
 		pointer-events: auto;
+	}
+
+	.listening::before {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		inset: 0 0 -32px;
+		background: linear-gradient(to bottom, #c8c8c8 40%, #c8c8c800);
+		pointer-events: none;
 	}
 
 	.legacy-player {

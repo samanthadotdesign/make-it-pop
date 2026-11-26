@@ -4,6 +4,7 @@
 	import {
 		CanvasTexture,
 		LinearFilter,
+		MathUtils,
 		MOUSE,
 		NeutralToneMapping,
 		PCFShadowMap,
@@ -199,6 +200,9 @@
 		let stage;
 		let optics;
 		let observer;
+		let viewportWidth;
+		let viewportHeight;
+		const desktopLayout = window.matchMedia('(min-width: 768px)');
 		const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 		function release() {
@@ -264,6 +268,8 @@
 				const width = canvas.clientWidth;
 				const height = canvas.clientHeight;
 				if (!width || !height) return;
+				viewportWidth = width;
+				viewportHeight = height;
 				camera.aspect = width / height;
 				renderer.setSize(width, height, false);
 				needsDraw = true;
@@ -324,8 +330,25 @@
 					model.parts.Record.rotation.y = rotation;
 					model.parts.Platter.rotation.y = rotation;
 					stage.setExplosion(motion.explosion);
-					camera.zoom = (1 - 0.23 * motion.explosion) * Math.min(1, camera.aspect / 0.87);
-					camera.updateProjectionMatrix();
+					const standardZoom = (1 - 0.23 * motion.explosion) * Math.min(1, camera.aspect / 0.87);
+					if (desktopLayout.matches && recordVisible && viewportWidth) {
+						// Pull in as the lid closes, keeping the record clear of the list on narrow desktops.
+						const closeUp = (1 - motion.cover) * (1 - motion.explosion);
+						const frameWidth = MathUtils.clamp(viewportWidth / 1500, 0.68, 1);
+						const playingZoom = Math.min(2.35, camera.aspect * frameWidth);
+						camera.zoom = MathUtils.lerp(standardZoom, playingZoom, closeUp);
+						camera.setViewOffset(
+							viewportWidth,
+							viewportHeight,
+							0,
+							viewportHeight * 0.063 * Math.max(0, camera.zoom - 1),
+							viewportWidth,
+							viewportHeight
+						);
+					} else {
+						camera.zoom = standardZoom;
+						camera.clearViewOffset();
+					}
 
 					if (liveArtwork) {
 						recordTexture.needsUpdate = true;

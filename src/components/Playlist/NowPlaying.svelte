@@ -5,19 +5,17 @@
 	export let session = null;
 
 	$: canPause = session?.canPause;
-	$: title = session?.track?.title || session?.record?.name;
+	$: recordName = session?.record?.name;
+	$: trackName = session?.track?.title;
 	$: status = session?.status || (canPause ? 'Now playing' : 'Paused');
-	$: detail =
-		session?.record && !session.status && title !== session.record.name
-			? `${status} · ${session.record.name}`
-			: status;
+	$: title = trackName && trackName !== recordName ? `${recordName} · ${trackName}` : recordName;
 </script>
 
 {#if session?.record}
 	<div class="now-playing" role="group" aria-label="Now playing">
 		<div class="metadata" aria-live="polite" aria-atomic="true">
-			<p class="status" title={detail}>{detail}</p>
-			<p class="track" {title}>{title}</p>
+			<p class="status">{status}</p>
+			<p class="record-name" {title}>{recordName}</p>
 		</div>
 		<button
 			class="control"
@@ -72,7 +70,7 @@
 		line-height: 1.2;
 	}
 
-	.track {
+	.record-name {
 		font-size: 14px;
 		line-height: 1.35;
 	}

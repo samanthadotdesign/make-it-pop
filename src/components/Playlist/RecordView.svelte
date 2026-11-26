@@ -1,4 +1,5 @@
 <script>
+	import { browser } from '$app/env';
 	import { base } from '$app/paths';
 	import { getContext, onMount } from 'svelte';
 	import { listeningSessionContext, primeListeningAudio } from '@utils/listeningAudio.js';
@@ -176,7 +177,7 @@
 					<a
 						class="disc"
 						sveltekit:prefetch
-						href="{base}{record.path}"
+						href={browser ? `${base}${record.path}` : undefined}
 						aria-label={record.artist ? `${record.name} by ${record.artist}` : record.name}
 						aria-current={index === activeIndex ? 'true' : undefined}
 						style="transform: translate(-50%, -50%) {tilt(distance, desktop)}"
@@ -196,7 +197,9 @@
 				<p aria-live="polite">{current.name}</p>
 				<a
 					class="play"
-					href="{base}{current.path}{Array.isArray(current.tracks) ? '?play=1' : ''}"
+					href={browser
+						? `${base}${current.path}${Array.isArray(current.tracks) ? '?play=1' : ''}`
+						: undefined}
 					aria-label="Play {current.name}"
 					on:click={() => Array.isArray(current.tracks) && primeListeningAudio()}
 				>

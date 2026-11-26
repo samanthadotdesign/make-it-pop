@@ -32,7 +32,15 @@
 	let paused = false;
 	let exchange = null;
 	let request = 0;
+	let preview = null;
 	let infoOpen = false;
+	let infoScroller;
+	let infoViewportHeight = 0;
+	let infoContentHeight = 0;
+	let infoScrollTop = 0;
+	let infoClose;
+	let detailsButton;
+	let playbackProgress = 0;
 	let status = '';
 
 	$: if (audio) {
@@ -40,11 +48,17 @@
 		if (arrivalKey !== key) {
 			arrivalKey = key;
 			if (visible) openRecord(initialRecord, autoplay, returnToSession);
+			else closePreview();
 		}
 	}
 	$: track = record.tracks[trackIndex];
 	$: canPause = playing || cueing || exchange?.autoplay;
 	$: canToggle = !!track?.src && (!exchange || !!exchange.record);
+	$: displayedRecord = preview?.record ?? record;
+	$: displayedTrackIndex = preview?.trackIndex ?? trackIndex;
+	$: showingPlayback = started && !preview;
+	$: displayedCanPause = !preview && canPause;
+	$: displayedCanToggle = preview ? preview.trackIndex >= 0 : canToggle;
 	$: nowPlaying = started
 		? { record, track, status, canPause: !!canPause, canToggle, togglePlayback }
 		: null;
@@ -79,8 +93,44 @@
 		else start(true);
 	}
 
+	function toggleDisplayedPlayback() {
+		if (!preview) {
+			togglePlayback();
+			return;
+		}
+		if (preview.trackIndex < 0) return;
+		primeListeningAudio();
+		switchRecord(preview.record, true, preview.trackIndex);
+	}
+
 	function inspectDeck() {
 		if (paused && !exchange) deck.inspectPaused();
+	}
+
+	async function openInfo() {
+		infoScrollTop = 0;
+		infoOpen = true;
+		await tick();
+		infoClose?.focus({ preventScroll: true });
+	}
+
+	async function closeInfo() {
+		if (infoScroller) infoScroller.scrollTop = 0;
+		infoOpen = false;
+		await tick();
+		if (visible) detailsButton?.focus({ preventScroll: true });
+	}
+
+	function updateProgress() {
+		const currentSource = record.tracks[trackIndex]?.src;
+		playbackProgress =
+			started &&
+			currentSource &&
+			audio.getAttribute('src') === `${base}${currentSource}` &&
+			Number.isFinite(audio.duration) &&
+			audio.duration > 0
+				? Math.max(0, Math.min(1, audio.currentTime / audio.duration))
+				: 0;
 	}
 
 	async function playTrack(index, restart = false) {
@@ -90,8 +140,13 @@
 		trackIndex = index;
 		const thisRequest = ++request;
 		const source = `${base}${next.src}`;
-		if (audio.getAttribute('src') !== source) audio.src = source;
-		else if (restart || audio.ended) audio.currentTime = 0;
+		if (audio.getAttribute('src') !== source) {
+			playbackProgress = 0;
+			audio.src = source;
+		} else if (restart || audio.ended) {
+			playbackProgress = 0;
+			audio.currentTime = 0;
+		}
 
 		try {
 			await playListeningAudio();
@@ -116,23 +171,47 @@
 		if (cueing) playTrack(trackIndex);
 	}
 
-	function selectRecord(next) {
+	function selectRecord(next, index = next.tracks.findIndex(({ src }) => src)) {
+		playbackProgress = 0;
 		recordSource = null;
 		record = next;
-		trackIndex = next.tracks.findIndex(({ src }) => src);
-		if (visible) activeShelfRecord.set(next);
+		trackIndex = index;
+		if (visible && !preview) activeShelfRecord.set(next);
+	}
+
+	function openPreview(next) {
+		preview = {
+			record: next,
+			trackIndex: next.tracks.findIndex(({ src }) => src),
+			previousInfoOpen: preview?.previousInfoOpen ?? infoOpen
+		};
+		infoOpen = false;
+		activeShelfRecord.set(next);
+	}
+
+	function closePreview() {
+		if (!preview) return;
+		infoOpen = preview.previousInfoOpen;
+		preview = null;
 	}
 
 	function openRecord(next, playOnArrival, returning) {
 		if (returning && started) {
+			closePreview();
 			// The indicator may have been clicked as the deck was swapping records.
 			if (next.id !== record.id) updatePlayerUrl(record);
 		} else if (next.id !== record.id) {
-			resetFromNavigation(next, playOnArrival);
-		} else if (playOnArrival && !playing && !cueing && !exchange?.autoplay) {
-			if (exchange?.record) exchange.autoplay = true;
-			else start();
+			if (started && !playOnArrival) openPreview(next);
+			else switchRecord(next, playOnArrival);
+		} else {
+			closePreview();
+			if (playOnArrival && !playing && !cueing && !exchange?.autoplay) {
+				if (exchange?.record) exchange.autoplay = true;
+				else start();
+			}
 		}
+		// Clear the Play flag so browser history opens the record without starting it again.
+		if (playOnArrival && !returning) updatePlayerUrl(next);
 	}
 
 	function updatePlayerUrl(next) {
@@ -143,15 +222,16 @@
 		}).catch((error) => console.error('Could not update the selected record URL:', error));
 	}
 
-	async function resetFromNavigation(next, playOnArrival) {
+	async function switchRecord(next, playOnArrival, index) {
 		cancelPlayback();
 		const navigationRequest = request;
 		exchange = null;
 		started = false;
 		paused = false;
-		infoOpen = false;
+		infoOpen = preview?.record.id === next.id && infoOpen;
+		preview = null;
 		status = '';
-		selectRecord(next);
+		selectRecord(next, index);
 		deckVersion += 1;
 		await tick();
 		if (playOnArrival && request === navigationRequest) start();
@@ -193,18 +273,24 @@
 		}
 
 		selectRecord(swap.record);
+		if (preview?.record.id === swap.record.id) preview = null;
 		// The old pressing is out of frame. Let the new artwork reach the deck before it inserts.
 		await tick();
 		if (exchange !== swap) return;
 		exchange = null;
 		status = '';
 		if (swap.autoplay) start();
-		// Leave the shelf in place if a record finishes while the listener is browsing.
-		if (visible && !$navigating) updatePlayerUrl(swap.record);
+		// Leave the shelf or preview in place if a record finishes while the listener is browsing.
+		if (visible && !preview && !$navigating) updatePlayerUrl(swap.record);
 	}
 
 	function chooseTrack(index) {
+		if (preview) {
+			preview.trackIndex = index;
+			return;
+		}
 		if (exchange) return;
+		if (index !== trackIndex) playbackProgress = 0;
 		if (playing) playTrack(index, true);
 		else {
 			trackIndex = index;
@@ -225,6 +311,8 @@
 	onMount(() => {
 		audio = getListeningAudio();
 		activeShelfRecord.set(record);
+		const progressEvents = ['timeupdate', 'durationchange', 'loadedmetadata', 'emptied'];
+		progressEvents.forEach((event) => audio.addEventListener(event, updateProgress));
 		audio.addEventListener('ended', onEnded);
 		audio.addEventListener('error', onAudioError);
 		return () => {
@@ -232,16 +320,23 @@
 			exchange = null;
 			audio.removeEventListener('ended', onEnded);
 			audio.removeEventListener('error', onAudioError);
+			progressEvents.forEach((event) => audio.removeEventListener(event, updateProgress));
 			if (audio.getAttribute('src')) audio.currentTime = 0;
 		};
 	});
 </script>
 
 <svelte:head>
-	{#if visible}<title>{record.name} · make it pop</title>{/if}
+	{#if visible}<title>{displayedRecord.name} · make it pop</title>{/if}
 </svelte:head>
 
-<main class="room">
+<svelte:window
+	on:keydown={(event) => {
+		if (event.key === 'Escape' && infoOpen && visible) closeInfo();
+	}}
+/>
+
+<main class="room" class:playlist-open={infoOpen}>
 	{#if record.treatment}
 		{#key record.id}
 			<div class="texture" aria-hidden="true">
@@ -250,101 +345,172 @@
 		{/key}
 	{/if}
 
-	<div class="model">
-		{#key deckVersion}
-			<TurntableScene
-				bind:this={deck}
-				recordColor={record.treatment?.color ?? record.color}
-				labelColor={record.treatment?.label}
-				{recordSource}
-				{visible}
-				inspectable={paused && !exchange}
-				on:cue={onCue}
-				on:exchange={onExchange}
-				on:inspect={inspectDeck}
-			/>
-		{/key}
+	<div class="stage-viewport">
+		<div class="model">
+			<div class="active-deck" hidden={!!preview}>
+				{#key deckVersion}
+					<TurntableScene
+						bind:this={deck}
+						recordColor={record.treatment?.color ?? record.color}
+						labelColor={record.treatment?.label}
+						{recordSource}
+						visible={visible && !preview}
+						inspectable={paused && !exchange}
+						on:cue={onCue}
+						on:exchange={onExchange}
+						on:inspect={inspectDeck}
+					/>
+				{/key}
+			</div>
+			{#if preview}
+				{#key preview.record.id}
+					<TurntableScene
+						recordColor={preview.record.treatment?.color ?? preview.record.color}
+						labelColor={preview.record.treatment?.label}
+					/>
+				{/key}
+			{/if}
+		</div>
 	</div>
 
+	{#if infoOpen}
+		<div
+			class="playlist-region"
+			class:has-more-tracks={infoContentHeight - infoScrollTop > infoViewportHeight + 1}
+		>
+			<div
+				class="playlist-scroll"
+				bind:this={infoScroller}
+				bind:clientHeight={infoViewportHeight}
+				on:scroll={(event) => (infoScrollTop = event.currentTarget.scrollTop)}
+				tabindex="0"
+				role="region"
+				aria-label="Playlist"
+			>
+				<section
+					id="playlist-info"
+					class="info"
+					bind:offsetHeight={infoContentHeight}
+					aria-label="Record details"
+				>
+					<button
+						bind:this={infoClose}
+						class="icon-button info-close"
+						type="button"
+						aria-label="Hide record details"
+						on:click={closeInfo}
+					>
+						<ShelfIcon name="plus" />
+					</button>
+					<h1>{displayedRecord.name}</h1>
+					{#if displayedRecord.artist}
+						<p>
+							{displayedRecord.artist}{displayedRecord.year ? ` · ${displayedRecord.year}` : ''}
+						</p>
+					{/if}
+					{#if displayedRecord.credit}<p>{displayedRecord.credit}</p>{/if}
+					{#if displayedRecord.source || displayedRecord.license}
+						<p class="credits">
+							{#if displayedRecord.source}<a
+									href={displayedRecord.source}
+									target="_blank"
+									rel="noreferrer">Original release</a
+								>{/if}
+							{#if displayedRecord.license}<a
+									href={displayedRecord.license.url}
+									target="_blank"
+									rel="noreferrer">{displayedRecord.license.name}</a
+								>{/if}
+						</p>
+					{/if}
+
+					<ol class="tracks">
+						{#each displayedRecord.tracks as item, index}
+							<li>
+								{#if item.src}
+									<button
+										type="button"
+										class="track"
+										aria-current={index === displayedTrackIndex ? 'true' : undefined}
+										on:click={() => chooseTrack(index)}
+									>
+										<span>{index + 1}</span>
+										<span
+											>{item.title}{#if item.artist}<small>{item.artist}</small>{/if}</span
+										>
+									</button>
+								{:else}
+									<span class="track unavailable">
+										<span>{index + 1}</span>
+										<span
+											>{item.title}<small
+												>Unavailable here{#if displayedRecord.missingTrackSource}
+													· <a
+														href={displayedRecord.missingTrackSource}
+														target="_blank"
+														rel="noreferrer">Original track</a
+													>{/if}</small
+											></span
+										>
+									</span>
+								{/if}
+							</li>
+						{/each}
+					</ol>
+				</section>
+			</div>
+		</div>
+	{/if}
+
 	<div class="controls">
-		{#if infoOpen}
-			<section id="playlist-info" class="info" aria-label="Record details">
-				<h1>{record.name}</h1>
-				{#if record.artist}
-					<p>{record.artist}{record.year ? ` · ${record.year}` : ''}</p>
-				{/if}
-				{#if record.credit}<p>{record.credit}</p>{/if}
-				{#if record.source || record.license}
-					<p class="credits">
-						{#if record.source}<a href={record.source} target="_blank" rel="noreferrer"
-								>Original release</a
-							>{/if}
-						{#if record.license}<a href={record.license.url} target="_blank" rel="noreferrer"
-								>{record.license.name}</a
-							>{/if}
-					</p>
-				{/if}
-
-				<ol class="tracks">
-					{#each record.tracks as item, index}
-						<li>
-							{#if item.src}
-								<button
-									type="button"
-									class="track"
-									aria-current={index === trackIndex ? 'true' : undefined}
-									on:click={() => chooseTrack(index)}
-								>
-									<span>{index + 1}</span>
-									<span
-										>{item.title}{#if item.artist}<small>{item.artist}</small>{/if}</span
-									>
-								</button>
-							{:else}
-								<span class="track unavailable">
-									<span>{index + 1}</span>
-									<span
-										>{item.title}<small
-											>Unavailable here{#if record.missingTrackSource}
-												· <a href={record.missingTrackSource} target="_blank" rel="noreferrer"
-													>Original track</a
-												>{/if}</small
-										></span
-									>
-								</span>
-							{/if}
-						</li>
-					{/each}
-				</ol>
-			</section>
+		{#if infoOpen && showingPlayback}
+			<div
+				class="progress"
+				role="progressbar"
+				aria-label="Playback progress"
+				aria-valuemin="0"
+				aria-valuemax="100"
+				aria-valuenow={Math.round(playbackProgress * 100)}
+			>
+				<div
+					class="played"
+					class:advancing={playing}
+					style={`transform: scaleX(${playbackProgress})`}
+				/>
+			</div>
 		{/if}
-
 		<div class="toolbar">
 			<div class="title">
-				<p>{record.name}</p>
-				{#if status || (playing && track)}
+				<p>{displayedRecord.name}</p>
+				{#if showingPlayback && (status || (playing && track))}
 					<p class="track-title" aria-live="polite">{status || track?.title}</p>
 				{/if}
 			</div>
+			<div class="title desktop-title" aria-live="polite" aria-atomic="true">
+				{#if showingPlayback}
+					<p class="playback-status">{status || (playing ? 'Now playing' : 'Paused')}</p>
+				{/if}
+				<p>{(showingPlayback && track?.title) || displayedRecord.name}</p>
+			</div>
 			<button
+				bind:this={detailsButton}
 				class="icon-button details"
-				class:expanded={infoOpen}
 				type="button"
-				aria-label={infoOpen ? 'Hide record details' : 'Show record details'}
+				aria-label="Show record details"
 				aria-expanded={infoOpen}
 				aria-controls={infoOpen ? 'playlist-info' : undefined}
-				on:click={() => (infoOpen = !infoOpen)}
+				on:click={openInfo}
 			>
 				<ShelfIcon name="plus" />
 			</button>
 			<button
 				class="icon-button"
 				type="button"
-				aria-label={canPause ? 'Pause' : 'Play'}
-				disabled={!canToggle}
-				on:click={togglePlayback}
+				aria-label={displayedCanPause ? 'Pause' : 'Play'}
+				disabled={!displayedCanToggle}
+				on:click={toggleDisplayedPlayback}
 			>
-				<ShelfIcon name={canPause ? 'pause' : 'play'} />
+				<ShelfIcon name={displayedCanPause ? 'pause' : 'play'} />
 			</button>
 		</div>
 	</div>
@@ -353,7 +519,11 @@
 <style>
 	.room {
 		--bottom: calc(72px + env(safe-area-inset-bottom));
+		--control-offset: 0px;
+		--panel-height: calc(100dvh - 72px - var(--bottom) - var(--control-offset));
+		--panel-peek: min(420px, calc(var(--panel-height) * 0.52));
 		--player-background: #c8c8c8;
+		--layout-motion: 400ms cubic-bezier(0.22, 1, 0.36, 1);
 		position: fixed;
 		inset: 0;
 		isolation: isolate;
@@ -370,16 +540,58 @@
 		pointer-events: none;
 	}
 
+	.stage-viewport {
+		--stage-edge-fade: linear-gradient(
+			to bottom,
+			transparent,
+			#000 64px,
+			#000 calc(100% - 64px),
+			transparent
+		);
+		position: absolute;
+		inset: 72px 0 calc(var(--bottom) + var(--control-offset));
+		overflow: hidden;
+		-webkit-mask-image: var(--stage-edge-fade);
+		mask-image: var(--stage-edge-fade);
+	}
+
 	.model {
 		position: absolute;
-		inset: 72px 0 var(--bottom);
-		overflow: hidden;
+		inset: 0;
+		transition: transform var(--layout-motion);
+	}
+
+	.active-deck {
+		height: 100%;
+	}
+
+	.playlist-open .model {
+		/* Lift the full-size canvas 265px at the reference's 420px panel height. */
+		transform: translateY(calc(var(--panel-peek) * -265 / 420));
 	}
 
 	.controls {
 		position: absolute;
-		z-index: 1;
-		inset: auto 0 0;
+		z-index: 2;
+		inset: auto 0 var(--control-offset);
+		background: var(--player-background);
+	}
+
+	.progress {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 2px;
+		overflow: hidden;
+	}
+
+	.played {
+		height: 100%;
+		background: #151515;
+		transform-origin: left;
+	}
+
+	.played.advancing {
+		transition: transform 250ms linear;
 	}
 
 	.toolbar {
@@ -393,6 +605,10 @@
 	.title {
 		flex: 1;
 		min-width: 0;
+	}
+
+	.desktop-title {
+		display: none;
 	}
 
 	.title p {
@@ -423,28 +639,69 @@
 		opacity: 0.35;
 		cursor: default;
 	}
-	.expanded :global(.icon) {
+	.info-close :global(.icon) {
 		transform: rotate(45deg);
 	}
 
+	.playlist-open .details {
+		visibility: hidden;
+	}
+
+	.playlist-region {
+		position: absolute;
+		z-index: 1;
+		inset: 72px 0 calc(var(--bottom) + var(--control-offset));
+		pointer-events: none;
+	}
+
+	.playlist-scroll {
+		height: 100%;
+		overflow-y: auto;
+		overscroll-behavior-y: contain;
+		scrollbar-width: none;
+		animation: reveal-playlist var(--layout-motion);
+	}
+
+	.playlist-scroll::-webkit-scrollbar {
+		display: none;
+	}
+
+	@keyframes reveal-playlist {
+		from {
+			transform: translateY(var(--panel-peek));
+		}
+		to {
+			transform: translateY(0);
+		}
+	}
+
 	.info {
-		max-height: min(50dvh, 420px);
-		overflow: auto;
-		overscroll-behavior: contain;
-		padding: 24px 32px 12px;
+		position: relative;
+		display: flow-root;
+		min-height: 100%;
+		/* Native scrolling consumes this space before continuing through the songs. */
+		margin-top: calc(var(--panel-height) - var(--panel-peek));
+		padding: 20px 32px 12px;
 		border-top: 1px solid #0002;
 		background: #e7e7e7;
+		pointer-events: auto;
+	}
+
+	.info-close {
+		position: absolute;
+		top: 9px;
+		right: 20px;
 	}
 
 	h1 {
-		font-size: 20px;
+		font-size: 1rem;
+		padding-right: 40px;
 	}
 
 	.credits {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 6px 16px;
-		margin-top: 8px;
 		font-size: 14px;
 	}
 
@@ -453,7 +710,7 @@
 	}
 
 	.tracks {
-		margin-top: 12px;
+		margin: 24px -12px 0;
 	}
 
 	.track {
@@ -461,9 +718,13 @@
 		grid-template-columns: 2ch 1fr;
 		gap: 12px;
 		width: 100%;
-		padding: 8px 4px;
+		padding: 12px 16px;
 		text-align: left;
 		border-bottom: 1px solid #0002;
+	}
+
+	.tracks li:last-child .track {
+		border-bottom-color: transparent;
 	}
 
 	button.track {
@@ -485,22 +746,114 @@
 	}
 
 	@media (min-width: 768px) {
-		.model {
+		.room {
+			--bottom: 60px;
+			--control-offset: 23px;
+			--sidebar-width: min(440px, 35vw);
+			--sidebar-inset: 32px;
+			--sidebar-gap: 18px;
+		}
+
+		.stage-viewport {
 			bottom: calc(clamp(20px, 8dvh, 65px) + 82px);
 		}
 
+		.model {
+			/* Blend the edge of the canvas that slides into view beside the playlist. */
+			mask-image: linear-gradient(to right, transparent, #000 80px);
+		}
+
+		.playlist-open .model {
+			transform: translateX(calc(var(--sidebar-width) * 0.65));
+		}
+
+		.controls,
+		.playlist-region {
+			left: var(--sidebar-inset);
+			right: auto;
+			width: var(--sidebar-width);
+		}
+
 		.controls {
-			--bottom: 74px;
-			inset: auto auto clamp(20px, 8dvh, 65px) 50%;
-			transform: translateX(-50%);
-			width: min(440px, calc(100vw - 64px));
+			border: 1px solid #15151521;
+			background: #ffffff30;
+		}
+
+		.toolbar {
+			min-height: calc(var(--bottom) - 2px);
+			gap: 0;
+			padding: 2px 4px 2px 14px;
+		}
+
+		.playlist-open .details {
+			display: none;
+		}
+
+		.progress {
+			inset: -1px -1px auto;
+		}
+
+		.title {
+			display: none;
+		}
+
+		.desktop-title {
+			display: block;
+			font-size: 14px;
+			line-height: 1.35;
+		}
+
+		.playback-status {
+			color: #2d2d2d;
+			font-size: 11px;
+			line-height: 1.2;
+		}
+
+		.playlist-region {
+			bottom: calc(var(--bottom) + var(--control-offset) + var(--sidebar-gap));
+			overflow: hidden;
+			animation: reveal-desktop-playlist var(--layout-motion);
+		}
+
+		.has-more-tracks::after {
+			content: '';
+			position: absolute;
+			inset: auto 0 0;
+			height: 90px;
+			background: linear-gradient(to bottom, #e7e7e700 27%, #e7e7e794);
+			pointer-events: none;
+		}
+
+		.playlist-scroll {
+			animation: none;
 		}
 
 		.info {
-			border: 1px solid #ffffff70;
-			border-radius: 8px;
-			backdrop-filter: blur(12px);
-			margin-bottom: 8px;
+			margin-top: 0;
+			background: #e7e7e74d;
+		}
+
+		.track {
+			grid-template-columns: 20px minmax(0, 1fr);
+		}
+	}
+
+	@keyframes reveal-desktop-playlist {
+		from {
+			opacity: 0;
+			transform: translateX(-16px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.model,
+		.played.advancing {
+			transition: none;
+		}
+
+		.playlist-region,
+		.playlist-scroll {
+			animation: none;
 		}
 	}
 </style>
