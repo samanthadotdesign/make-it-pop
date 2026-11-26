@@ -5,6 +5,7 @@
 	export let record;
 	export let spinning = false;
 	export let animate = true;
+	export let beveled = false;
 
 	const waterMotion = { from: 0, to: 2, durationMs: 2000, loopMode: 'boomerang' };
 	const assetRoot = `${base}/images/shelf`;
@@ -12,61 +13,127 @@
 
 <div
 	class="record"
-	class:spinning
+	class:beveled
+	class:dusk={record.finish === 'dusk'}
 	aria-hidden="true"
 	style="--pressing: {record.color ?? record.tint}"
 >
-	{#if record.treatment}
-		<div class="art" class:dusk={record.finish === 'dusk'}>
-			<div class="shader" style="--pressing: {record.treatment.color}">
-				<VinylShader
-					kind={record.treatment.kind}
-					properties={record.treatment.properties}
-					{animate}
-					playheadTimeline={record.finish === 'water' ? waterMotion : null}
-					on:surface
-				/>
-			</div>
-			<img class="grooves" src="{assetRoot}/{record.finish}-grooves.svg" alt="" />
-			<img class="label" src="{assetRoot}/{record.finish}-label.svg" alt="" />
-		</div>
-	{:else}
-		<div class="pressing">
-			<div class="plain-label" />
-		</div>
+	{#if beveled}
+		<span class="rim" style="--rim-color: {record.treatment?.color ?? record.color ?? record.tint}">
+			<span class="rim-side" />
+		</span>
 	{/if}
+
+	<div class="face">
+		<div class="rotor" class:spinning>
+			{#if record.treatment}
+				<div class="shader" style="--pressing: {record.treatment.color}">
+					<VinylShader
+						kind={record.treatment.kind}
+						properties={record.treatment.properties}
+						{animate}
+						playheadTimeline={record.finish === 'water' ? waterMotion : null}
+						on:surface
+					/>
+				</div>
+				<img class="grooves" src="{assetRoot}/{record.finish}-grooves.svg" alt="" />
+				<span
+					class="label"
+					style:background-color={record.finish === 'water'
+						? 'rgb(255 255 255 / 0.5)'
+						: record.treatment.label}
+				/>
+			{:else}
+				<div class="pressing">
+					<span class="label plain-label" />
+				</div>
+			{/if}
+		</div>
+	</div>
 </div>
 
 <style>
 	.record,
-	.art,
+	.face,
+	.rotor,
 	.pressing,
-	.shader {
+	.shader,
+	.rim {
 		position: absolute;
 		inset: 0;
 	}
 
 	.record {
-		animation: rotate-record 8s linear infinite paused;
 		pointer-events: none;
 	}
 
-	.spinning {
-		animation-play-state: running;
-	}
-
 	.dusk {
-		inset: 0 6% 6% 0;
+		inset: 3%;
 	}
 
-	.shader {
-		background-color: var(--pressing);
+	.beveled,
+	.rim {
+		transform-style: preserve-3d;
+	}
+
+	.rim {
+		/* The playable model's pressing is 0.0225 units thick and 3.003 units across. */
+		--rim-depth: calc(var(--size) * 0.0075);
+		--rim-light: color-mix(in srgb, var(--rim-color) 84%, white);
+		--rim-shade: color-mix(in srgb, var(--rim-color) 80%, #17151d);
+	}
+
+	.rim::before,
+	.rim-side,
+	.rim::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		mask: radial-gradient(
+			circle closest-side,
+			transparent 2.3%,
+			#000 2.5% 99.65%,
+			transparent 100%
+		);
+	}
+
+	.rim::before {
+		background: var(--rim-light);
+		transform: translateZ(calc(var(--rim-depth) * -0.3)) scale(0.998);
+	}
+
+	.rim-side {
+		background: var(--rim-color);
+		transform: translateZ(calc(var(--rim-depth) * -0.65)) scale(0.997);
+	}
+
+	.rim::after {
+		background: var(--rim-shade);
+		transform: translateZ(calc(-1 * var(--rim-depth))) scale(0.992);
+	}
+
+	.face {
+		/* The rim and spindle hole share a fixed center with the rotating artwork. */
 		mask: radial-gradient(
 			circle closest-side,
 			transparent 2.2%,
 			#000 2.45% 99.6%,
 			transparent 100%
 		);
+	}
+
+	.rotor {
+		transform-origin: 50% 50%;
+		animation: rotate-record 12s linear infinite paused;
+	}
+
+	.spinning {
+		animation-play-state: running;
+		will-change: transform;
+	}
+
+	.shader {
+		background-color: var(--pressing);
 	}
 
 	.grooves,
@@ -83,38 +150,32 @@
 
 	.label {
 		inset: 33.34%;
-		width: 33.32%;
-		height: 33.32%;
+		border-radius: 50%;
 	}
 
 	.pressing {
-		border-radius: 50%;
 		background: repeating-radial-gradient(circle, transparent 0 3px, #1111 3.5px 4px),
 			var(--pressing);
-		mask: radial-gradient(
-			circle closest-side,
-			transparent 2.25%,
-			#000 2.5% 99.6%,
-			transparent 100%
-		);
 	}
 
 	.plain-label {
-		position: absolute;
-		inset: 33.34%;
-		border-radius: 50%;
 		background: color-mix(in srgb, var(--pressing) 30%, #f2ede3);
 	}
 
 	@keyframes rotate-record {
+		from {
+			transform: rotateZ(0turn);
+		}
+
 		to {
-			transform: rotate(1turn);
+			transform: rotateZ(1turn);
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.record {
+		.rotor {
 			animation: none;
+			will-change: auto;
 		}
 	}
 </style>

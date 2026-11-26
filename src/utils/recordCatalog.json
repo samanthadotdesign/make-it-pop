@@ -1,0 +1,927 @@
+[
+	{
+		"id": "7tuJKZre2zfUdz0ERsqR1L",
+		"name": "Float On",
+		"artist": "Efilheim",
+		"originalTitle": "anamnesis",
+		"source": "https://efilheim.bandcamp.com/album/anamnesis",
+		"credit": "From anamnesis",
+		"color": "#a39aca",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"memory of a dream",
+			"ever and never",
+			"drifting stardust",
+			"between the waves",
+			"like wild horses on the hills",
+			"closer",
+			"in the end, only sorrow"
+		],
+		"year": 2025
+	},
+	{
+		"id": "public-domain-lo-fi-2",
+		"name": "Saltwater Daydreams",
+		"artist": "Holizna",
+		"originalTitle": "Public Domain Lo-Fi 2",
+		"source": "https://holiznacc0.bandcamp.com/album/public-domain-lo-fi-2",
+		"credit": "A selection from Public Domain Lo-Fi 2",
+		"color": "#cab660",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Cold (Salt) Water",
+			"Currents We Used To Know",
+			"I Don't Understand A Thing",
+			"Ocean Memory",
+			"Washed Up",
+			"Feeling Human Again",
+			"Foley Of Man",
+			"Hope On Repeat",
+			"Seasonal Depression",
+			"Spring In Sight",
+			"Toy Box",
+			"August Never Lasts",
+			"Faded In Sunlight",
+			"Roof Tops",
+			"Summer Felt Longer Then",
+			"The Last Long Day",
+			"Kitsune",
+			"Kodama",
+			"Tanuki",
+			"Tengu",
+			"Tsukumogami",
+			"Yuki-onna"
+		],
+		"year": 2026
+	},
+	{
+		"id": "to-chill-and-stay-awake",
+		"name": "Half Awake",
+		"artist": "Loyalty Freak Music",
+		"originalTitle": "To Chill and Stay Awake",
+		"source": "https://loyaltyfreakmusic.com/music/to-chill-and-stay-awake/",
+		"credit": "From To Chill and Stay Awake",
+		"color": "#e99a72",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Coexistenz",
+			"Everyone",
+			"Chillin with a drink at the club",
+			"You know why",
+			"Traveling in your mind",
+			"People are spinning",
+			"Monarch of the street"
+		],
+		"year": 2017
+	},
+	{
+		"id": "lofi-ftw",
+		"name": "Warm Windows",
+		"artist": "Loyalty Freak Music",
+		"originalTitle": "Lo-fi FTW",
+		"source": "https://loyaltyfreakmusic.com/music/lofi-ftw/",
+		"credit": "From Lo-fi FTW",
+		"color": "#d7b18e",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Lack of Color - That tenderness",
+			"Lack of Color - Can you tell me who I am",
+			"Lack of Color - Let me dive",
+			"Take this seriously",
+			"I'm feeling it",
+			"I feel double near you",
+			"That was a pain",
+			"You forgot us",
+			"Need to find peace, somewhere"
+		],
+		"year": 2024
+	},
+	{
+		"id": "space-sleep-meditation",
+		"name": "Weightless",
+		"artist": "HoliznaCC0",
+		"originalTitle": "Space - Sleep - Meditation",
+		"source": "https://freemusicarchive.org/music/holiznacc0/space-sleep-meditation/",
+		"credit": "A selection from Space - Sleep - Meditation by HoliznaCC0",
+		"color": "#8c9fba",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["Cosmic Waves", "DreamScape", "Rain _ Sleep _ Meditation"],
+		"year": 2022
+	},
+	{
+		"id": "minimal-ambient-bounce",
+		"name": "Low Orbit",
+		"artist": "Loyalty Freak Music",
+		"originalTitle": "Minimal Ambient Bounce",
+		"source": "https://loyaltyfreakmusic.com/music/minimal-ambient-bounce/",
+		"credit": "From Minimal Ambient Bounce",
+		"color": "#81aeb1",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Once more with you",
+			"One Cool Minute",
+			"Old Key",
+			"Static Shoes",
+			"Waiting TTTT",
+			"Lag",
+			"No Cadillac"
+		],
+		"year": 2017
+	},
+	{
+		"id": "lofi-ambient-songs",
+		"name": "Soft Focus",
+		"artist": "Loyalty Freak Music",
+		"originalTitle": "Lo-fi Ambient Songs!",
+		"source": "https://loyaltyfreakmusic.com/music/lofi-ambient-songs/",
+		"credit": "From Lo-fi Ambient Songs!",
+		"color": "#a3b9a2",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Lack of Color - Drowning in your smile",
+			"Lack of Color - Dancing in the street",
+			"Lack of Color - Aeroplane",
+			"Lack of Color - I'm glad you are here with me",
+			"Crying those tears I've kept so long",
+			"This pain is soft but here",
+			"I hope you're happy",
+			"Lack of Color - Sugar and coffee"
+		],
+		"year": 2021
+	},
+	{
+		"id": "tad-lofi-compilation",
+		"name": "Sunday Morning",
+		"artist": "TAD",
+		"originalTitle": "Lo-fi Compilation",
+		"source": "https://opengameart.org/content/lofi-compilation",
+		"credit": "From Lo-fi Compilation",
+		"color": "#dba987",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"A cup of tea",
+			"Cue",
+			"Bartender",
+			"Cat caffe",
+			"Rainy Forest",
+			"Countryside",
+			"Oceanside",
+			"Florist",
+			"Morning rain"
+		],
+		"year": 2019
+	},
+	{
+		"id": "john-bartmann-moody-beats",
+		"name": "Side Streets",
+		"artist": "John Bartmann",
+		"originalTitle": "Moody Beats",
+		"source": "https://freemusicarchive.org/music/John_Bartmann/moody-beats",
+		"credit": "A selection from Moody Beats by John Bartmann",
+		"color": "#92a9bd",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Lofi Jam",
+			"Boneshake",
+			"Hood Rat",
+			"Under the Hood",
+			"A Moody Phonecall",
+			"Spooky Systems"
+		],
+		"year": 2024
+	},
+	{
+		"id": "iamoneabe-lofi-selections",
+		"name": "Velvet Static",
+		"artist": "iamoneabe",
+		"originalTitle": "Lo-fi & Chill — Selections",
+		"source": "https://opengameart.org/users/iamoneabe",
+		"credit": "From Lo-fi & Chill — Selections. A curated selection of lo-fi synthwave, electro blues, and chill game music by iamoneabe.",
+		"color": "#b19ab8",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["Vintage Menu", "Dimly lit", "Gone Fishin'"]
+	},
+	{
+		"id": "open-goldberg-variations",
+		"name": "Quiet Geometry",
+		"artist": "Kimiko Ishizaka",
+		"originalTitle": "The Open Goldberg Variations",
+		"source": "https://opengoldbergvariations.org/",
+		"credit": "From The Open Goldberg Variations. Composed by Johann Sebastian Bach",
+		"color": "#9fb2d1",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Aria",
+			"Variatio 1 a 1 Clav.",
+			"Variatio 2 a 1 Clav.",
+			"Variatio 3 a 1 Clav. Canone all’Unisuono",
+			"Variatio 4 a 1 Clav.",
+			"Variatio 5 a 1 ovvero 2 Clav.",
+			"Variatio 6 a 1 Clav. Canone alla Seconda",
+			"Variatio 7 a 1 ovvero 2 Clav.",
+			"Variatio 8 a 2 Clav.",
+			"Variatio 9 a 1 Clav. Canone alla Terza",
+			"Variatio 10 a 1 Clav. Fughetta",
+			"Variatio 11 a 2 Clav.",
+			"Variatio 12 Canone alla Quarta",
+			"Variatio 13 a 2 Clav.",
+			"Variatio 14 a 2 Clav.",
+			"Variatio 15 a 1 Clav. Canone alla Quinta",
+			"Variatio 16 a 1 Clav. Ouverture",
+			"Variatio 17 a 2 Clav.",
+			"Variatio 18 a 1 Clav. Canone alla Sexta",
+			"Variatio 19 a 1 Clav.",
+			"Variatio 20 a 2 Clav.",
+			"Variatio 21 Canone alla Settima",
+			"Variatio 22 a 1 Clav.",
+			"Variatio 23 a 2 Clav.",
+			"Variatio 24 a 1 Clav. Canone all’Ottava",
+			"Variatio 25 a 2 Clav.",
+			"Variatio 26 a 2 Clav.",
+			"Variatio 27 a 2 Clav. Canone alla Nona",
+			"Variatio 28 a 2 Clav.",
+			"Variatio 29 a 1 ovvero 2 Clav.",
+			"Variatio 30 a 1 Clav. Quodlibet",
+			"Aria da Capo è Fine"
+		],
+		"year": 2012
+	},
+	{
+		"id": "eldorado-beats-2019",
+		"name": "Concrete Heat",
+		"artist": "Gage Lara / Eldorado Beats",
+		"originalTitle": "Eldorado Beats 2019 (CC0)",
+		"source": "https://gagelara.bandcamp.com/album/eldorado-beats-2019-cc0",
+		"credit": "From Eldorado Beats 2019 (CC0)",
+		"color": "#b59da8",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Sway (Hard Trap Type Beat)",
+			"Hunted (Hard Trap Beat)",
+			"Shinobi (Japanese Trap Beat)",
+			"Undertow (Orchestral Type Beat)",
+			"Choices (Orchestral Type Beat)",
+			"Nighttime (Chill Type Beat)",
+			"Sunrise (Uplifting Guitar Type Beat)",
+			"Childs Play (Horror Type Beat)"
+		],
+		"year": 2024
+	},
+	{
+		"id": "after-dark",
+		"name": "Night Shift",
+		"artist": "HoliznaCC0",
+		"originalTitle": "After Dark",
+		"source": "https://freemusicarchive.org/music/holiznacc0/after-dark",
+		"credit": "From After Dark",
+		"color": "#91a5bf",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["ITS A TRAP", "Childs Play", "Serial", "Skill Test", "WOLF"],
+		"year": 2026
+	},
+	{
+		"id": "phonk-aura-farming",
+		"name": "Chrome Teeth",
+		"artist": "HoliznaCC0",
+		"originalTitle": "PHONK - AURA FARMING",
+		"source": "https://freemusicarchive.org/music/holiznacc0/phonk-aura-farming",
+		"credit": "From PHONK - AURA FARMING",
+		"color": "#c5a58c",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["ONLY HUMAN", "Re Adusjtment", "Pantheon", "Phonk Remix", "Phonk ish"],
+		"year": 2026
+	},
+	{
+		"id": "beats-from-the-crypt",
+		"name": "Basement Shadows",
+		"artist": "HoliznaCC0",
+		"originalTitle": "Beats From The Crypt",
+		"source": "https://freemusicarchive.org/music/holiznacc0/beats-from-the-crypt",
+		"credit": "From Beats From The Crypt",
+		"color": "#a6ad85",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Halloween Lofi",
+			"Abducted",
+			"Dance Of The Dead",
+			"Strange Brew",
+			"Someones In The Attic",
+			"Carnival Of Souls",
+			"Under The Floor Boards",
+			"Shadow Self",
+			"Tension In The Air"
+		],
+		"year": 2022
+	},
+	{
+		"id": "bassic",
+		"name": "Pocket Groove",
+		"artist": "HoliznaCC0",
+		"originalTitle": "BASSIC",
+		"source": "https://freemusicarchive.org/music/holiznacc0/bassic",
+		"credit": "From BASSIC",
+		"color": "#a2a5cb",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["Eat.mp3", "Sleep", "Breath", "Make Money", "Make Love", "Make Funk"],
+		"year": 2020
+	},
+	{
+		"id": "straight-to-vhs",
+		"name": "Midnight Broadcast",
+		"artist": "HoliznaCC0",
+		"originalTitle": "Straight To VHS",
+		"source": "https://freemusicarchive.org/music/holiznacc0/straight-to-vhs",
+		"credit": "From Straight To VHS",
+		"color": "#a39aca",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Interstellar Soap Opra",
+			"Moronic Tin Can Robot",
+			"WHAT",
+			"Gangsters In Space",
+			"Strange Signal",
+			"Acid",
+			"Conquer The Earth!"
+		],
+		"year": 2022
+	},
+	{
+		"id": "orphaned-media",
+		"name": "Dust on Tape",
+		"artist": "HoliznaCC0",
+		"originalTitle": "Orphaned Media",
+		"source": "https://freemusicarchive.org/music/holiznacc0/orphaned-media",
+		"credit": "From Orphaned Media",
+		"color": "#b6a17f",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"There Ain't Nothin",
+			"How Can Things Be",
+			"Ragtime Getdown",
+			"Waves",
+			"WitchCraft",
+			"Swingin' Richards",
+			"Tunez",
+			"Exploring Tomorrow Part 1",
+			"Exploring Tomorrow Part 2",
+			"Expolirng Tomorrow Part 3",
+			"Strangers",
+			"Bikini Bottom"
+		],
+		"year": 2022
+	},
+	{
+		"id": "bartmann-happy-trappy",
+		"name": "Sunshine on Concrete",
+		"artist": "John Bartmann",
+		"originalTitle": "Happy Trappy Positive Urban Beats",
+		"source": "https://freemusicarchive.org/music/John_Bartmann/happy-trappy-positive-urban-beats",
+		"credit": "From Happy Trappy Positive Urban Beats",
+		"color": "#92b6b2",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Inner City Smiling",
+			"She Moves Slow",
+			"Handful Of Benjamins",
+			"Dopest Hope",
+			"Bright Tenement Skyline",
+			"Gimme That African Vibe",
+			"Such Good Candy",
+			"Back To My Roots"
+		],
+		"year": 2020
+	},
+	{
+		"id": "zane-new-peach-radio",
+		"name": "Sunday Overdrive",
+		"artist": "Zane Little",
+		"originalTitle": "New Peach Radio",
+		"source": "https://freemusicarchive.org/music/zane-little/new-peach-radio",
+		"credit": "From New Peach Radio",
+		"color": "#b59da8",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Drive",
+			"Empty Stretch",
+			"Midnight Cruiser",
+			"Freeway Fumes",
+			"Barriers",
+			"Detour"
+		],
+		"year": 2023
+	},
+	{
+		"id": "waves-of-nostalgia-2",
+		"name": "Neon Afterglow",
+		"artist": "HoliznaCC0",
+		"originalTitle": "Waves Of Nostalgia 2",
+		"source": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2",
+		"credit": "From Waves Of Nostalgia 2",
+		"color": "#91a5bf",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Machines With Feelings",
+			"All The Fight Left",
+			"New Gods",
+			"Cyber Anxiety",
+			"Night Life",
+			"Fires Uptown",
+			"Street Lights Passing By",
+			"Internal Panic",
+			"We used To Dance"
+		],
+		"year": 2023
+	},
+	{
+		"id": "power-pop",
+		"name": "Electric Daydream",
+		"artist": "HoliznaCC0",
+		"originalTitle": "Power Pop!",
+		"source": "https://freemusicarchive.org/music/holiznacc0/power-pop",
+		"credit": "From Power Pop!",
+		"color": "#c5a58c",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Funky Pop",
+			"transcendental earth people",
+			"Happy Dance",
+			"Retro Synths",
+			"50 Over The Speed Limit",
+			"A Small Town On Pluto",
+			"Retro Soundtrack",
+			"Bouncing",
+			"Drama",
+			"Day Dreams",
+			"Love Love Love",
+			"Mutant Club",
+			"Dear Mr Super Computer",
+			"Back In The 80s"
+		],
+		"year": 2022
+	},
+	{
+		"id": "we-drove-all-night",
+		"name": "Tail Lights",
+		"artist": "HoliznaCC0",
+		"originalTitle": "We Drove All Night",
+		"source": "https://freemusicarchive.org/music/holiznacc0/we-drove-all-night",
+		"credit": "From We Drove All Night",
+		"color": "#a6ad85",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"City In The Rearview",
+			"I Thought You Were Cool",
+			"Quiet Moonlit Countrysides",
+			"Stealing Glimpses Of Your Face",
+			"Morning Light",
+			"RetroSpect"
+		],
+		"year": 2022
+	},
+	{
+		"id": "post-morphose",
+		"name": "Circuit Bloom",
+		"artist": "Koi-discovery",
+		"originalTitle": "Post-Morphose",
+		"source": "https://freemusicarchive.org/music/koi-discovery/post-morphose",
+		"credit": "From Post-Morphose",
+		"color": "#a2a5cb",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Chromatismus.mp3",
+			"der anti-philosophe.mp3",
+			"broken-origami.mp3",
+			"arborescence_ex-vitro.mp3",
+			"The_agonie_of_the_minotaur.mp3",
+			"GODANDRAM.mp3",
+			"Icar_Fell.mp3",
+			"Mermaids-Trapped.mp3",
+			"Post-morphose.mp3",
+			"PHENIX.mp3",
+			"END.mp3"
+		],
+		"year": 2020
+	},
+	{
+		"id": "neon-collapse-vol-1",
+		"name": "Voltage Rush",
+		"artist": "Gage Lara",
+		"originalTitle": "NEON.COLLAPSE Vol. 1 (CC0)",
+		"source": "https://gagelara.bandcamp.com/album/neon-collapse-vol-1-cc0",
+		"credit": "From NEON.COLLAPSE Vol. 1 (CC0)",
+		"color": "#a39aca",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["Neon Collapse", "i.break", "Nerve", "Skyline"],
+		"year": 2021
+	},
+	{
+		"id": "astrolabe-vol-1",
+		"name": "Astral Map",
+		"artist": "Gage Lara",
+		"originalTitle": "Astrolabe Vol. 1 (CC0)",
+		"source": "https://gagelara.bandcamp.com/album/astrolabe-vol-1-cc0",
+		"credit": "From Astrolabe Vol. 1 (CC0)",
+		"color": "#b6a17f",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["Eclipse", "Solstice", "Syzygy", "Twilight (Solo)"],
+		"year": 2022
+	},
+	{
+		"id": "the-flood",
+		"name": "Neon Undertow",
+		"artist": "Soft And Furious",
+		"originalTitle": "The Flood",
+		"source": "https://loyaltyfreakmusic.com/music/the-flood/",
+		"credit": "From The Flood",
+		"color": "#92b6b2",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Will I ever see you again ?",
+			"Say something",
+			"The most beautiful accident in the world",
+			"The mysticism of my fuckin restless leg syndrome",
+			"The Flood",
+			"True Ending"
+		],
+		"year": 2025
+	},
+	{
+		"id": "half-of-me",
+		"name": "Sunset Circuit",
+		"artist": "Soft And Furious",
+		"originalTitle": "Half of me",
+		"source": "https://loyaltyfreakmusic.com/music/half-of-me/",
+		"credit": "From Half of me",
+		"color": "#b59da8",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["Cliché", "Crystal Unclear", "Special Spatial", "Be kind to yourself"],
+		"year": 2021
+	},
+	{
+		"id": "dancing-in-the-closet",
+		"name": "Bedroom Strobe",
+		"artist": "Soft And Furious",
+		"originalTitle": "Dancing in the closet",
+		"source": "https://loyaltyfreakmusic.com/music/dancing-in-the-closet/",
+		"credit": "From Dancing in the closet",
+		"color": "#91a5bf",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Rumbling Roof",
+			"No moment of truth",
+			"Lucidity",
+			"Am I drunk or in love ?",
+			"D D D Dancing",
+			"Shake me, Baby",
+			"I love the way you're talking to me",
+			"Shut up, the mermaid is talking",
+			"Mermaid ending"
+		],
+		"year": 2017
+	},
+	{
+		"id": "shine-burst",
+		"name": "Solar Arcade",
+		"artist": "Soft And Furious",
+		"originalTitle": "Shine Burst",
+		"source": "https://loyaltyfreakmusic.com/music/shine-burst/",
+		"credit": "From Shine Burst",
+		"color": "#c5a58c",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"You Are Shining",
+			"Beach Run",
+			"Violet Son",
+			"One Time Last Time",
+			"So True It's Unseeable",
+			"Mermaid Butterfly",
+			"C L I M A X",
+			"Passionate Ending"
+		],
+		"year": 2017
+	},
+	{
+		"id": "the-society-of-the-spectral",
+		"name": "Ghost Signals",
+		"artist": "Anonymous420",
+		"originalTitle": "The Society of the Spectral",
+		"source": "https://loyaltyfreakmusic.com/music/the-society-of-the-spectral/",
+		"credit": "From The Society of the Spectral",
+		"color": "#a6ad85",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Ａｌｉｅｎ　Ｎａｔｉｏｎ",
+			"We are living in an Action Replay Society™",
+			"【﻿ⓗⓞⓜⓞ ⓢⓟⓔⓒⓣⓐⓒⓤⓛⓤⓜ】",
+			"Demon Funder",
+			"You have entered Ｈｙｐｅｒｒｅａｌｉｔｙ",
+			"Tuesday, existential crisis",
+			"When everything will return to dust"
+		],
+		"year": 2021
+	},
+	{
+		"id": "summer-aesthetics-2020",
+		"name": "Heat Haze FM",
+		"artist": "Adeline Adrenaline",
+		"originalTitle": "SUMMER AESTHETICS 2020",
+		"source": "https://loyaltyfreakmusic.com/music/summer-aesthetics-2020/",
+		"credit": "From SUMMER AESTHETICS 2020",
+		"color": "#a2a5cb",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"melting lollipop",
+			"now you know",
+			"vi driver isär",
+			"plan 9 from the sunny forest",
+			"new dress",
+			"eyes on",
+			"i am the night",
+			"square roots",
+			"c'est la vie",
+			"bon voyage"
+		],
+		"year": 2020
+	},
+	{
+		"id": "ehlers-cyberpunk-one",
+		"name": "Neon Underworld",
+		"artist": "Alexander Ehlers",
+		"originalTitle": "T & T Free Cyberpunk Pack — Selections",
+		"source": "https://opengameart.org/content/t-t-free-cyberpunk-pack",
+		"credit": "From T & T Free Cyberpunk Pack — Selections. A selection of complete industrial and electronic recordings from T & T Free Cyberpunk Pack by Alexander Ehlers.",
+		"color": "#a39aca",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["Currents", "Tribal Chaos", "Experiment G"],
+		"year": 2019
+	},
+	{
+		"id": "ehlers-cyberpunk-two",
+		"name": "After the Grid",
+		"artist": "Alexander Ehlers",
+		"originalTitle": "T & T Free Cyberpunk Pack 2 — Selections",
+		"source": "https://opengameart.org/content/t-t-free-cyberpunk-pack-2",
+		"credit": "From T & T Free Cyberpunk Pack 2 — Selections. A selection of complete industrial and electronic recordings from T & T Free Cyberpunk Pack 2 by Alexander Ehlers.",
+		"color": "#b6a17f",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": ["Electric Stream", "New Factory", "System Overload"],
+		"year": 2020
+	},
+	{
+		"id": "bartmann-robot-space-rock",
+		"name": "Circuit Breakers",
+		"artist": "John Bartmann",
+		"originalTitle": "Robot Space Rock",
+		"source": "https://freemusicarchive.org/music/John_Bartmann/robot-space-rock",
+		"credit": "From Robot Space Rock",
+		"color": "#92b6b2",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Faulty Circuitry",
+			"Silly Robot Walk",
+			"Busy Robots",
+			"Bad Broken Robot",
+			"Sending Robots To Mars",
+			"Let's Build A Robot",
+			"Haywire",
+			"Robot Spacewalk"
+		],
+		"year": 2020
+	},
+	{
+		"id": "bartmann-making-soundtracks",
+		"name": "Offbeat Avenue",
+		"artist": "John Bartmann",
+		"originalTitle": "Making Soundtracks Is Easy",
+		"source": "https://freemusicarchive.org/music/John_Bartmann/making-soundtracks-is-easy",
+		"credit": "The eleven recordings available from Making Soundtracks Is Easy on Free Music Archive.",
+		"color": "#b59da8",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Uptown Fatness",
+			"Tough Good Guy",
+			"Weird Science",
+			"Lagos Hustle | Nigerian Vintage Onyeabor Soundtrack Music",
+			"Fancy A Stroll",
+			"First Bicycle",
+			"Epic Vista | Moving Orchestral Electronic Commercial Soundtrack Music",
+			"Mad Heights | Crazy Happy Violin Beats Soundtrack Music",
+			"Precious Cargo | Gentle Baby Meditation Soundtrack Music",
+			"8-Bit Kung Fu",
+			"Theta Waves | Tech Noir Action Soundtrack Music"
+		],
+		"year": 2020
+	},
+	{
+		"id": "bartmann-public-domain-one",
+		"name": "Scenes from Somewhere",
+		"artist": "John Bartmann",
+		"originalTitle": "Public Domain Soundtrack Music: Album One",
+		"source": "https://freemusicarchive.org/music/John_Bartmann/Public_Domain_Soundtrack_Music_Album_One",
+		"credit": "From Public Domain Soundtrack Music: Album One",
+		"color": "#91a5bf",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Mad Hatter Tea Party",
+			"Happy African Village",
+			"Bouncy Gypsy Beats",
+			"Earning Happiness",
+			"Home At Last",
+			"Balkan Gypsy Party",
+			"African Moon",
+			"Gameshow Brazz",
+			"Happy Clappy",
+			"Heart of Acceptance",
+			"Iyanetha",
+			"Interstellar Space",
+			"Robot Gypsy Jazz",
+			"Serial Killer",
+			"West in Africa",
+			"Somewhere Nice",
+			"Secret Agent Rock",
+			"Tupac Lives",
+			"Tender Moment",
+			"Umlungu"
+		],
+		"year": 2018
+	},
+	{
+		"id": "abstraction-loop-selections",
+		"name": "Pixel Daydreams",
+		"artist": "Abstraction",
+		"originalTitle": "FREE Music Loop Bundle — Selections",
+		"source": "https://tallbeard.itch.io/music-loop-bundle",
+		"credit": "From FREE Music Loop Bundle — Selections. A curated selection from FREE Music Loop Bundle by Abstraction.",
+		"color": "#c5a58c",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Week 29 Heart-Shaped",
+			"Week 30 Crushing It",
+			"Week 37 Schmoovin",
+			"Week 23 Workshop",
+			"Week 26 Seaside",
+			"Week 1.5 Super Retro Lounge",
+			"Three Red Hearts - Penguin Town",
+			"Three Red Hearts - Sanctuary",
+			"Troubadeck 12 Good King",
+			"Interior Birdecorator - Decorate"
+		]
+	},
+	{
+		"id": "not-jam-one",
+		"name": "Soft Reset",
+		"artist": "Not Jam",
+		"originalTitle": "Not Jam Music Pack — Selections",
+		"source": "https://not-jam.itch.io/not-jam-music-pack",
+		"credit": "From Not Jam Music Pack — Selections. A curated selection from Not Jam Music Pack by Not Jam.",
+		"color": "#a6ad85",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Chill Menu",
+			"Seeing Double",
+			"Phone Home",
+			"Credits [Klepto-Linda]",
+			"Untitled [Unreleased Project]"
+		]
+	},
+	{
+		"id": "not-jam-two",
+		"name": "Pocket Worlds",
+		"artist": "Not Jam",
+		"originalTitle": "Not Jam Music Pack 2 — Selections",
+		"source": "https://not-jam.itch.io/not-jam-music-pack-2",
+		"credit": "From Not Jam Music Pack 2 — Selections. A curated selection from Not Jam Music Pack 2 by Not Jam.",
+		"color": "#a2a5cb",
+		"license": {
+			"name": "CC0 1.0",
+			"url": "https://creativecommons.org/publicdomain/zero/1.0/"
+		},
+		"trackNames": [
+			"Safe Space",
+			"Baroque Chips",
+			"Grumpy Shopkeep",
+			"Really Long Arms",
+			"Rainy Foothills [Really Long Arms]",
+			"Crystal Caverns [Really Long Arms]",
+			"Pool Party [Lazy River Rally]",
+			"Lazy River Rally"
+		]
+	}
+]

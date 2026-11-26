@@ -39,10 +39,6 @@ export async function loadTurntable(source, { displayScale } = {}) {
 			object.receiveShadow = glass.length === 0;
 		}
 	});
-	// The GLB batches both center-label inscriptions into this mesh.
-	const labelLettering = parts.Record_Hardware_2;
-	if (labelLettering) labelLettering.visible = false;
-
 	if (displayScale !== undefined) {
 		const metreAsset = parts.AT_LPA2_ChromeEdition.userData.units === 'metres';
 		const factor = displayScale * (metreAsset ? 1 : 0.1);
@@ -55,10 +51,20 @@ export async function loadTurntable(source, { displayScale } = {}) {
 		DustCover: cover,
 		Platter: platter,
 		Record: record,
+		RecordLabel: label,
 		Spindle: spindle,
 		StylusTip: stylus,
 		TonearmPivot: arm
 	} = parts;
+	// The printed rings and lettering share an ink material on separate meshes.
+	record.traverse((object) => {
+		if (object.isMesh && object.material.name === 'Neutral gray label ink') {
+			object.visible = false;
+		}
+	});
+	// The label's small separation from the vinyl can round to the same depth when zoomed out.
+	label.material.polygonOffset = true;
+	label.material.polygonOffsetUnits = -4;
 	const ring = line && new T.Vector3(...line.userData.antiSkateLine.ring);
 	const yawAtRadius = trackTonearm(arm, stylus, spindle);
 
@@ -110,6 +116,6 @@ export async function loadTurntable(source, { displayScale } = {}) {
 		applyMotion,
 		playback: createPlaybackMotion(yawAtRadius),
 		animations: gltf.animations,
-		materials: { label: parts.RecordLabel.material }
+		materials: { label: label.material }
 	};
 }

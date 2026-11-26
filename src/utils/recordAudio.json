@@ -1,4 +1,13 @@
 {
+	"7tuJKZre2zfUdz0ERsqR1L": {
+		"1": "/audio/records/float-on/01.mp3",
+		"2": "/audio/records/float-on/02.mp3",
+		"3": "/audio/records/float-on/03.mp3",
+		"4": "/audio/records/float-on/04.mp3",
+		"5": "/audio/records/float-on/05.mp3",
+		"6": "/audio/records/float-on/06.mp3",
+		"7": "/audio/records/float-on/07.mp3"
+	},
 	"public-domain-lo-fi-2": {
 		"1": "/audio/records/public-domain-lo-fi-2/01.mp3",
 		"2": "/audio/records/public-domain-lo-fi-2/02.mp3",
@@ -32,19 +41,64 @@
 		"6": "/audio/records/to-chill-and-stay-awake/06.mp3",
 		"7": "/audio/records/to-chill-and-stay-awake/07.mp3"
 	},
-	"ashes": {
-		"1": "/audio/records/ashes/01.mp3",
-		"2": "/audio/records/ashes/02.mp3",
-		"3": "/audio/records/ashes/03.mp3",
-		"4": "/audio/records/ashes/04.mp3",
-		"5": "/audio/records/ashes/05.mp3",
-		"6": "/audio/records/ashes/06.mp3",
-		"7": "/audio/records/ashes/07.mp3",
-		"8": "/audio/records/ashes/08.mp3",
-		"9": "/audio/records/ashes/09.mp3",
-		"10": "/audio/records/ashes/10.mp3",
-		"11": "/audio/records/ashes/11.mp3",
-		"12": "/audio/records/ashes/12.mp3"
+	"lofi-ftw": {
+		"1": "/audio/records/lofi-ftw/01.mp3",
+		"2": "/audio/records/lofi-ftw/02.mp3",
+		"3": "/audio/records/lofi-ftw/03.mp3",
+		"4": "/audio/records/lofi-ftw/04.mp3",
+		"5": "/audio/records/lofi-ftw/05.mp3",
+		"6": "/audio/records/lofi-ftw/06.mp3",
+		"7": "/audio/records/lofi-ftw/07.mp3",
+		"8": "/audio/records/lofi-ftw/08.mp3",
+		"9": "/audio/records/lofi-ftw/09.mp3"
+	},
+	"space-sleep-meditation": {
+		"1": "/audio/records/space-sleep-meditation/01.mp3",
+		"2": "/audio/records/space-sleep-meditation/02.mp3",
+		"3": "/audio/records/space-sleep-meditation/03.mp3"
+	},
+	"minimal-ambient-bounce": {
+		"1": "/audio/records/minimal-ambient-bounce/01.mp3",
+		"2": "/audio/records/minimal-ambient-bounce/02.mp3",
+		"3": "/audio/records/minimal-ambient-bounce/03.mp3",
+		"4": "/audio/records/minimal-ambient-bounce/04.mp3",
+		"5": "/audio/records/minimal-ambient-bounce/05.mp3",
+		"6": "/audio/records/minimal-ambient-bounce/06.mp3",
+		"7": "/audio/records/minimal-ambient-bounce/07.mp3"
+	},
+	"lofi-ambient-songs": {
+		"1": "/audio/records/lofi-ambient-songs/01.mp3",
+		"2": "/audio/records/lofi-ambient-songs/02.mp3",
+		"3": "/audio/records/lofi-ambient-songs/03.mp3",
+		"4": "/audio/records/lofi-ambient-songs/04.mp3",
+		"5": "/audio/records/lofi-ambient-songs/05.mp3",
+		"6": "/audio/records/lofi-ambient-songs/06.mp3",
+		"7": "/audio/records/lofi-ambient-songs/07.mp3",
+		"8": "/audio/records/lofi-ambient-songs/08.mp3"
+	},
+	"tad-lofi-compilation": {
+		"1": "/audio/records/tad-lofi-compilation/01.mp3",
+		"2": "/audio/records/tad-lofi-compilation/02.mp3",
+		"3": "/audio/records/tad-lofi-compilation/03.mp3",
+		"4": "/audio/records/tad-lofi-compilation/04.mp3",
+		"5": "/audio/records/tad-lofi-compilation/05.mp3",
+		"6": "/audio/records/tad-lofi-compilation/06.mp3",
+		"7": "/audio/records/tad-lofi-compilation/07.mp3",
+		"8": "/audio/records/tad-lofi-compilation/08.mp3",
+		"9": "/audio/records/tad-lofi-compilation/09.mp3"
+	},
+	"john-bartmann-moody-beats": {
+		"1": "/audio/records/john-bartmann-moody-beats/01.mp3",
+		"2": "/audio/records/john-bartmann-moody-beats/02.mp3",
+		"3": "/audio/records/john-bartmann-moody-beats/03.mp3",
+		"4": "/audio/records/john-bartmann-moody-beats/04.mp3",
+		"5": "/audio/records/john-bartmann-moody-beats/05.mp3",
+		"6": "/audio/records/john-bartmann-moody-beats/06.mp3"
+	},
+	"iamoneabe-lofi-selections": {
+		"1": "/audio/records/iamoneabe-lofi-selections/01.mp3",
+		"2": "/audio/records/iamoneabe-lofi-selections/02.mp3",
+		"3": "/audio/records/iamoneabe-lofi-selections/03.mp3"
 	},
 	"open-goldberg-variations": {
 		"1": "/audio/records/open-goldberg-variations/01.mp3",
@@ -80,17 +134,288 @@
 		"31": "/audio/records/open-goldberg-variations/31.mp3",
 		"32": "/audio/records/open-goldberg-variations/32.mp3"
 	},
-	"point-of-no-return": {
-		"1": "/audio/records/point-of-no-return/01.mp3",
-		"2": "/audio/records/point-of-no-return/02.mp3",
-		"3": "/audio/records/point-of-no-return/03.mp3",
-		"4": "/audio/records/point-of-no-return/04.mp3",
-		"5": "/audio/records/point-of-no-return/05.mp3",
-		"6": "/audio/records/point-of-no-return/06.mp3",
-		"7": "/audio/records/point-of-no-return/07.mp3",
-		"8": "/audio/records/point-of-no-return/08.mp3",
-		"9": "/audio/records/point-of-no-return/09.mp3",
-		"10": "/audio/records/point-of-no-return/10.mp3",
-		"11": "/audio/records/point-of-no-return/11.mp3"
+	"eldorado-beats-2019": {
+		"1": "/audio/records/eldorado-beats-2019/01.mp3",
+		"2": "/audio/records/eldorado-beats-2019/02.mp3",
+		"3": "/audio/records/eldorado-beats-2019/03.mp3",
+		"4": "/audio/records/eldorado-beats-2019/04.mp3",
+		"5": "/audio/records/eldorado-beats-2019/05.mp3",
+		"6": "/audio/records/eldorado-beats-2019/06.mp3",
+		"7": "/audio/records/eldorado-beats-2019/07.mp3",
+		"8": "/audio/records/eldorado-beats-2019/08.mp3"
+	},
+	"after-dark": {
+		"1": "/audio/records/after-dark/01.mp3",
+		"2": "/audio/records/after-dark/02.mp3",
+		"3": "/audio/records/after-dark/03.mp3",
+		"4": "/audio/records/after-dark/04.mp3",
+		"5": "/audio/records/after-dark/05.mp3"
+	},
+	"phonk-aura-farming": {
+		"1": "/audio/records/phonk-aura-farming/01.mp3",
+		"2": "/audio/records/phonk-aura-farming/02.mp3",
+		"3": "/audio/records/phonk-aura-farming/03.mp3",
+		"4": "/audio/records/phonk-aura-farming/04.mp3",
+		"5": "/audio/records/phonk-aura-farming/05.mp3"
+	},
+	"beats-from-the-crypt": {
+		"1": "/audio/records/beats-from-the-crypt/01.mp3",
+		"2": "/audio/records/beats-from-the-crypt/02.mp3",
+		"3": "/audio/records/beats-from-the-crypt/03.mp3",
+		"4": "/audio/records/beats-from-the-crypt/04.mp3",
+		"5": "/audio/records/beats-from-the-crypt/05.mp3",
+		"6": "/audio/records/beats-from-the-crypt/06.mp3",
+		"7": "/audio/records/beats-from-the-crypt/07.mp3",
+		"8": "/audio/records/beats-from-the-crypt/08.mp3",
+		"9": "/audio/records/beats-from-the-crypt/09.mp3"
+	},
+	"bassic": {
+		"1": "/audio/records/bassic/01.mp3",
+		"2": "/audio/records/bassic/02.mp3",
+		"3": "/audio/records/bassic/03.mp3",
+		"4": "/audio/records/bassic/04.mp3",
+		"5": "/audio/records/bassic/05.mp3",
+		"6": "/audio/records/bassic/06.mp3"
+	},
+	"straight-to-vhs": {
+		"1": "/audio/records/straight-to-vhs/01.mp3",
+		"2": "/audio/records/straight-to-vhs/02.mp3",
+		"3": "/audio/records/straight-to-vhs/03.mp3",
+		"4": "/audio/records/straight-to-vhs/04.mp3",
+		"5": "/audio/records/straight-to-vhs/05.mp3",
+		"6": "/audio/records/straight-to-vhs/06.mp3",
+		"7": "/audio/records/straight-to-vhs/07.mp3"
+	},
+	"orphaned-media": {
+		"1": "/audio/records/orphaned-media/01.mp3",
+		"2": "/audio/records/orphaned-media/02.mp3",
+		"3": "/audio/records/orphaned-media/03.mp3",
+		"4": "/audio/records/orphaned-media/04.mp3",
+		"5": "/audio/records/orphaned-media/05.mp3",
+		"6": "/audio/records/orphaned-media/06.mp3",
+		"7": "/audio/records/orphaned-media/07.mp3",
+		"8": "/audio/records/orphaned-media/08.mp3",
+		"9": "/audio/records/orphaned-media/09.mp3",
+		"10": "/audio/records/orphaned-media/10.mp3",
+		"11": "/audio/records/orphaned-media/11.mp3",
+		"12": "/audio/records/orphaned-media/12.mp3"
+	},
+	"bartmann-happy-trappy": {
+		"1": "/audio/records/bartmann-happy-trappy/01.mp3",
+		"2": "/audio/records/bartmann-happy-trappy/02.mp3",
+		"3": "/audio/records/bartmann-happy-trappy/03.mp3",
+		"4": "/audio/records/bartmann-happy-trappy/04.mp3",
+		"5": "/audio/records/bartmann-happy-trappy/05.mp3",
+		"6": "/audio/records/bartmann-happy-trappy/06.mp3",
+		"7": "/audio/records/bartmann-happy-trappy/07.mp3",
+		"8": "/audio/records/bartmann-happy-trappy/08.mp3"
+	},
+	"zane-new-peach-radio": {
+		"1": "/audio/records/zane-new-peach-radio/01.mp3",
+		"2": "/audio/records/zane-new-peach-radio/02.mp3",
+		"3": "/audio/records/zane-new-peach-radio/03.mp3",
+		"4": "/audio/records/zane-new-peach-radio/04.mp3",
+		"5": "/audio/records/zane-new-peach-radio/05.mp3",
+		"6": "/audio/records/zane-new-peach-radio/06.mp3"
+	},
+	"waves-of-nostalgia-2": {
+		"1": "/audio/records/waves-of-nostalgia-2/01.mp3",
+		"2": "/audio/records/waves-of-nostalgia-2/02.mp3",
+		"3": "/audio/records/waves-of-nostalgia-2/03.mp3",
+		"4": "/audio/records/waves-of-nostalgia-2/04.mp3",
+		"5": "/audio/records/waves-of-nostalgia-2/05.mp3",
+		"6": "/audio/records/waves-of-nostalgia-2/06.mp3",
+		"7": "/audio/records/waves-of-nostalgia-2/07.mp3",
+		"8": "/audio/records/waves-of-nostalgia-2/08.mp3",
+		"9": "/audio/records/waves-of-nostalgia-2/09.mp3"
+	},
+	"power-pop": {
+		"1": "/audio/records/power-pop/01.mp3",
+		"2": "/audio/records/power-pop/02.mp3",
+		"3": "/audio/records/power-pop/03.mp3",
+		"4": "/audio/records/power-pop/04.mp3",
+		"5": "/audio/records/power-pop/05.mp3",
+		"6": "/audio/records/power-pop/06.mp3",
+		"7": "/audio/records/power-pop/07.mp3",
+		"8": "/audio/records/power-pop/08.mp3",
+		"9": "/audio/records/power-pop/09.mp3",
+		"10": "/audio/records/power-pop/10.mp3",
+		"11": "/audio/records/power-pop/11.mp3",
+		"12": "/audio/records/power-pop/12.mp3",
+		"13": "/audio/records/power-pop/13.mp3",
+		"14": "/audio/records/power-pop/14.mp3"
+	},
+	"we-drove-all-night": {
+		"1": "/audio/records/we-drove-all-night/01.mp3",
+		"2": "/audio/records/we-drove-all-night/02.mp3",
+		"3": "/audio/records/we-drove-all-night/03.mp3",
+		"4": "/audio/records/we-drove-all-night/04.mp3",
+		"5": "/audio/records/we-drove-all-night/05.mp3",
+		"6": "/audio/records/we-drove-all-night/06.mp3"
+	},
+	"post-morphose": {
+		"1": "/audio/records/post-morphose/01.mp3",
+		"2": "/audio/records/post-morphose/02.mp3",
+		"3": "/audio/records/post-morphose/03.mp3",
+		"4": "/audio/records/post-morphose/04.mp3",
+		"5": "/audio/records/post-morphose/05.mp3",
+		"6": "/audio/records/post-morphose/06.mp3",
+		"7": "/audio/records/post-morphose/07.mp3",
+		"8": "/audio/records/post-morphose/08.mp3",
+		"9": "/audio/records/post-morphose/09.mp3",
+		"10": "/audio/records/post-morphose/10.mp3",
+		"11": "/audio/records/post-morphose/11.mp3"
+	},
+	"neon-collapse-vol-1": {
+		"1": "/audio/records/neon-collapse-vol-1/01.mp3",
+		"2": "/audio/records/neon-collapse-vol-1/02.mp3",
+		"3": "/audio/records/neon-collapse-vol-1/03.mp3",
+		"4": "/audio/records/neon-collapse-vol-1/04.mp3"
+	},
+	"astrolabe-vol-1": {
+		"1": "/audio/records/astrolabe-vol-1/01.mp3",
+		"2": "/audio/records/astrolabe-vol-1/02.mp3",
+		"3": "/audio/records/astrolabe-vol-1/03.mp3",
+		"4": "/audio/records/astrolabe-vol-1/04.mp3"
+	},
+	"the-flood": {
+		"1": "/audio/records/the-flood/01.mp3",
+		"2": "/audio/records/the-flood/02.mp3",
+		"3": "/audio/records/the-flood/03.mp3",
+		"4": "/audio/records/the-flood/04.mp3",
+		"5": "/audio/records/the-flood/05.mp3",
+		"6": "/audio/records/the-flood/06.mp3"
+	},
+	"half-of-me": {
+		"1": "/audio/records/half-of-me/01.mp3",
+		"2": "/audio/records/half-of-me/02.mp3",
+		"3": "/audio/records/half-of-me/03.mp3",
+		"4": "/audio/records/half-of-me/04.mp3"
+	},
+	"dancing-in-the-closet": {
+		"1": "/audio/records/dancing-in-the-closet/01.mp3",
+		"2": "/audio/records/dancing-in-the-closet/02.mp3",
+		"3": "/audio/records/dancing-in-the-closet/03.mp3",
+		"4": "/audio/records/dancing-in-the-closet/04.mp3",
+		"5": "/audio/records/dancing-in-the-closet/05.mp3",
+		"6": "/audio/records/dancing-in-the-closet/06.mp3",
+		"7": "/audio/records/dancing-in-the-closet/07.mp3",
+		"8": "/audio/records/dancing-in-the-closet/08.mp3",
+		"9": "/audio/records/dancing-in-the-closet/09.mp3"
+	},
+	"shine-burst": {
+		"1": "/audio/records/shine-burst/01.mp3",
+		"2": "/audio/records/shine-burst/02.mp3",
+		"3": "/audio/records/shine-burst/03.mp3",
+		"4": "/audio/records/shine-burst/04.mp3",
+		"5": "/audio/records/shine-burst/05.mp3",
+		"6": "/audio/records/shine-burst/06.mp3",
+		"7": "/audio/records/shine-burst/07.mp3",
+		"8": "/audio/records/shine-burst/08.mp3"
+	},
+	"the-society-of-the-spectral": {
+		"1": "/audio/records/the-society-of-the-spectral/01.mp3",
+		"2": "/audio/records/the-society-of-the-spectral/02.mp3",
+		"3": "/audio/records/the-society-of-the-spectral/03.mp3",
+		"4": "/audio/records/the-society-of-the-spectral/04.mp3",
+		"5": "/audio/records/the-society-of-the-spectral/05.mp3",
+		"6": "/audio/records/the-society-of-the-spectral/06.mp3",
+		"7": "/audio/records/the-society-of-the-spectral/07.mp3"
+	},
+	"summer-aesthetics-2020": {
+		"1": "/audio/records/summer-aesthetics-2020/01.mp3",
+		"2": "/audio/records/summer-aesthetics-2020/02.mp3",
+		"3": "/audio/records/summer-aesthetics-2020/03.mp3",
+		"4": "/audio/records/summer-aesthetics-2020/04.mp3",
+		"5": "/audio/records/summer-aesthetics-2020/05.mp3",
+		"6": "/audio/records/summer-aesthetics-2020/06.mp3",
+		"7": "/audio/records/summer-aesthetics-2020/07.mp3",
+		"8": "/audio/records/summer-aesthetics-2020/08.mp3",
+		"9": "/audio/records/summer-aesthetics-2020/09.mp3",
+		"10": "/audio/records/summer-aesthetics-2020/10.mp3"
+	},
+	"ehlers-cyberpunk-one": {
+		"1": "/audio/records/ehlers-cyberpunk-one/01.mp3",
+		"2": "/audio/records/ehlers-cyberpunk-one/02.mp3",
+		"3": "/audio/records/ehlers-cyberpunk-one/03.mp3"
+	},
+	"ehlers-cyberpunk-two": {
+		"1": "/audio/records/ehlers-cyberpunk-two/01.mp3",
+		"2": "/audio/records/ehlers-cyberpunk-two/02.mp3",
+		"3": "/audio/records/ehlers-cyberpunk-two/03.mp3"
+	},
+	"bartmann-robot-space-rock": {
+		"1": "/audio/records/bartmann-robot-space-rock/01.mp3",
+		"2": "/audio/records/bartmann-robot-space-rock/02.mp3",
+		"3": "/audio/records/bartmann-robot-space-rock/03.mp3",
+		"4": "/audio/records/bartmann-robot-space-rock/04.mp3",
+		"5": "/audio/records/bartmann-robot-space-rock/05.mp3",
+		"6": "/audio/records/bartmann-robot-space-rock/06.mp3",
+		"7": "/audio/records/bartmann-robot-space-rock/07.mp3",
+		"8": "/audio/records/bartmann-robot-space-rock/08.mp3"
+	},
+	"bartmann-making-soundtracks": {
+		"1": "/audio/records/bartmann-making-soundtracks/01.mp3",
+		"2": "/audio/records/bartmann-making-soundtracks/02.mp3",
+		"3": "/audio/records/bartmann-making-soundtracks/03.mp3",
+		"4": "/audio/records/bartmann-making-soundtracks/04.mp3",
+		"5": "/audio/records/bartmann-making-soundtracks/05.mp3",
+		"6": "/audio/records/bartmann-making-soundtracks/06.mp3",
+		"7": "/audio/records/bartmann-making-soundtracks/07.mp3",
+		"8": "/audio/records/bartmann-making-soundtracks/08.mp3",
+		"9": "/audio/records/bartmann-making-soundtracks/09.mp3",
+		"10": "/audio/records/bartmann-making-soundtracks/10.mp3",
+		"11": "/audio/records/bartmann-making-soundtracks/11.mp3"
+	},
+	"bartmann-public-domain-one": {
+		"1": "/audio/records/bartmann-public-domain-one/01.mp3",
+		"2": "/audio/records/bartmann-public-domain-one/02.mp3",
+		"3": "/audio/records/bartmann-public-domain-one/03.mp3",
+		"4": "/audio/records/bartmann-public-domain-one/04.mp3",
+		"5": "/audio/records/bartmann-public-domain-one/05.mp3",
+		"6": "/audio/records/bartmann-public-domain-one/06.mp3",
+		"7": "/audio/records/bartmann-public-domain-one/07.mp3",
+		"8": "/audio/records/bartmann-public-domain-one/08.mp3",
+		"9": "/audio/records/bartmann-public-domain-one/09.mp3",
+		"10": "/audio/records/bartmann-public-domain-one/10.mp3",
+		"11": "/audio/records/bartmann-public-domain-one/11.mp3",
+		"12": "/audio/records/bartmann-public-domain-one/12.mp3",
+		"13": "/audio/records/bartmann-public-domain-one/13.mp3",
+		"14": "/audio/records/bartmann-public-domain-one/14.mp3",
+		"15": "/audio/records/bartmann-public-domain-one/15.mp3",
+		"16": "/audio/records/bartmann-public-domain-one/16.mp3",
+		"17": "/audio/records/bartmann-public-domain-one/17.mp3",
+		"18": "/audio/records/bartmann-public-domain-one/18.mp3",
+		"19": "/audio/records/bartmann-public-domain-one/19.mp3",
+		"20": "/audio/records/bartmann-public-domain-one/20.mp3"
+	},
+	"abstraction-loop-selections": {
+		"1": "/audio/records/abstraction-loop-selections/01.mp3",
+		"2": "/audio/records/abstraction-loop-selections/02.mp3",
+		"3": "/audio/records/abstraction-loop-selections/03.mp3",
+		"4": "/audio/records/abstraction-loop-selections/04.mp3",
+		"5": "/audio/records/abstraction-loop-selections/05.mp3",
+		"6": "/audio/records/abstraction-loop-selections/06.mp3",
+		"7": "/audio/records/abstraction-loop-selections/07.mp3",
+		"8": "/audio/records/abstraction-loop-selections/08.mp3",
+		"9": "/audio/records/abstraction-loop-selections/09.mp3",
+		"10": "/audio/records/abstraction-loop-selections/10.mp3"
+	},
+	"not-jam-one": {
+		"1": "/audio/records/not-jam-one/01.mp3",
+		"2": "/audio/records/not-jam-one/02.mp3",
+		"3": "/audio/records/not-jam-one/03.mp3",
+		"4": "/audio/records/not-jam-one/04.mp3",
+		"5": "/audio/records/not-jam-one/05.mp3"
+	},
+	"not-jam-two": {
+		"1": "/audio/records/not-jam-two/01.mp3",
+		"2": "/audio/records/not-jam-two/02.mp3",
+		"3": "/audio/records/not-jam-two/03.mp3",
+		"4": "/audio/records/not-jam-two/04.mp3",
+		"5": "/audio/records/not-jam-two/05.mp3",
+		"6": "/audio/records/not-jam-two/06.mp3",
+		"7": "/audio/records/not-jam-two/07.mp3",
+		"8": "/audio/records/not-jam-two/08.mp3"
 	}
 }

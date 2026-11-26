@@ -103,9 +103,7 @@
 		background: #15151513;
 	}
 
-	@media (max-width: 767px) {
-		.has-shelf-session {
-			display: none;
-		}
+	.has-shelf-session {
+		display: none;
 	}
 </style>

@@ -47,7 +47,6 @@
 		margin-inline: auto;
 		padding: 2px 4px 2px 14px;
 		border: 1px solid #15151520;
-		border-radius: 26px;
 		background: #ffffff30;
 		color: #151515;
 	}
@@ -88,10 +87,6 @@
 		cursor: pointer;
 	}
 
-	.control :global(.icon) {
-		transform: scale(0.75);
-	}
-
 	.control:hover:not(:disabled) {
 		background: #15151513;
 	}
@@ -104,15 +99,5 @@
 	.control:disabled {
 		opacity: 0.45;
 		cursor: default;
-	}
-
-	@media (max-width: 767px) {
-		.now-playing {
-			border-radius: 0;
-		}
-
-		.control :global(.icon) {
-			transform: none;
-		}
 	}
 </style>

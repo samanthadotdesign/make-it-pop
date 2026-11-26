@@ -4,6 +4,8 @@
 	import { getContext, onMount } from 'svelte';
 	import { listeningSessionContext, primeListeningAudio } from '@utils/listeningAudio.js';
 	import { activeShelfRecord } from '@utils/shelfCatalog.js';
+	import { shelfPalette } from '@utils/shelfPalette.js';
+	import { followVinylShadow } from '@utils/vinylTitleShadow.js';
 	import NowPlaying from './NowPlaying.svelte';
 	import RecordArtwork from './RecordArtwork.svelte';
 	import ShelfIcon from './ShelfIcon.svelte';
@@ -11,10 +13,13 @@
 	export let items;
 
 	const listening = getContext(listeningSessionContext);
+	const shelfPerspective = 1200;
+	const backgroundColors = ['--sky', '--ground', '--glow', '--reflection'];
 
 	let scroller;
 	let row;
 	let desktop = false;
+	let reducedMotion = false;
 	let restored = false;
 	let position = 0;
 	let pitch = 1;
@@ -22,18 +27,55 @@
 	let wheelScrolling = false;
 	let drag;
 	let suppressClick = false;
+	let shaderSurfaces = {};
+	let hoveredIndex;
 
-	$: activeIndex = Math.max(0, Math.min(items.length - 1, Math.round(position)));
+	$: scrollIndex = Math.max(0, Math.min(items.length - 1, Math.round(position)));
+	$: activeIndex = desktop && hoveredIndex !== undefined ? hoveredIndex : scrollIndex;
+	$: focusPosition = desktop && hoveredIndex !== undefined ? hoveredIndex : position;
+	$: focusOffset = (activeIndex - position + stackShift(activeIndex - position)) * pitch;
 	$: current = items[activeIndex];
+	$: palettes = items.map(shelfPalette);
+	$: backgroundStyle = shelfBackground(palettes, reducedMotion ? activeIndex : focusPosition);
 	$: if (restored && current) activeShelfRecord.set(current);
+
+	function shelfBackground(palettes, position) {
+		const offset = Math.max(0, Math.min(palettes.length - 1, position));
+		const index = Math.floor(offset);
+		const from = palettes[index] ?? shelfPalette({});
+		const to = palettes[index + 1] ?? from;
+		const weight = (offset - index) * 100;
+		const colors = backgroundColors.map((name, index) =>
+			weight
+				? `${name}: color-mix(in oklab, ${from[index]}, ${to[index]} ${weight}%)`
+				: `${name}: ${from[index]}`
+		);
+		const phase = offset * 1.4;
+		return [
+			...colors,
+			`--glow-x: ${46 + Math.sin(phase) * 24}%`,
+			`--glow-y: ${30 - Math.cos(phase) * 12}%`
+		].join('; ');
+	}
 
 	function scrollTo(index, behavior = 'instant') {
 		const offset = Math.max(0, Math.min(items.length - 1, index)) * pitch;
 		scroller.scrollTo(desktop ? { left: offset, behavior } : { top: offset, behavior });
 	}
 
-	function scrollPosition() {
+	function scrollPosition(event) {
+		if (event?.type === 'scroll') hoveredIndex = undefined;
 		position = (desktop ? scroller.scrollLeft : scroller.scrollTop) / pitch;
+	}
+
+	function hoverRecord(event, index) {
+		if (desktop && event.pointerType === 'mouse' && !drag?.active && !wheelScrolling) {
+			hoveredIndex = index;
+		}
+	}
+
+	function focusRecord(index) {
+		if (desktop) hoveredIndex = index;
 	}
 
 	function handleWheel(event) {
@@ -46,6 +88,7 @@
 		scroller.scrollLeft += event.deltaY * multiplier;
 		clearTimeout(wheelTimer);
 		wheelTimer = setTimeout(() => {
+			scrollPosition();
 			wheelScrolling = false;
 			scroller.style.scrollSnapType = '';
 			scrollTo(Math.round(position), 'smooth');
@@ -63,6 +106,7 @@
 		};
 		if (!(event.key in indexes)) return;
 		event.preventDefault();
+		hoveredIndex = undefined;
 		scrollTo(indexes[event.key], 'smooth');
 	}
 
@@ -77,6 +121,7 @@
 		const delta = event.clientX - drag.x;
 		if (!drag.active && Math.abs(delta) > 7) {
 			drag.active = true;
+			hoveredIndex = undefined;
 			scroller.setPointerCapture(event.pointerId);
 			scroller.style.scrollSnapType = 'none';
 		}
@@ -86,6 +131,7 @@
 	function endDrag() {
 		if (!drag) return;
 		if (drag.active) {
+			scrollPosition();
 			suppressClick = true;
 			scroller.style.scrollSnapType = '';
 			scrollTo(Math.round(position), 'smooth');
@@ -102,14 +148,33 @@
 		$activeShelfRecord = record;
 	}
 
-	function tilt(distance, isDesktop) {
+	function stackShift(distance) {
+		return -Math.sign(distance) * Math.max(0, Math.abs(distance) - 3) * 0.36;
+	}
+
+	function recordPose(distance, pitch, focusDistance, hovering) {
 		const magnitude = Math.abs(distance);
-		const angle = Math.min(70, isDesktop ? magnitude * 64 : Math.max(0, magnitude * 34.9 - 13.4));
-		return `perspective(800px) rotate${isDesktop ? 'Y' : 'X'}(${distance < 0 ? -angle : angle}deg)`;
+		const focusMagnitude = Math.abs(focusDistance);
+		const angle = hovering ? 70 : Math.min(70, Math.max(0, focusMagnitude * 34.9 - 13.4));
+		const side = Math.sign(focusDistance);
+		const shift = stackShift(distance);
+		const cameraOffset = (distance + shift) * pitch;
+		const depth = -Math.min(96, Math.max(0, focusMagnitude - 1) * 15);
+		// Keep the outside edges nearer to the shared camera on either side of the front record.
+		const sightline = (Math.atan2(cameraOffset, shelfPerspective - depth) * 180) / Math.PI;
+		return [
+			`--tilt: ${Math.sign(distance) * Math.min(70, Math.max(0, magnitude * 34.9 - 13.4))}deg`,
+			`--stack-offset: ${shift}`,
+			`--camera-offset: ${cameraOffset}px`,
+			`--record-depth: ${depth}px`,
+			`--record-yaw: ${focusDistance === 0 ? 0 : -side * angle - sightline}deg`
+		].join('; ');
 	}
 
 	onMount(() => {
 		const desktopQuery = window.matchMedia('(min-width: 768px)');
+		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const syncMotionPreference = () => (reducedMotion = motionQuery.matches);
 		const restoredIndex = Math.max(
 			0,
 			items.findIndex(({ id }) => id === $activeShelfRecord?.id)
@@ -119,22 +184,26 @@
 		function measure() {
 			const index = Math.round(position);
 			desktop = desktopQuery.matches;
-			const first = row.firstElementChild;
-			pitch = Math.max(1, desktop ? first.offsetWidth : first.offsetHeight);
+			if (!desktop) hoveredIndex = undefined;
+			const { width, height } = row.firstElementChild.getBoundingClientRect();
+			pitch = Math.max(1, desktop ? width : height);
 			if (!wheelScrolling && !drag) scrollTo(index);
 			scrollPosition();
 		}
 
 		measure();
+		syncMotionPreference();
 		restored = true;
 		const observer = new ResizeObserver(measure);
 		observer.observe(scroller);
 		desktopQuery.addEventListener('change', measure);
+		motionQuery.addEventListener('change', syncMotionPreference);
 		scroller.addEventListener('wheel', handleWheel, { passive: false });
 
 		return () => {
 			observer.disconnect();
 			desktopQuery.removeEventListener('change', measure);
+			motionQuery.removeEventListener('change', syncMotionPreference);
 			scroller.removeEventListener('wheel', handleWheel);
 			clearTimeout(wheelTimer);
 		};
@@ -144,8 +213,11 @@
 <div
 	class="shelf"
 	class:has-now-playing={!!$listening}
-	style="--shelf-tint: {current?.tint ?? '#7a77e8'}"
+	class:hover-selected={desktop && hoveredIndex !== undefined}
+	style="--shelf-perspective: {shelfPerspective}px; --focus-offset: {focusOffset}px; {backgroundStyle}"
 >
+	<div class="shelf-light" aria-hidden="true" />
+
 	{#if $listening}
 		<div class="now-playing-row">
 			<NowPlaying session={$listening} />
@@ -168,11 +240,12 @@
 		<ol bind:this={row} class="row">
 			{#each items as record, index (record.id)}
 				{@const distance = index - position}
+				{@const focusDistance = index - focusPosition}
 				<li
 					class="slot"
 					style="z-index: {index === activeIndex
 						? items.length * 10 + 1
-						: -Math.round(Math.abs(distance) * 10) + items.length * 10}"
+						: -Math.round(Math.abs(focusDistance) * 10) + items.length * 10}"
 				>
 					<a
 						class="disc"
@@ -180,11 +253,24 @@
 						href={browser ? `${base}${record.path}` : undefined}
 						aria-label={record.artist ? `${record.name} by ${record.artist}` : record.name}
 						aria-current={index === activeIndex ? 'true' : undefined}
-						style="transform: translate(-50%, -50%) {tilt(distance, desktop)}"
+						style={recordPose(
+							distance,
+							pitch,
+							focusDistance,
+							desktop && hoveredIndex !== undefined
+						)}
 						draggable="false"
+						on:pointermove={(event) => hoverRecord(event, index)}
+						on:focus={() => focusRecord(index)}
 						on:click={(event) => recordClick(event, record)}
 					>
-						<RecordArtwork {record} spinning={index === activeIndex} />
+						<RecordArtwork
+							{record}
+							spinning={index === activeIndex}
+							animate={index === activeIndex}
+							beveled
+							on:surface={(event) => (shaderSurfaces[record.id] = event.detail.canvas)}
+						/>
 					</a>
 				</li>
 			{/each}
@@ -192,9 +278,13 @@
 	</div>
 
 	{#if current}
-		<div class="shelf-controls">
+		<div
+			class="shelf-controls"
+			style="--vinyl-shadow-base: {current.treatment?.color ?? current.color ?? current.tint}"
+			use:followVinylShadow={{ desktop, canvas: shaderSurfaces[current.id] }}
+		>
 			<div class="toolbar">
-				<p aria-live="polite">{current.name}</p>
+				<p aria-live="polite" title={current.name}>{current.name}</p>
 				<a
 					class="play"
 					href={browser
@@ -211,23 +301,52 @@
 </div>
 
 <style>
-	@property --shelf-tint {
-		syntax: '<color>';
-		inherits: true;
-		initial-value: #7a77e8;
-	}
-
 	.shelf {
-		--wash: color-mix(in srgb, var(--shelf-tint) 75%, white);
-		--ground: #999;
 		--toolbar-height: 72px;
 		--top: 72px;
 		--bottom: calc(var(--toolbar-height) + env(safe-area-inset-bottom));
 		position: fixed;
 		inset: 0;
+		overflow: hidden;
 		color: #151515;
-		background: linear-gradient(var(--wash), var(--ground));
-		transition: --shelf-tint 350ms ease;
+		background: radial-gradient(
+				ellipse at var(--glow-x) var(--glow-y),
+				color-mix(in oklab, var(--glow) 67%, transparent) 0%,
+				transparent 63%
+			),
+			radial-gradient(
+				ellipse at 100% 88%,
+				color-mix(in oklab, var(--reflection) 60%, transparent) 0%,
+				transparent 60%
+			),
+			linear-gradient(152deg, var(--sky), var(--ground));
+	}
+
+	.shelf-light {
+		position: absolute;
+		inset: -18%;
+		pointer-events: none;
+		background: radial-gradient(
+				ellipse 38% 24% at 22% 72%,
+				color-mix(in oklab, var(--reflection) 55%, transparent),
+				transparent
+			),
+			radial-gradient(
+				ellipse 36% 25% at 77% 35%,
+				color-mix(in oklab, var(--glow) 32%, transparent),
+				transparent
+			);
+		animation: shelf-light-drift 24s ease-in-out infinite alternate;
+	}
+
+	@keyframes shelf-light-drift {
+		from {
+			transform: translate3d(-5%, 5%, 0) rotate(-9deg);
+		}
+
+		to {
+			transform: translate3d(7%, -4%, 0) rotate(11deg);
+		}
 	}
 
 	.has-now-playing {
@@ -295,6 +414,8 @@
 		top: 50%;
 		width: var(--size);
 		height: var(--size);
+		transform: translate(-50%, -50%) perspective(800px) rotateX(var(--tilt));
+		transform-style: preserve-3d;
 		border-radius: 50%;
 		pointer-events: auto;
 		-webkit-user-drag: none;
@@ -343,28 +464,34 @@
 
 	@media (min-width: 768px) {
 		.shelf {
-			--bottom: 105px;
-			--shelf-controls-inset: clamp(20px, 8dvh, 65px);
-		}
-
-		.has-now-playing {
 			--top: 72px;
-			--bottom: 161px;
+			--bottom: 72px;
+			--record-size: min(320px, 40dvh);
+			--record-axis: max(calc(var(--record-size) / 2 + 32px), 17.75vw);
+			--record-center-y: max(calc(var(--top) + var(--record-size) / 2), 48dvh);
 		}
 
 		.now-playing-row {
-			inset: auto 0 calc(var(--shelf-controls-inset) + 80px);
+			inset: 12px 17px auto auto;
+			width: 320px;
+			padding-inline: 0;
 		}
 
 		.scroller {
-			--size: min(320px, 40dvh);
-			--pitch: clamp(185px, 21.5vw, 290px);
-			--axis: 55vw;
+			--size: var(--record-size);
+			--pitch: clamp(105px, 12.9vw, 170px);
+			--axis: var(--record-axis);
 			--available: 100vw;
+			--edge-fade: clamp(120px, 19vw, 280px);
+			--edge-mask: linear-gradient(to right, #000 calc(100% - var(--edge-fade)), transparent);
 			overflow: auto hidden;
 			scroll-snap-type: x proximity;
 			scroll-padding-top: 0;
 			scroll-padding-left: calc(var(--axis) - var(--pitch) / 2);
+			-webkit-mask-image: var(--shelf-mask), var(--edge-mask);
+			-webkit-mask-composite: source-in;
+			mask-image: var(--shelf-mask), var(--edge-mask);
+			mask-composite: intersect;
 		}
 
 		.row {
@@ -374,22 +501,65 @@
 		}
 
 		.disc {
-			top: clamp(calc(var(--size) / 2), calc(52.5dvh - var(--top)), 75%);
+			top: calc(var(--record-center-y) - var(--top));
+			transform: translate(calc(-50% + var(--stack-offset) * var(--pitch)), -50%)
+				translateX(calc(-1 * var(--camera-offset))) perspective(var(--shelf-perspective))
+				translateX(var(--camera-offset)) translateZ(var(--record-depth)) rotateY(var(--record-yaw));
+		}
+
+		.hover-selected .disc {
+			transition: transform 220ms ease;
 		}
 
 		.shelf-controls {
-			inset: auto 50% var(--shelf-controls-inset) auto;
-			transform: translateX(50%);
-			width: min(440px, calc(100vw - 64px));
+			--caption-shadow: color-mix(
+				in srgb,
+				var(--vinyl-shadow-sample, var(--vinyl-shadow-base)) 54%,
+				#151515
+			);
+			inset: calc(var(--record-center-y) + var(--record-size) * 0.16) auto auto
+				calc(var(--record-axis) + var(--focus-offset) + 4px);
+			transform: translateX(-50%);
+			width: clamp(154px, calc(var(--record-size) * 0.725), 232px);
+			pointer-events: none;
 		}
 
 		.toolbar {
-			height: 74px;
+			gap: 0;
+			height: clamp(44px, calc(var(--record-size) * 0.225), 72px);
+			padding: 0 clamp(7px, calc(var(--record-size) * 0.069), 22px) 0
+				clamp(12px, calc(var(--record-size) * 0.1), 32px);
+			color: white;
+			text-shadow: 0 1px 2px var(--caption-shadow),
+				0 0 5px color-mix(in srgb, var(--caption-shadow) 54%, transparent);
+			transition: text-shadow 170ms linear;
+		}
+
+		.toolbar p {
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.play {
+			pointer-events: auto;
+		}
+
+		.play :global(.icon) {
+			filter: invert(1) drop-shadow(0 1px 2px var(--caption-shadow));
+			transition: filter 170ms linear;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.shelf {
+		.shelf-light {
+			animation: none;
+		}
+
+		.toolbar,
+		.play :global(.icon),
+		.hover-selected .disc {
 			transition: none;
 		}
 	}
