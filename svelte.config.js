@@ -1,14 +1,23 @@
 import adapter from '@sveltejs/adapter-auto';
+import githubPages from './scripts/github-pages-adapter.js';
 import path from "path";
 import preprocess from "svelte-preprocess";
 import postcss from "./postcss.config.mjs"
+
+const pagesBase = process.env.PAGES_BASE_PATH;
+const buildingForPages = pagesBase !== undefined;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	
 	preprocess: [preprocess({})],
 	kit: {
-		adapter: adapter(),
+		adapter: buildingForPages ? githubPages() : adapter(),
+		...(buildingForPages && {
+			paths: { base: pagesBase },
+			prerender: { enabled: false },
+			trailingSlash: 'ignore'
+		}),
 
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: '#svelte',
