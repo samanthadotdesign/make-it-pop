@@ -5,9 +5,10 @@ export default function githubPages() {
 	return {
 		name: 'github-pages',
 		async adapt(builder) {
-			const destination = 'build/pages';
+			const destination = process.env.PAGES_OUTPUT_DIRECTORY || 'build/pages';
 			builder.rimraf(destination);
-			builder.writeStatic(destination);
+			// The portfolio build shares the original deployment's static media.
+			if (process.env.PAGES_SKIP_STATIC !== '1') builder.writeStatic(destination);
 			builder.writeClient(destination);
 
 			// Serve the same client router for the shelf and direct links to a record.
