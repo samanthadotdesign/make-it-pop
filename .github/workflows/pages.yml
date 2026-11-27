@@ -31,6 +31,12 @@ jobs:
       - run: npm run build:only
         env:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+      - name: Build the samantha.design campaign entry
+        run: npm run build:only
+        env:
+          PAGES_BASE_PATH: /makeitpop
+          PAGES_OUTPUT_DIRECTORY: build/pages/campaign
+          PAGES_SKIP_STATIC: '1'
       - name: Prepare audio for GitHub Pages
         run: |
           if ! command -v ffmpeg >/dev/null; then
