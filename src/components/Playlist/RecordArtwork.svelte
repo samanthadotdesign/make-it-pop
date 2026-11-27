@@ -4,11 +4,72 @@
 
 	export let record;
 	export let spinning = false;
+	export let smoothSpin = false;
+	export let reducedMotion = false;
 	export let animate = true;
 	export let beveled = false;
 
 	const waterMotion = { from: 0, to: 2, durationMs: 2000, loopMode: 'boomerang' };
 	const assetRoot = `${base}/images/shelf`;
+
+	function spinRecord(node, initialOptions) {
+		let rotation;
+		let frame;
+		let rate = 0;
+
+		function update({ spinning, smoothSpin, reducedMotion }) {
+			cancelAnimationFrame(frame);
+			if (reducedMotion) {
+				rotation?.cancel();
+				rotation = undefined;
+				rate = 0;
+				return;
+			}
+			if (!rotation && !spinning) return;
+			if (!rotation) {
+				rotation = node.animate(
+					[{ transform: 'rotateZ(0turn)' }, { transform: 'rotateZ(1turn)' }],
+					{ duration: 12000, iterations: Infinity }
+				);
+				rotation.playbackRate = 0;
+			}
+
+			const targetRate = spinning ? 1 : 0;
+			if (!smoothSpin || rate === targetRate) {
+				rate = targetRate;
+				rotation.updatePlaybackRate(rate);
+				if (spinning) rotation.play();
+				else rotation.pause();
+				return;
+			}
+
+			const startRate = rate;
+			const start = performance.now();
+			const duration = 440 * Math.abs(targetRate - startRate);
+			if (spinning) rotation.play();
+
+			function ramp(now) {
+				const t = Math.max(0, Math.min(1, (now - start) / duration));
+				const eased = t * t * (3 - 2 * t);
+				rate = startRate + (targetRate - startRate) * eased;
+				// Change speed while keeping the record at its current angle.
+				rotation.updatePlaybackRate(rate);
+				if (t < 1) frame = requestAnimationFrame(ramp);
+				else if (!spinning) rotation.pause();
+			}
+
+			frame = requestAnimationFrame(ramp);
+		}
+
+		update(initialOptions);
+		return {
+			update,
+			destroy() {
+				cancelAnimationFrame(frame);
+				rotation?.cancel();
+			}
+		};
+	}
 </script>
 
 <div
@@ -25,7 +86,7 @@
 	{/if}
 
 	<div class="face">
-		<div class="rotor" class:spinning>
+		<div class="rotor" class:spinning use:spinRecord={{ spinning, smoothSpin, reducedMotion }}>
 			{#if record.treatment}
 				<div class="shader" style="--pressing: {record.treatment.color}">
 					<VinylShader
@@ -124,11 +185,9 @@
 
 	.rotor {
 		transform-origin: 50% 50%;
-		animation: rotate-record 12s linear infinite paused;
 	}
 
 	.spinning {
-		animation-play-state: running;
 		will-change: transform;
 	}
 
@@ -162,19 +221,8 @@
 		background: color-mix(in srgb, var(--pressing) 30%, #f2ede3);
 	}
 
-	@keyframes rotate-record {
-		from {
-			transform: rotateZ(0turn);
-		}
-
-		to {
-			transform: rotateZ(1turn);
-		}
-	}
-
 	@media (prefers-reduced-motion: reduce) {
 		.rotor {
-			animation: none;
 			will-change: auto;
 		}
 	}

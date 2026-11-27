@@ -1,7 +1,7 @@
 <script>
 	import { browser } from '$app/env';
 	import { base } from '$app/paths';
-	import { getContext, onMount } from 'svelte';
+	import { getContext, onMount, tick } from 'svelte';
 	import { listeningSessionContext, primeListeningAudio } from '@utils/listeningAudio.js';
 	import { activeShelfRecord } from '@utils/shelfCatalog.js';
 	import { shelfPalette } from '@utils/shelfPalette.js';
@@ -22,7 +22,10 @@
 	let reducedMotion = false;
 	let restored = false;
 	let position = 0;
+	let scrollOffset = 0;
 	let pitch = 1;
+	let endStart = 0;
+	let endPitch = 1;
 	let wheelTimer;
 	let wheelScrolling = false;
 	let drag;
@@ -30,10 +33,14 @@
 	let shaderSurfaces = {};
 	let hoveredIndex;
 
-	$: scrollIndex = Math.max(0, Math.min(items.length - 1, Math.round(position)));
+	$: lastIndex = Math.max(0, items.length - 1);
+	$: scrollIndex = Math.max(0, Math.min(lastIndex, Math.round(position)));
 	$: activeIndex = desktop && hoveredIndex !== undefined ? hoveredIndex : scrollIndex;
 	$: focusPosition = desktop && hoveredIndex !== undefined ? hoveredIndex : position;
-	$: focusOffset = (activeIndex - position + stackShift(activeIndex - position)) * pitch;
+	$: focusOffset = (activeIndex + stackShift(activeIndex - position)) * pitch - scrollOffset;
+	$: endProgress = desktop
+		? Math.max(0, Math.min(1, (position - endStart) / Math.max(1, lastIndex - endStart)))
+		: 0;
 	$: current = items[activeIndex];
 	$: palettes = items.map(shelfPalette);
 	$: backgroundStyle = shelfBackground(palettes, reducedMotion ? activeIndex : focusPosition);
@@ -58,14 +65,24 @@
 		].join('; ');
 	}
 
+	function endShift(index, start, step, endStep) {
+		return Math.max(0, index - start) * (step - endStep);
+	}
+
 	function scrollTo(index, behavior = 'instant') {
-		const offset = Math.max(0, Math.min(items.length - 1, index)) * pitch;
+		const target = Math.max(0, Math.min(lastIndex, index));
+		const offset = target * pitch - (desktop ? endShift(target, endStart, pitch, endPitch) : 0);
 		scroller.scrollTo(desktop ? { left: offset, behavior } : { top: offset, behavior });
 	}
 
 	function scrollPosition(event) {
 		if (event?.type === 'scroll') hoveredIndex = undefined;
-		position = (desktop ? scroller.scrollLeft : scroller.scrollTop) / pitch;
+		scrollOffset = desktop ? scroller.scrollLeft : scroller.scrollTop;
+		const endOffset = endStart * pitch;
+		position =
+			desktop && scrollOffset > endOffset
+				? endStart + (scrollOffset - endOffset) / endPitch
+				: scrollOffset / pitch;
 	}
 
 	function hoverRecord(event, index) {
@@ -102,7 +119,7 @@
 			[previous]: activeIndex - 1,
 			[next]: activeIndex + 1,
 			Home: 0,
-			End: items.length - 1
+			End: lastIndex
 		};
 		if (!(event.key in indexes)) return;
 		event.preventDefault();
@@ -152,13 +169,15 @@
 		return -Math.sign(distance) * Math.max(0, Math.abs(distance) - 3) * 0.36;
 	}
 
-	function recordPose(distance, pitch, focusDistance, hovering) {
+	function recordPose(distance, pitch, focusDistance) {
 		const magnitude = Math.abs(distance);
 		const focusMagnitude = Math.abs(focusDistance);
-		const angle = hovering ? 70 : Math.min(70, Math.max(0, focusMagnitude * 34.9 - 13.4));
+		const angle = Math.min(70, Math.max(0, focusMagnitude * 34.9 - 13.4));
 		const side = Math.sign(focusDistance);
-		const shift = stackShift(distance);
-		const cameraOffset = (distance + shift) * pitch;
+		const focusShift = stackShift(focusDistance);
+		// Keep the focused record in its slot and fan out evenly on both sides.
+		const shift = stackShift(distance - focusDistance) + focusShift;
+		const cameraOffset = (focusDistance + focusShift) * pitch;
 		const depth = -Math.min(96, Math.max(0, focusMagnitude - 1) * 15);
 		// Keep the outside edges nearer to the shared camera on either side of the front record.
 		const sightline = (Math.atan2(cameraOffset, shelfPerspective - depth) * 180) / Math.PI;
@@ -181,12 +200,25 @@
 		);
 		position = restoredIndex;
 
-		function measure() {
+		async function measure() {
 			const index = Math.round(position);
 			desktop = desktopQuery.matches;
 			if (!desktop) hoveredIndex = undefined;
-			const { width, height } = row.firstElementChild.getBoundingClientRect();
+			const { width, height } = row.firstElementChild?.getBoundingClientRect() ?? {};
+			if (!width || !height) return;
 			pitch = Math.max(1, desktop ? width : height);
+
+			if (desktop) {
+				// Spread the shorter scroll range across the final records so each can still snap.
+				const maxScroll = scroller.scrollWidth - scroller.clientWidth;
+				const reduction = Math.max(0, lastIndex * pitch - maxScroll);
+				const endSteps = Math.min(lastIndex, Math.ceil((2 * reduction) / pitch));
+				endStart = lastIndex - endSteps;
+				endPitch = endSteps ? (maxScroll - endStart * pitch) / endSteps : pitch;
+			}
+
+			await tick();
+			if (!scroller) return;
 			if (!wheelScrolling && !drag) scrollTo(index);
 			scrollPosition();
 		}
@@ -214,7 +246,7 @@
 	class="shelf"
 	class:has-now-playing={!!$listening}
 	class:hover-selected={desktop && hoveredIndex !== undefined}
-	style="--shelf-perspective: {shelfPerspective}px; --focus-offset: {focusOffset}px; {backgroundStyle}"
+	style="--shelf-perspective: {shelfPerspective}px; --focus-offset: {focusOffset}px; --end-progress: {endProgress}; --record-steps: {lastIndex}; {backgroundStyle}"
 >
 	<div class="shelf-light" aria-hidden="true" />
 
@@ -246,6 +278,9 @@
 					style="z-index: {index === activeIndex
 						? items.length * 10 + 1
 						: -Math.round(Math.abs(focusDistance) * 10) + items.length * 10}"
+					style:scroll-margin-left={desktop
+						? `${endShift(index, endStart, pitch, endPitch)}px`
+						: undefined}
 				>
 					<a
 						class="disc"
@@ -253,12 +288,7 @@
 						href={browser ? `${base}${record.path}` : undefined}
 						aria-label={record.artist ? `${record.name} by ${record.artist}` : record.name}
 						aria-current={index === activeIndex ? 'true' : undefined}
-						style={recordPose(
-							distance,
-							pitch,
-							focusDistance,
-							desktop && hoveredIndex !== undefined
-						)}
+						style={recordPose(distance, pitch, focusDistance)}
 						draggable="false"
 						on:pointermove={(event) => hoverRecord(event, index)}
 						on:focus={() => focusRecord(index)}
@@ -267,6 +297,8 @@
 						<RecordArtwork
 							{record}
 							spinning={index === activeIndex}
+							smoothSpin={desktop}
+							{reducedMotion}
 							animate={index === activeIndex}
 							beveled
 							on:surface={(event) => (shaderSurfaces[record.id] = event.detail.canvas)}
@@ -483,7 +515,13 @@
 			--axis: var(--record-axis);
 			--available: 100vw;
 			--edge-fade: clamp(120px, 19vw, 280px);
-			--edge-mask: linear-gradient(to right, #000 calc(100% - var(--edge-fade)), transparent);
+			--edge-mask: linear-gradient(
+				to right,
+				transparent,
+				#000 calc(var(--edge-fade) * var(--end-progress)),
+				#000 calc(100% - var(--edge-fade) * (1 - var(--end-progress))),
+				transparent
+			);
 			overflow: auto hidden;
 			scroll-snap-type: x proximity;
 			scroll-padding-top: 0;
@@ -498,6 +536,17 @@
 			flex-direction: row;
 			width: max-content;
 			height: 100%;
+			overflow: clip;
+		}
+
+		.row::after {
+			/* Match the leading gap, while keeping short shelves scrollable. */
+			flex-basis: max(
+				calc(var(--axis) - var(--pitch) / 2),
+				calc(
+					var(--available) - var(--axis) - var(--pitch) / 2 - var(--record-steps) * var(--pitch) / 2
+				)
+			);
 		}
 
 		.disc {
@@ -508,7 +557,7 @@
 		}
 
 		.hover-selected .disc {
-			transition: transform 220ms ease;
+			transition: transform 320ms ease-in-out;
 		}
 
 		.shelf-controls {
